@@ -23,7 +23,6 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      # setup Docker build action
       - name: Set up Docker Buildx
         id: buildx
         uses: docker/setup-buildx-action@v1
@@ -40,7 +39,7 @@ jobs:
           # relative path to the place where source code with Dockerfile is located
           context: ./src/posts/write
           # Note: tags has to be all lower-case
-          tags: vjv2143/kwetter/posts-write-service:latest
+          tags: vjv2143/kwetter:posts-write-service:latest
           # build on feature branches, push only on master branch
           push: ${{ github.ref == 'refs/heads/master' }}
 
