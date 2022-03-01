@@ -20,6 +20,11 @@ jobs:
 
     # steps to perform in job
     steps:
+      - name: View Directory
+        uses: |
+          ls
+          pwd
+
       - name: Checkout code
         uses: actions/checkout@v2
 
@@ -38,9 +43,7 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           # relative path to the place where source code with Dockerfile is located
-          # context: .src/posts/write
-          context: ./
-          file: ./Dockerfile
+          context: .src/posts/write
           # Note: tags has to be all lower-case
           tags: vjv2143/kwetter.posts-write-service:latest
           # build on feature branches, push only on master branch
