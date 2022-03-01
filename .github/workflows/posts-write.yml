@@ -9,7 +9,7 @@ on:
 
 defaults:
   run:
-    working-directory: /Users/vjv/Fontys/sm6/Individual/kwetter/src/posts/write
+    working-directory: ./src/posts/write
 
 jobs:
   # define job to build and publish docker image
@@ -27,8 +27,6 @@ jobs:
       - name: Set up Docker Buildx
         id: buildx
         uses: docker/setup-buildx-action@v1
-        with:
-          version: v0.6.3
 
       - name: Login to DockerHub
         uses: docker/login-action@v1
@@ -40,7 +38,7 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           # relative path to the place where source code with Dockerfile is located
-          context: /Users/vjv/Fontys/sm6/Individual/kwetter/src/posts/write
+          context: ./src/posts/write
           # Note: tags has to be all lower-case
           tags: vjv2143/kwetter.posts-write-service:latest
           # build on feature branches, push only on master branch
