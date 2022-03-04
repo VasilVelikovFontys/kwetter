@@ -1,4 +1,6 @@
-import { initializeApp } from "firebase/app";
+import firebase from 'firebase/compat/app';
+import 'firebase/compat/firestore';
+import express from "express";
 
 const firebaseConfig = {
     apiKey: process.env.API_KEY,
@@ -9,13 +11,13 @@ const firebaseConfig = {
     appId: process.env.APP_ID,
 };
 
-const firebaseApp = initializeApp(firebaseConfig);
+const firebaseApp = firebase.initializeApp(firebaseConfig);
 export const db = firebaseApp.firestore();
 
-const app = require("express")();
+const app = express();
 
 // constants
-const HOST = process.env.HOST || '0.0.0.0';
+const HOST = process.env.HOST || 'localhost';
 const PORT = process.env.PORT || 8080;
 
 app.get('/', (req, res) => {
@@ -24,7 +26,7 @@ app.get('/', (req, res) => {
 
 app.post('/records', (req, res) => {
     db.collection('posts')
-        .add("Hello world")
+        .add({id: 1, text: "Hello world!"})
         .then(() => res.status(200).send("Record added successfully"))
 })
 
