@@ -19,6 +19,10 @@ const HOST = process.env.HOST || '0.0.0.0';
 const PORT = process.env.PORT || 8080;
 
 app.get('/', (req, res) => {
+    res.send('Hello World!')
+})
+
+app.post('/records', (req, res) => {
     db.collection('posts')
         .add("Hello world")
         .then(() => res.status(200).send("Record added successfully"))
