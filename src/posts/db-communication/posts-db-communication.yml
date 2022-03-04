@@ -1,0 +1,69 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: posts-db-communication-deployment
+  labels:
+    app: posts-db-communication
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: posts-db-communication
+  template:
+    metadata:
+      labels:
+        app: posts-db-communication
+    spec:
+      containers:
+        - name: posts-db-communication
+          image: vjv2143/kwetter.posts-db-communication-service:latest
+          ports:
+            - containerPort: 8080
+          env:
+            - name: API_KEY
+              valueFrom:
+                configMapKeyRef:
+                  name: posts-db-communication-configmap
+                  key: firebase.api-key
+
+            - name: AUTH_DOMAIN
+                valueFrom:
+                  configMapKeyRef:
+                    name: posts-db-communication-configmap
+                    key: firebase.auth-domain
+
+            - name: PROJECT_ID
+                valueFrom:
+                  configMapKeyRef:
+                    name: posts-db-communication-configmap
+                    key: firebase.project-id
+
+            - name: STORAGE_BUCKET
+                valueFrom:
+                  configMapKeyRef:
+                    name: posts-db-communication-configmap
+                    key: firebase.storage-bucket
+
+            - name: MESSAGING_SENDER_ID
+                valueFrom:
+                  configMapKeyRef:
+                    name: posts-db-communication-configmap
+                    key: firebase.messaging-sender-id
+
+            - name: APP_ID
+                valueFrom:
+                  configMapKeyRef:
+                    name: posts-db-communication-configmap
+                    key: firebase.app-id
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: posts-db-communication-service
+spec:
+  selector:
+    app: posts-db-communication
+  ports:
+    - protocol: TCP
+      port: 8080 #can be different
+      targetPort: 8080
