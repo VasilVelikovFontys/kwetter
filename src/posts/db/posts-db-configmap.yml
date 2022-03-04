@@ -7,5 +7,5 @@ data:
   auth-domain: "kwetter-posts.firebaseapp.com"
   project-id: "kwetter-posts"
   storage-bucket: "kwetter-posts.appspot.com"
-  messaging-senderId: "578340542785"
+  messaging-sender-id: "578340542785"
   app-id: "1:578340542785:web:a986dd952994c0eada29c0"

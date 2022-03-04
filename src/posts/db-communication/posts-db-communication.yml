@@ -58,7 +58,9 @@ metadata:
 spec:
   selector:
     app: posts-db-communication
+  type: NodePort
   ports:
     - protocol: TCP
       port: 8080
       targetPort: 8080
+      nodePort: 30000
