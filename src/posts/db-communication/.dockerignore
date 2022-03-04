@@ -1,2 +1,4 @@
-node_modules
-npm-debug.log
+./app/node_modules
+./app/npm-debug.log
+posts-db-communication.yml
+
