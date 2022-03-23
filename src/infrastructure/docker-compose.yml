@@ -5,15 +5,26 @@ services:
     image: vjv2143/kwetter.posts-service
     container_name: posts-service
     ports:
-      - ${POST_SERVICE_PORT}:80
+      - ${POSTS_SERVICE_PORT}:4000
     networks:
       - network-name
     environment:
-      PORT: ${POST_SERVICE_PORT}
+      PORT: ${POSTS_SERVICE_PORT}
+
+  #Mentions Service
+  mentions-service:
+    image: vjv2143/kwetter.mentions-service
+    container_name: mentions-service
+    ports:
+      - ${MENTIONS_SERVICE_PORT}:4000
+    networks:
+      - network-name
+    environment:
+      PORT: ${MENTIONS_SERVICE_PORT}
 
   #NATS Streaming
   nast-streaming:
-    immage: nats-streaming:0.17.0
+    image: nats-streaming:0.17.0
     container_name: nats-streaming
     ports:
       - ${NATS_PORT}:4222

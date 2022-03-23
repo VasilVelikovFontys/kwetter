@@ -30,7 +30,8 @@ const {
     NATS_CLUSTER_ID,
     NATS_HOST,
     NATS_PORT,
-    NATS_POST_CREATED_CHANNEL
+    NATS_POST_CREATED_CHANNEL,
+    NATS_MENTIONS_SERVICE_QUEUE_GROUP
 } = process.env;
 
 const corsOptions = {
@@ -42,28 +43,33 @@ const app = express();
 app.use(bodyParser.json());
 app.use(cors(corsOptions));
 
-const posts = [];
+const mentions = [];
 
 const stan = nats.connect(NATS_CLUSTER_ID, NATS_CLIENT_ID, {
     url: `${NATS_HOST}:${NATS_PORT}`
 });
 
-app.get('/posts', (req, res) => {
-    res.send(posts);
-});
+stan.on('connect', () => {
+    const options = stan.subscriptionOptions().setManualAckMode(true);
 
-app.post('/posts', (req, res) => {
-    const id = posts.length;
-    const userId = 1;
-    const { text } = req.body;
-    const post = {id, userId, text};
+    const subscription = stan.subscribe(NATS_POST_CREATED_CHANNEL, NATS_MENTIONS_SERVICE_QUEUE_GROUP, options);
 
-    posts.push(post);
+    subscription.on('message', (msg) => {
+        const data = msg.getData();
+        const post = JSON.parse(data);
 
-    const data = JSON.stringify(post);
-    stan.publish(NATS_POST_CREATED_CHANNEL, data);
+        const id = mentions.length;
+        const postId = post.id;
+        const userId = post.userId;
 
-    res.status(201).send(posts[id]);
+        mentions.push({id, postId, userId});
+
+        msg.ack();
+    })
+})
+
+app.get('/mentions', (req, res) => {
+    res.send(mentions);
 });
 
 app.listen(PORT || 4000, () => {
