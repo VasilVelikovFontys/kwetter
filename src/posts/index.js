@@ -48,6 +48,12 @@ const stan = nats.connect(NATS_CLUSTER_ID, NATS_CLIENT_ID, {
     url: `${NATS_HOST}:${NATS_PORT}`
 });
 
+stan.on('connect', () => {
+    stan.on('close', () => {
+        process.exit();
+    });
+});
+
 app.get('/posts', (req, res) => {
     res.send(posts);
 });
@@ -69,3 +75,6 @@ app.post('/posts', (req, res) => {
 app.listen(PORT || 4000, () => {
     console.log(`Listening on port ${PORT}`);
 });
+
+process.on('SIGINT', () => stan.close());
+process.on('SIGTERM', () => stan.close());

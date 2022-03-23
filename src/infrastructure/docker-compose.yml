@@ -10,6 +10,11 @@ services:
       - network-name
     environment:
       PORT: ${POSTS_SERVICE_PORT}
+      NATS_CLUSTER_ID: ${NATS_CLUSTER_ID}
+      NATS_CLIENT_ID: ${NATS_POST_SERVICE_CLIENT_ID}
+      NATS_HOST: ${NATS_HOST}
+      NATS_PORT: ${NATS_PORT}
+      NATS_POST_CREATED_CHANNEL: ${NATS_POST_CREATED_CHANNEL}
 
   #Mentions Service
   mentions-service:
@@ -21,9 +26,16 @@ services:
       - network-name
     environment:
       PORT: ${MENTIONS_SERVICE_PORT}
+      NATS_CLUSTER_ID: ${NATS_CLUSTER_ID}
+      NATS_CLIENT_ID: ${NATS_MENTIONS_SERVICE_CLIENT_ID}
+      NATS_HOST: ${NATS_HOST}
+      NATS_PORT: ${NATS_PORT}
+      NATS_POST_CREATED_CHANNEL: ${NATS_POST_CREATED_CHANNEL}
+      NATS_DURABLE_NAME: ${NATS_MENTIONS_SERVICE_DURABLE_NAME}
+      NATS_QUEUE_GROUP: ${NATS_MENTIONS_SERVICE_QUEUE_GROUP}
 
   #NATS Streaming
-  nast-streaming:
+  nats-streaming:
     image: nats-streaming:0.17.0
     container_name: nats-streaming
     ports:
@@ -32,4 +44,4 @@ services:
 
 networks:
   network-name:
-    name: swsp
+    name: kwetter

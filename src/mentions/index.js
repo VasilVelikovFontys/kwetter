@@ -31,7 +31,8 @@ const {
     NATS_HOST,
     NATS_PORT,
     NATS_POST_CREATED_CHANNEL,
-    NATS_MENTIONS_SERVICE_QUEUE_GROUP
+    NATS_DURABLE_NAME,
+    NATS_QUEUE_GROUP
 } = process.env;
 
 const corsOptions = {
@@ -50,9 +51,17 @@ const stan = nats.connect(NATS_CLUSTER_ID, NATS_CLIENT_ID, {
 });
 
 stan.on('connect', () => {
-    const options = stan.subscriptionOptions().setManualAckMode(true);
+    stan.on('close', () => {
+        process.exit();
+    });
 
-    const subscription = stan.subscribe(NATS_POST_CREATED_CHANNEL, NATS_MENTIONS_SERVICE_QUEUE_GROUP, options);
+    const options = stan
+        .subscriptionOptions()
+        .setManualAckMode(true)
+        .setDeliverAllAvailable()
+        .setDurableName(NATS_DURABLE_NAME);
+
+    const subscription = stan.subscribe(NATS_POST_CREATED_CHANNEL, NATS_QUEUE_GROUP, options);
 
     subscription.on('message', (msg) => {
         const data = msg.getData();
@@ -75,3 +84,6 @@ app.get('/mentions', (req, res) => {
 app.listen(PORT || 4000, () => {
     console.log(`Listening on port ${PORT}`);
 });
+
+process.on('SIGINT', () => stan.close());
+process.on('SIGTERM', () => stan.close());
