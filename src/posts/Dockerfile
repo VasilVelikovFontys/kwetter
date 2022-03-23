@@ -5,15 +5,13 @@ WORKDIR /usr/src/app
 
 # Install app dependencies
 # A wildcard is used to ensure both package.json and package-lock.json are copied
-COPY ./app/package*.json ./
+COPY ./package*.json ./
 
 RUN npm install
 # For production:
 # RUN npm ci --only=production
 
 # Bundle app source
-COPY ./app ./
-
-EXPOSE 8080
+COPY ./ ./
 
 CMD [ "node", "index.js" ]
