@@ -18,10 +18,10 @@ dotenv.config();
 // const firebaseApp = firebase.initializeApp(firebaseConfig);
 // export const db = firebaseApp.firestore();
 
-const {PORT, CLIENT_URL, CLIENT_PORT} = process.env;
+const {PORT, CLIENT_HOST, CLIENT_PORT} = process.env;
 
 const corsOptions = {
-    origin: `${CLIENT_URL}:${CLIENT_PORT}`,
+    origin: `${CLIENT_HOST}:${CLIENT_PORT}`,
     optionSuccessStatus: 200
 }
 
