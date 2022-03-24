@@ -1,10 +1,12 @@
 const express = require("express");
+const bodyParser = require("body-parser");
 const nats = require("node-nats-streaming");
 
 const cors = require("cors");
 
 const firebase = require("firebase/compat/app");
 require("firebase/compat/firestore");
+require("firebase/compat/auth");
 
 const dotenv = require("dotenv");
 dotenv.config();
@@ -23,10 +25,7 @@ const {
     NATS_CLUSTER_ID,
     NATS_HOST,
     NATS_PORT,
-    NATS_POST_CREATED_CHANNEL,
-    NATS_USER_MENTIONED_CHANNEL,
-    NATS_DURABLE_NAME,
-    NATS_QUEUE_GROUP
+    NATS_ACCOUNT_CREATED_CHANNEL,
 } = process.env;
 
 const firebaseConfig = {
@@ -40,6 +39,7 @@ const firebaseConfig = {
 
 const firebaseApp = firebase.initializeApp(firebaseConfig);
 const db = firebaseApp.firestore();
+const auth = firebaseApp.auth();
 
 const corsOptions = {
     origin: `${CLIENT_HOST}:${CLIENT_PORT}`,
@@ -47,6 +47,7 @@ const corsOptions = {
 }
 
 const app = express();
+app.use(bodyParser.json());
 app.use(cors(corsOptions));
 
 const stan = nats.connect(NATS_CLUSTER_ID, NATS_CLIENT_ID, {
@@ -57,33 +58,37 @@ stan.on('connect', () => {
     stan.on('close', () => {
         process.exit();
     });
+});
 
-    const options = stan
-        .subscriptionOptions()
-        .setManualAckMode(true)
-        .setDeliverAllAvailable()
-        .setDurableName(NATS_DURABLE_NAME);
+app.post('/accounts', async (req, res) => {
+    const {email, username, password} = req.body;
 
-    const subscription = stan.subscribe(NATS_POST_CREATED_CHANNEL, NATS_QUEUE_GROUP, options);
+    const snapshot = await db.collection('accounts').where('username', '==', username).get();
+    const usernameExists = snapshot.docs.length;
 
-    subscription.on('message', async (msg) => {
-        const receivedData = msg.getData();
-        const post = JSON.parse(receivedData);
+    if(!usernameExists) {
+        try {
+            const authResponse = await auth.createUserWithEmailAndPassword(email, password);
 
-        const {text} = post;
-        let username = text.substring(text.indexOf('@'));
-        username = username.substring(1, username.indexOf(' '));
+            await db.collection('accounts').doc(authResponse.user.uid).set({email, username});
 
-        await db.collection('mentions').add({postId: post.id, username});
+            const account = {id: authResponse.user.uid, email, username};
 
-        const mention = {postId: post.id, username};
+            const data = JSON.stringify(account);
+            stan.publish(NATS_ACCOUNT_CREATED_CHANNEL, data);
 
-        const sentData = JSON.stringify(mention);
-        stan.publish(NATS_USER_MENTIONED_CHANNEL, sentData);
-
-        msg.ack();
-    })
-})
+            res.status(201).send(account);
+        } catch (err) {
+            if(err.code === "auth/weak-password") {
+                res.status(202).send("Password must be at least 6 characters!");
+            } else {
+                res.status(202).send(err);
+            }
+        }
+    } else {
+        res.status(202).send("Username already taken!");
+    }
+});
 
 app.listen(PORT || 4000, () => {
     console.log(`Listening on port ${PORT}`);

@@ -10,28 +10,34 @@ require("firebase/compat/firestore");
 const dotenv = require("dotenv");
 dotenv.config();
 
-// const firebaseConfig = {
-//     apiKey: process.env.API_KEY || "AIzaSyBnHS1iNI3mxaGHeMAh1XH2-lbS_MvqjXg",
-//     authDomain: process.env.AUTH_DOMAIN || "kwetter-posts.firebaseapp.com",
-//     projectId: process.env.PROJECT_ID || "kwetter-posts",
-//     storageBucket: process.env.STORAGE_BUCKET || "kwetter-posts.appspot.com",
-//     messagingSenderId: process.env.MESSAGING_SENDER_ID || "578340542785",
-//     appId: process.env.APP_ID || "1:578340542785:web:a986dd952994c0eada29c0",
-// };
-//
-// const firebaseApp = firebase.initializeApp(firebaseConfig);
-// export const db = firebaseApp.firestore();
-
 const {
     PORT,
     CLIENT_HOST,
     CLIENT_PORT,
+    FIRESTORE_API_KEY,
+    FIRESTORE_AUTH_DOMAIN,
+    FIRESTORE_APP_ID,
+    FIRESTORE_MESSAGING_SENDER_ID,
+    FIRESTORE_PROJECT_ID,
+    FIRESTORE_STORAGE_BUCKET,
     NATS_CLIENT_ID,
     NATS_CLUSTER_ID,
     NATS_HOST,
     NATS_PORT,
     NATS_POST_CREATED_CHANNEL
 } = process.env;
+
+const firebaseConfig = {
+    apiKey: FIRESTORE_API_KEY,
+    authDomain: FIRESTORE_AUTH_DOMAIN,
+    projectId: FIRESTORE_PROJECT_ID,
+    storageBucket: FIRESTORE_STORAGE_BUCKET,
+    messagingSenderId: FIRESTORE_MESSAGING_SENDER_ID,
+    appId: FIRESTORE_APP_ID,
+};
+
+const firebaseApp = firebase.initializeApp(firebaseConfig);
+const db = firebaseApp.firestore();
 
 const corsOptions = {
     origin: `${CLIENT_HOST}:${CLIENT_PORT}`,
@@ -41,8 +47,6 @@ const corsOptions = {
 const app = express();
 app.use(bodyParser.json());
 app.use(cors(corsOptions));
-
-const posts = [];
 
 const stan = nats.connect(NATS_CLUSTER_ID, NATS_CLIENT_ID, {
     url: `${NATS_HOST}:${NATS_PORT}`
@@ -54,22 +58,22 @@ stan.on('connect', () => {
     });
 });
 
-app.get('/posts', (req, res) => {
-    res.send(posts);
+app.get('/posts', async (req, res) => {
+    const snapshot = await db.collection('posts').get();
+    res.send(snapshot.docs.map(doc => doc.data()));
 });
 
-app.post('/posts', (req, res) => {
-    const id = posts.length;
-    const userId = 1;
-    const { text } = req.body;
-    const post = {id, userId, text};
+app.post('/posts', async (req, res) => {
+    const {userId, text} = req.body;
 
-    posts.push(post);
+    const docRef = await db.collection('posts').add({userId, text});
+
+    const post = {id: docRef.id, userId, text};
 
     const data = JSON.stringify(post);
     stan.publish(NATS_POST_CREATED_CHANNEL, data);
 
-    res.status(201).send(posts[id]);
+    res.status(201).send(post);
 });
 
 app.listen(PORT || 4000, () => {
