@@ -44,7 +44,7 @@ const auth = firebaseApp.auth();
 const corsOptions = {
     origin: `${CLIENT_HOST}:${CLIENT_PORT}`,
     optionSuccessStatus: 200
-}
+};
 
 const app = express();
 app.use(bodyParser.json());
