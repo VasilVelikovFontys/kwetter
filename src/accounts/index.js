@@ -96,4 +96,3 @@ app.listen(PORT || 4000, () => {
 
 process.on('SIGINT', () => stan.close());
 process.on('SIGTERM', () => stan.close());
-//re-run github pipeline
