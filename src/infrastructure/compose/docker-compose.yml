@@ -4,6 +4,8 @@ services:
   accounts-service:
     image: vjv2143/kwetter.accounts-service
     container_name: accounts-service
+    depends_on:
+      - nats-streaming
     env_file: .accounts.env
     ports:
       - ${ACCOUNTS_SERVICE_PORT}:4000
@@ -14,6 +16,8 @@ services:
   posts-service:
     image: vjv2143/kwetter.posts-service
     container_name: posts-service
+    depends_on:
+      - nats-streaming
     env_file: .posts.env
     ports:
       - ${POSTS_SERVICE_PORT}:4000
@@ -24,6 +28,8 @@ services:
   mentions-service:
     image: vjv2143/kwetter.mentions-service
     container_name: mentions-service
+    depends_on:
+      - nats-streaming
     env_file: .mentions.env
     ports:
       - ${MENTIONS_SERVICE_PORT}:4000
@@ -34,6 +40,8 @@ services:
   mentioning-posts-service:
     image: vjv2143/kwetter.mentioning-posts-service
     container_name: mentioning-posts-service
+    depends_on:
+      - nats-streaming
     env_file: .mentioning-posts.env
     ports:
       - ${MENTIONING_POSTS_SERVICE_PORT}:4000

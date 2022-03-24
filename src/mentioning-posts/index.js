@@ -123,7 +123,7 @@ app.get('/mentioning-posts/:userId', async (req, res) => {
 });
 
 app.listen(PORT || 4000, () => {
-    console.log(`Listening on port ${PORT}`);
+    console.log(`Listening on port ${PORT || 4000}`);
 });
 
 process.on('SIGINT', () => stan.close());
