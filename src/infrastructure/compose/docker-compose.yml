@@ -31,8 +31,6 @@ services:
     depends_on:
       - nats-streaming
     env_file: .mentions.env
-    ports:
-      - ${MENTIONS_SERVICE_PORT}:4000
     networks:
       - network-name
 
