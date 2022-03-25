@@ -23,7 +23,7 @@ jobs:
       - name: Build and Push Image
         run: |
           docker build ./src/gateway -t vasilvelikovkwetter.azurecr.io/gateway:latest
-          docker push vasilvelikovkwetter.azurecr.io/gateway:${{ github.sha }}
+          docker push vasilvelikovkwetter.azurecr.io/gateway:latest
 
       - name: Image digest
         run: echo ${{ steps.docker_build.outputs.digest }}
