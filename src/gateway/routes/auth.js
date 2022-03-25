@@ -12,7 +12,8 @@ router.post('/auth/register', async (req, res) => {
     const data = req.body;
 
     try {
-        await axios.post(`${ACCOUNTS_SERVICE_HOST}:${ACCOUNTS_SERVICE_PORT}/accounts`, data);
+        const response = await axios.post(`${ACCOUNTS_SERVICE_HOST}:${ACCOUNTS_SERVICE_PORT}/accounts`, data);
+        console.log(response)
         res.status(201).send(data);
     } catch (err) {
         res.status(202).send(err);
