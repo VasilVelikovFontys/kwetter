@@ -15,7 +15,7 @@ router.get('/posts', async (req, res) => {
         const response = await axios.get(`${POSTS_SERVICE_HOST}:${POSTS_SERVICE_PORT}/posts`);
         res.status(200).send(response.data);
     } catch (err) {
-        res.status(200).send(err);
+        res.status(204).send(err);
     }
 });
 
@@ -34,7 +34,7 @@ router.get('/posts/mentioning', async (req, res) => {
         const response = await axios.get(`${MENTIONING_POSTS_SERVICE_HOST}:${MENTIONING_POSTS_SERVICE_PORT}/mentioning-posts/3s05d8Cj80ZzOYFOrC5wtERhlCt2`);
         res.status(200).send(response.data);
     } catch (err) {
-        res.status(200).send(err);
+        res.status(204).send(err);
     }
 })
 

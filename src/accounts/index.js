@@ -68,7 +68,7 @@ app.post('/accounts', async (req, res) => {
     const snapshot = await db.collection('accounts').where('username', '==', username).get();
     const usernameExists = snapshot.docs.length;
 
-    if (usernameExists) return res.status(202).send("Username already taken!");
+    if (usernameExists) return res.status(202).send({error: "Username already taken!"});
 
     try {
         const authResponse = await auth.createUserWithEmailAndPassword(email, password);
@@ -81,11 +81,17 @@ app.post('/accounts', async (req, res) => {
         stan.publish(NATS_ACCOUNT_CREATED_CHANNEL, data);
 
         res.status(201).send(account);
-    } catch (err) {
-        if(err.code === "auth/weak-password") {
-            res.status(202).send("Password must be at least 6 characters!");
-        } else {
-            res.status(202).send(err);
+    } catch (error) {
+        switch (error.code) {
+            case "auth/email-already-in-use":
+                res.status(202).send({error: "Email already taken!"});
+                break;
+            case "auth/weak-password":
+                res.status(202).send({error: "Password must be at least 6 characters!"});
+                break;
+            default:
+                res.status(202).send({error});
+                break;
         }
     }
 });
