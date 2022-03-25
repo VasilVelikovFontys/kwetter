@@ -1,19 +1,14 @@
 name: Accounts
 
 on:
-  # run it on push to the default repository branch
   push:
     branches: [master]
     paths: 'src/accounts/**'
 
 jobs:
-  # define job to build and publish docker image
   build-and-push-docker-image:
     name: Build Docker image and push to repository
-    # run only when code is compiling and tests are passing
     runs-on: ubuntu-latest
-
-    # steps to perform in job
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -31,14 +26,19 @@ jobs:
       - name: Build image and push to Docker Hub
         uses: docker/build-push-action@v2
         with:
-          # relative path to the place where source code with Dockerfile is located
           context: ./src/accounts
-
-          # Note: tags has to be all lower-case
           tags: vjv2143/kwetter.accounts-service:latest
-
-          # build on feature branches, push only on master branch
           push: ${{ github.ref == 'refs/heads/master' }}
+
+      - name: Login to Azure Container Registry, Build and Push Image
+        uses: azure/docker-login@v1
+        with:
+          login-server: vasilvelikovkwetter.azurecr.io
+          username: ${{ secrets.ACR_USERNAME }}
+          password: ${{ secrets.ACR_PASSWORD }}
+        run: |
+          docker build ./src/accounts -t vasilvelikovkwetter.azurecr.io/accounts-service:${{ github.sha }}
+          docker push vasilvelikovkwetter.azurecr.io/accounts-service:${{ github.sha }}
 
       - name: Image digest
         run: echo ${{ steps.docker_build.outputs.digest }}
