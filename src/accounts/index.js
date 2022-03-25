@@ -68,27 +68,25 @@ app.post('/accounts', async (req, res) => {
     const snapshot = await db.collection('accounts').where('username', '==', username).get();
     const usernameExists = snapshot.docs.length;
 
-    if(!usernameExists) {
-        try {
-            const authResponse = await auth.createUserWithEmailAndPassword(email, password);
+    if (usernameExists) return res.status(202).send("Username already taken!");
 
-            await db.collection('accounts').doc(authResponse.user.uid).set({email, username});
+    try {
+        const authResponse = await auth.createUserWithEmailAndPassword(email, password);
 
-            const account = {id: authResponse.user.uid, email, username};
+        await db.collection('accounts').doc(authResponse.user.uid).set({email, username});
 
-            const data = JSON.stringify(account);
-            stan.publish(NATS_ACCOUNT_CREATED_CHANNEL, data);
+        const account = {id: authResponse.user.uid, email, username};
 
-            res.status(201).send(account);
-        } catch (err) {
-            if(err.code === "auth/weak-password") {
-                res.status(202).send("Password must be at least 6 characters!");
-            } else {
-                res.status(202).send(err);
-            }
+        const data = JSON.stringify(account);
+        stan.publish(NATS_ACCOUNT_CREATED_CHANNEL, data);
+
+        res.status(201).send(account);
+    } catch (err) {
+        if(err.code === "auth/weak-password") {
+            res.status(202).send("Password must be at least 6 characters!");
+        } else {
+            res.status(202).send(err);
         }
-    } else {
-        res.status(202).send("Username already taken!");
     }
 });
 

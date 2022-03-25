@@ -61,21 +61,29 @@ stan.on('connect', () => {
 });
 
 app.get('/posts', async (req, res) => {
-    const snapshot = await db.collection('posts').get();
-    res.send(snapshot.docs.map(doc => doc.data()));
+    try {
+        const snapshot = await db.collection('posts').get();
+        res.status(200).send(snapshot.docs.map(doc => doc.data()));
+    } catch (err) {
+        res.send(204).send(err);
+    }
 });
 
 app.post('/posts', async (req, res) => {
     const {userId, text} = req.body;
 
-    const docRef = await db.collection('posts').add({userId, text});
+    try {
+        const docRef = await db.collection('posts').add({userId, text});
 
-    const post = {id: docRef.id, userId, text};
+        const post = {id: docRef.id, userId, text};
 
-    const data = JSON.stringify(post);
-    stan.publish(NATS_POST_CREATED_CHANNEL, data);
+        const data = JSON.stringify(post);
+        stan.publish(NATS_POST_CREATED_CHANNEL, data);
 
-    res.status(201).send(post);
+        res.status(201).send(post);
+    } catch (err) {
+        res.status(202).send(err);
+    }
 });
 
 app.listen(PORT || 4000, () => {

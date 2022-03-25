@@ -1,5 +1,17 @@
 version: '3'
 services:
+  #Gateway
+  gateway:
+    image: vjv2143/kwetter.gateway
+    container_name: gateway
+    depends_on:
+      - nats-streaming
+    env_file: .gateway.env
+    ports:
+      - ${GATEWAY_PORT}:4000
+    networks:
+      - network-name
+
   #Accounts Service
   accounts-service:
     image: vjv2143/kwetter.accounts-service
@@ -7,8 +19,6 @@ services:
     depends_on:
       - nats-streaming
     env_file: .accounts.env
-    ports:
-      - ${ACCOUNTS_SERVICE_PORT}:4000
     networks:
       - network-name
 
@@ -19,8 +29,6 @@ services:
     depends_on:
       - nats-streaming
     env_file: .posts.env
-    ports:
-      - ${POSTS_SERVICE_PORT}:4000
     networks:
       - network-name
 
@@ -41,8 +49,6 @@ services:
     depends_on:
       - nats-streaming
     env_file: .mentioning-posts.env
-    ports:
-      - ${MENTIONING_POSTS_SERVICE_PORT}:4000
     networks:
       - network-name
 
@@ -51,7 +57,6 @@ services:
     image: nats-streaming:0.17.0
     container_name: nats-streaming
     ports:
-      - ${NATS_PORT}:4222
       - ${NATS_MONITORING_PORT}:8222
     networks:
       - network-name
