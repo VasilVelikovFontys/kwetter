@@ -1,0 +1,99 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: posts-deployment
+  labels:
+    app: posts
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: posts
+  template:
+    metadata:
+      labels:
+        app: posts
+    spec:
+      containers:
+        - name: posts
+          image: vasilvelikovkwetter.azurecr.io/posts
+          ports:
+            - containerPort: 4000
+          env:
+            - name: FIRESTORE_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: posts-secret
+                  key: firestore-api-key
+
+            - name: FIRESTORE_AUTH_DOMAIN
+              valueFrom:
+                secretKeyRef:
+                  name: posts-secret
+                  key: firestore-auth-domain
+
+            - name: FIRESTORE_PROJECT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: posts-secret
+                  key: firestore-project-id
+
+            - name: FIRESTORE_STORAGE_BUCKET
+              valueFrom:
+                secretKeyRef:
+                  name: posts-secret
+                  key: firestore-storage-bucket
+
+            - name: FIRESTORE_MESSAGIN_SENDER_ID
+              valueFrom:
+                secretKeyRef:
+                  name: posts-secret
+                  key: firestore-messaging-sender-id
+
+            - name: FIRESTORE_APP_ID
+              valueFrom:
+                secretKeyRef:
+                  name: posts-secret
+                  key: firestore-app-id
+
+            - name: NATS_CLUSTER_ID
+              valueFrom:
+                configMapKeyRef:
+                  name: nats-config
+                  key: cluster-id
+
+            - name: NATS_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: nats-config
+                  key: host
+
+            - name: NATS_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: nats-config
+                  key: port
+
+            - name: NATS_CLIENT_ID
+              valueFrom:
+                configMapKeyRef:
+                  name: posts-config
+                  key: nats-client-id
+
+            - name: NATS_POST_CREATED_CHANNEL
+              valueFrom:
+                configMapKeyRef:
+                  name: nats-config
+                  key: post-created-channel
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: posts-service
+spec:
+  selector:
+    app: posts
+  ports:
+    - protocol: TCP
+      port: 4002
+      targetPort: 4000

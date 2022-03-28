@@ -13,9 +13,9 @@ services:
       - network-name
 
   #Accounts Service
-  accounts-service:
-    image: vasilvelikovkwetter.azurecr.io/accounts-service
-    container_name: accounts-service
+  accounts:
+    image: vasilvelikovkwetter.azurecr.io/accounts
+    container_name: accounts
     depends_on:
       - nats-streaming
     env_file: .accounts.env
@@ -23,9 +23,9 @@ services:
       - network-name
 
   #Posts Service
-  posts-service:
-    image: vasilvelikovkwetter.azurecr.io/posts-service
-    container_name: posts-service
+  posts:
+    image: vasilvelikovkwetter.azurecr.io/posts
+    container_name: posts
     depends_on:
       - nats-streaming
     env_file: .posts.env
@@ -33,9 +33,9 @@ services:
       - network-name
 
   #Mentions Service
-  mentions-service:
-    image: vasilvelikovkwetter.azurecr.io/mentions-service
-    container_name: mentions-service
+  mentions:
+    image: vasilvelikovkwetter.azurecr.io/mentions
+    container_name: mentions
     depends_on:
       - nats-streaming
     env_file: .mentions.env
@@ -43,9 +43,9 @@ services:
       - network-name
 
   #Mentioning Posts Service
-  mentioning-posts-service:
-    image: vasilvelikovkwetter.azurecr.io/mentioning-posts-service
-    container_name: mentioning-posts-service
+  mentioning-posts:
+    image: vasilvelikovkwetter.azurecr.io/mentions-posts
+    container_name: mentions-posts
     depends_on:
       - nats-streaming
     env_file: .mentioning-posts.env

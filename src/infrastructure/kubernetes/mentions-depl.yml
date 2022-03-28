@@ -1,0 +1,117 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mentions-deployment
+  labels:
+    app: mentions
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mentions
+  template:
+    metadata:
+      labels:
+        app: mentions
+    spec:
+      containers:
+        - name: mentions
+          image: vasilvelikovkwetter.azurecr.io/mentions
+          ports:
+            - containerPort: 4000
+          env:
+            - name: FIRESTORE_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: mentions-secret
+                  key: firestore-api-key
+
+            - name: FIRESTORE_AUTH_DOMAIN
+              valueFrom:
+                secretKeyRef:
+                  name: mentions-secret
+                  key: firestore-auth-domain
+
+            - name: FIRESTORE_PROJECT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: mentions-secret
+                  key: firestore-project-id
+
+            - name: FIRESTORE_STORAGE_BUCKET
+              valueFrom:
+                secretKeyRef:
+                  name: mentions-secret
+                  key: firestore-storage-bucket
+
+            - name: FIRESTORE_MESSAGIN_SENDER_ID
+              valueFrom:
+                secretKeyRef:
+                  name: mentions-secret
+                  key: firestore-messaging-sender-id
+
+            - name: FIRESTORE_APP_ID
+              valueFrom:
+                secretKeyRef:
+                  name: mentions-secret
+                  key: firestore-app-id
+
+            - name: NATS_CLUSTER_ID
+              valueFrom:
+                configMapKeyRef:
+                  name: nats-config
+                  key: cluster-id
+
+            - name: NATS_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: nats-config
+                  key: host
+
+            - name: NATS_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: nats-config
+                  key: port
+
+            - name: NATS_CLIENT_ID
+              valueFrom:
+                configMapKeyRef:
+                  name: mentions-config
+                  key: nats-client-id
+
+            - name: NATS_DURABLE_NAME
+              valueFrom:
+                configMapKeyRef:
+                  name: mentions-config
+                  key: nats-durable-name
+
+            - name: NATS_QUEUE_GROUP
+              valueFrom:
+                configMapKeyRef:
+                  name: mentions-config
+                  key: nats-queue-group
+
+            - name: NATS_POST_CREATED_CHANNEL
+              valueFrom:
+                configMapKeyRef:
+                  name: nats-config
+                  key: post-created-channel
+
+            - name: NATS_USER_MENTIONED_CHANNEL
+              valueFrom:
+                configMapKeyRef:
+                  name: nats-config
+                  key: user-mentioned-channel
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mentions-service
+spec:
+  selector:
+    app: mentions
+  ports:
+    - protocol: TCP
+      port: 4003
+      targetPort: 4000

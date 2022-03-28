@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: posts-config
+data:
+  nats-client-id: posts
+

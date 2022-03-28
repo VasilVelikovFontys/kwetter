@@ -1,0 +1,123 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mentioning-posts-deployment
+  labels:
+    app: mentioning-posts
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mentioning-posts
+  template:
+    metadata:
+      labels:
+        app: mentioning-posts
+    spec:
+      containers:
+        - name: mentioning-posts
+          image: vasilvelikovkwetter.azurecr.io/mentioning-posts
+          ports:
+            - containerPort: 4000
+          env:
+            - name: FIRESTORE_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: mentioning-posts-secret
+                  key: firestore-api-key
+
+            - name: FIRESTORE_AUTH_DOMAIN
+              valueFrom:
+                secretKeyRef:
+                  name: mentioning-posts-secret
+                  key: firestore-auth-domain
+
+            - name: FIRESTORE_PROJECT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: mentioning-posts-secret
+                  key: firestore-project-id
+
+            - name: FIRESTORE_STORAGE_BUCKET
+              valueFrom:
+                secretKeyRef:
+                  name: mentioning-posts-secret
+                  key: firestore-storage-bucket
+
+            - name: FIRESTORE_MESSAGIN_SENDER_ID
+              valueFrom:
+                secretKeyRef:
+                  name: mentioning-posts-secret
+                  key: firestore-messaging-sender-id
+
+            - name: FIRESTORE_APP_ID
+              valueFrom:
+                secretKeyRef:
+                  name: mentioning-posts-secret
+                  key: firestore-app-id
+
+            - name: NATS_CLUSTER_ID
+              valueFrom:
+                configMapKeyRef:
+                  name: nats-config
+                  key: cluster-id
+
+            - name: NATS_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: nats-config
+                  key: host
+
+            - name: NATS_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: nats-config
+                  key: port
+
+            - name: NATS_CLIENT_ID
+              valueFrom:
+                configMapKeyRef:
+                  name: mentioning-posts-config
+                  key: nats-client-id
+
+            - name: NATS_DURABLE_NAME
+              valueFrom:
+                configMapKeyRef:
+                  name: mentioning-posts-config
+                  key: nats-durable-name
+
+            - name: NATS_QUEUE_GROUP
+              valueFrom:
+                configMapKeyRef:
+                  name: mentioning-posts-config
+                  key: nats-queue-group
+
+            - name: NATS_ACCOUNT_CREATED_CHANNEL
+              valueFrom:
+                configMapKeyRef:
+                  name: nats-config
+                  key: account-created-channel
+
+            - name: NATS_POST_CREATED_CHANNEL
+              valueFrom:
+                configMapKeyRef:
+                  name: nats-config
+                  key: post-created-channel
+
+            - name: NATS_USER_MENTIONED_CHANNEL
+              valueFrom:
+                configMapKeyRef:
+                  name: nats-config
+                  key: user-mentioned-channel
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mentioning-posts-service
+spec:
+  selector:
+    app: mentioning-posts
+  ports:
+    - protocol: TCP
+      port: 4004
+      targetPort: 4000

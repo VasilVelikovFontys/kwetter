@@ -22,8 +22,8 @@ jobs:
 
       - name: Build and Push Image
         run: |
-          docker build ./src/mentions -t vasilvelikovkwetter.azurecr.io/mentions-service:latest
-          docker push vasilvelikovkwetter.azurecr.io/mentions-service:latest
+          docker build ./src/mentions -t vasilvelikovkwetter.azurecr.io/mentions:latest
+          docker push vasilvelikovkwetter.azurecr.io/mentions:latest
 
       - name: Image digest
         run: echo ${{ steps.docker_build.outputs.digest }}

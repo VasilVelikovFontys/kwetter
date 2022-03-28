@@ -3,7 +3,7 @@ name: Mentioning Posts
 on:
   push:
     branches: [master]
-    paths: 'src/mentioning-posts/**'
+    paths: 'src/mentions-posts/**'
 
 jobs:
   build-and-push-docker-image:
@@ -22,8 +22,8 @@ jobs:
 
       - name: Build and Push Image
         run: |
-          docker build ./src/mentioning-posts -t vasilvelikovkwetter.azurecr.io/mentioning-posts-service:latest
-          docker push vasilvelikovkwetter.azurecr.io/mentioning-posts-service:latest
+          docker build ./src/mentioning-posts -t vasilvelikovkwetter.azurecr.io/mentioning-posts:latest
+          docker push vasilvelikovkwetter.azurecr.io/mentioning-posts:latest
 
       - name: Image digest
         run: echo ${{ steps.docker_build.outputs.digest }}
