@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: mentions-deployment
+  namespace: kwetter
   labels:
     app: mentions
 spec:
@@ -11,6 +12,7 @@ spec:
       app: mentions
   template:
     metadata:
+      namespace: kwetter
       labels:
         app: mentions
     spec:
@@ -76,9 +78,8 @@ spec:
 
             - name: NATS_CLIENT_ID
               valueFrom:
-                configMapKeyRef:
-                  name: mentions-config
-                  key: nats-client-id
+                fieldRef:
+                  fieldPath: metadata.name
 
             - name: NATS_DURABLE_NAME
               valueFrom:
@@ -103,15 +104,3 @@ spec:
                 configMapKeyRef:
                   name: nats-config
                   key: user-mentioned-channel
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: mentions-service
-spec:
-  selector:
-    app: mentions
-  ports:
-    - protocol: TCP
-      port: 4003
-      targetPort: 4000

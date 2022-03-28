@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: gateway-deployment
+  namespace: kwetter
   labels:
     app: gateway
 spec:
@@ -11,6 +12,7 @@ spec:
       app: gateway
   template:
     metadata:
+      namespace: kwetter
       labels:
         app: gateway
     spec:
@@ -19,11 +21,48 @@ spec:
           image: vasilvelikovkwetter.azurecr.io/gateway
           ports:
             - containerPort: 4000
+          env:
+            - name: ACCOUNTS_SERVICE_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: accounts-config
+                  key: host
+
+            - name: ACCOUNTS_SERVICE_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: accounts-config
+                  key: port
+
+            - name: POSTS_SERVICE_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: posts-config
+                  key: host
+
+            - name: POSTS_SERVICE_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: posts-config
+                  key: port
+
+            - name: MENTIONING_POSTS_SERVICE_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: mentioning-posts-config
+                  key: host
+
+            - name: MENTIONING_POSTS_SERVICE_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: mentioning-posts-config
+                  key: port
 ---
 apiVersion: v1
 kind: Service
 metadata:
   name: gateway-service
+  namespace: kwetter
 spec:
   selector:
     app: gateway

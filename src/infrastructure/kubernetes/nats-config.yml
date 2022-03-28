@@ -2,11 +2,12 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: nats-config
+  namespace: kwetter
 data:
   cluster-id: kwetter
-  host: nats-service
-  port: 4222
-  monitoring-port: 8222
+  host: "http://nats-service"
+  port: "4222"
+  monitoring-port: "8222"
   account-created-channel: account:created
   post-created-channel: account:created
   user-mentioned-channel: account:created

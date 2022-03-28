@@ -2,7 +2,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: mentions-config
+  namespace: kwetter
 data:
-  nats-client-id: mentions
   nats-durable-name: mentions
   nats-queue-group: mentions-queue-group

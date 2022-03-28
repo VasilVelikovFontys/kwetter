@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: accounts-deployment
+  namespace: kwetter
   labels:
     app: accounts
 spec:
@@ -11,6 +12,7 @@ spec:
       app: accounts
   template:
     metadata:
+      namespace: kwetter
       labels:
         app: accounts
     spec:
@@ -76,9 +78,8 @@ spec:
 
             - name: NATS_CLIENT_ID
               valueFrom:
-                configMapKeyRef:
-                  name: accounts-config
-                  key: nats-client-id
+                fieldRef:
+                  fieldPath: metadata.name
 
             - name: NATS_ACCOUNT_CREATED_CHANNEL
               valueFrom:
@@ -90,6 +91,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: accounts-service
+  namespace: kwetter
 spec:
   selector:
     app: posts
