@@ -3,7 +3,7 @@ name: Mentioning Posts
 on:
   push:
     branches: [master]
-    paths: 'src/mentions-posts/**'
+    paths: 'src/mentioning-posts/**'
 
 jobs:
   build-and-push-docker-image:
