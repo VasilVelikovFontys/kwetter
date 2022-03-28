@@ -44,8 +44,8 @@ services:
 
   #Mentioning Posts Service
   mentioning-posts:
-    image: vasilvelikovkwetter.azurecr.io/mentions-posts
-    container_name: mentions-posts
+    image: vasilvelikovkwetter.azurecr.io/mentioning-posts
+    container_name: mentioning-posts
     depends_on:
       - nats-streaming
     env_file: .mentioning-posts.env
