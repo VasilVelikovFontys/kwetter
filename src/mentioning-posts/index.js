@@ -75,7 +75,7 @@ stan.on('connect', () => {
         const {id, username} = account
 
         if (!id) return console.log('Cannot deconstruct account id!');
-        if (!username) return console.log('Cannot deconstruct username!');
+        if (!username) return console.log('Cannot deconstruct account username!');
 
         await db.collection('users').doc(id).set({username});
 
@@ -89,8 +89,8 @@ stan.on('connect', () => {
 
         const {id, text} = post;
 
-        if (!id) return console.log('Cannot deconstruct id!');
-        if (!text) return console.log('Cannot deconstruct text!');
+        if (!id) return console.log('Cannot deconstruct post id!');
+        if (!text) return console.log('Cannot deconstruct post text!');
 
         await db.collection('posts').doc(id).set({text, mentions: []});
 
@@ -104,8 +104,8 @@ stan.on('connect', () => {
 
         const {username, postId} = mention;
 
-        if (!username) return console.log('Cannot deconstruct username!');
-        if (!postId) return console.log('Cannot deconstruct post id!');
+        if (!username) return console.log('Cannot deconstruct mention username!');
+        if (!postId) return console.log('Cannot deconstruct mention post id!');
 
         const userSnapshot = await db.collection('users').where('username', '==', username).get();
 
