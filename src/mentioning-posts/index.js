@@ -112,6 +112,9 @@ stan.on('connect', () => {
 
             if(postDocument) {
                 const post = postDocument.data();
+
+                if (!post) return;
+
                 await db.collection('posts').doc(postId).set({
                     ...post,
                     mentions: [...post.mentions, userId]
