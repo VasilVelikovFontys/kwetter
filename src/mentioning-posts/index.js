@@ -74,8 +74,8 @@ stan.on('connect', () => {
 
         const {id, username} = account
 
-        if (!id) return console.log('Id is required!');
-        if (!username) return console.log('Username is required!');
+        if (!id) return console.log('Cannot deconstruct account id!');
+        if (!username) return console.log('Cannot deconstruct username!');
 
         await db.collection('users').doc(id).set({username});
 
@@ -89,8 +89,8 @@ stan.on('connect', () => {
 
         const {id, text} = post;
 
-        if (!id) return console.log('Id is required!');
-        if (!text) return console.log('Text is required!');
+        if (!id) return console.log('Cannot deconstruct id!');
+        if (!text) return console.log('Cannot deconstruct text!');
 
         await db.collection('posts').doc(id).set({text, mentions: []});
 
@@ -104,8 +104,8 @@ stan.on('connect', () => {
 
         const {username, postId} = mention;
 
-        if (!username) return console.log('Username is required!');
-        if (!postId) return console.log('Post id is required!');
+        if (!username) return console.log('Cannot deconstruct username!');
+        if (!postId) return console.log('Cannot deconstruct post id!');
 
         const userSnapshot = await db.collection('users').where('username', '==', username).get();
 
@@ -116,7 +116,7 @@ stan.on('connect', () => {
             if(postDocument) {
                 const post = postDocument.data();
 
-                if (!post) return;
+                if (!post) return console.log('Cannot read post data!');
 
                 await db.collection('posts').doc(postId).set({
                     ...post,
