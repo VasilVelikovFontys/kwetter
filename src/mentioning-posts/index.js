@@ -74,6 +74,8 @@ stan.on('connect', () => {
 
         const {id, username} = account
 
+        if (!id || !username) return;
+
         await db.collection('users').doc(id).set({username});
 
         msg.ack();
@@ -86,6 +88,8 @@ stan.on('connect', () => {
 
         const {id, text} = post;
 
+        if (!id || !text) return;
+
         await db.collection('posts').doc(id).set({text, mentions: []});
 
         msg.ack();
@@ -97,6 +101,8 @@ stan.on('connect', () => {
         const mention = JSON.parse(data);
 
         const {username, postId} = mention;
+
+        if (!username || !postId) return;
 
         const userSnapshot = await db.collection('users').where('username', '==', username).get();
 

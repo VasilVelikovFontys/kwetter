@@ -72,9 +72,16 @@ stan.on('connect', () => {
         const receivedData = msg.getData();
         const post = JSON.parse(receivedData);
 
-        const {text} = post;
-        let username = text.substring(text.indexOf('@'));
-        username = username.substring(1, username.indexOf(' '));
+        let username = null;
+        try {
+            const {text} = post;
+            username = text.substring(text.indexOf('@'));
+            username = username.substring(1, username.indexOf(' '));
+        } catch (error) {
+            console.log(error);
+        }
+
+        if (!username) return;
 
         await db.collection('mentions').add({postId: post.id, username});
 
