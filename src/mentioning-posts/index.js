@@ -74,7 +74,8 @@ stan.on('connect', () => {
 
         const {id, username} = account
 
-        if (!id || !username) return;
+        if (!id) return console.log('Id is required!');
+        if (!username) return console.log('Username is required!');
 
         await db.collection('users').doc(id).set({username});
 
@@ -88,7 +89,8 @@ stan.on('connect', () => {
 
         const {id, text} = post;
 
-        if (!id || !text) return;
+        if (!id) return console.log('Id is required!');
+        if (!text) return console.log('Text is required!');
 
         await db.collection('posts').doc(id).set({text, mentions: []});
 
@@ -102,7 +104,8 @@ stan.on('connect', () => {
 
         const {username, postId} = mention;
 
-        if (!username || !postId) return;
+        if (!username) return console.log('Username is required!');
+        if (!postId) return console.log('Post id is required!');
 
         const userSnapshot = await db.collection('users').where('username', '==', username).get();
 
