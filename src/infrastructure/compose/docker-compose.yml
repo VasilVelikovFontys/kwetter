@@ -57,6 +57,7 @@ services:
     image: nats-streaming:0.17.0
     container_name: nats-streaming
     ports:
+      - 4222:4222
       - ${NATS_MONITORING_PORT}:8222
     networks:
       - network-name
