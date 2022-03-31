@@ -26,6 +26,10 @@ app.use(cors(corsOptions));
 app.use(authRoutes);
 app.use(postRoutes);
 
+app.get('/test', (req, res) => {
+   res.send('Hello World')
+});
+
 app.listen(PORT || 4000, () => {
     console.log(`Listening on port ${PORT || 4000}`);
 });
