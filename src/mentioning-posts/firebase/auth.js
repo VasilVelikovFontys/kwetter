@@ -37,7 +37,3 @@ module.exports = {
     authMiddleware,
     signOut
 };
-
-
-module.exports = auth;
-
