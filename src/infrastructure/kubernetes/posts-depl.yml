@@ -58,6 +58,18 @@ spec:
                   name: posts-secret
                   key: firestore-app-id
 
+            - name: FIRESTORE_SERVICE_EMAIL
+              valueFrom:
+                secretKeyRef:
+                  name: posts-secret
+                  key: firestore-service-email
+
+            - name: FIRESTORE_SERVICE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: posts-secret
+                  key: firestore-service-password
+
             - name: NATS_CLUSTER_ID
               valueFrom:
                 configMapKeyRef:
