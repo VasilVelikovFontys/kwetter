@@ -1,17 +1,18 @@
 const express = require("express");
-const firebaseApp = require("../firebase");
-const publishPostCreated = require("../nats");
-require("firebase/compat/firestore");
+const db = require("../firebase/db");
+const {authMiddleware, signOut} = require("../firebase/auth");
+const publishPostCreated = require("../messaging/nats");
 
 const router = express.Router();
-const db = firebaseApp.firestore();
+
+router.use(authMiddleware);
 
 router.get('/posts', async (req, res) => {
     try {
         const snapshot = await db.collection('posts').get();
         res.status(200).send(snapshot.docs.map(doc => doc.data()));
-    } catch (err) {
-        res.send(204).send(err);
+    } catch (error) {
+        res.status(204).send({error});
     }
 });
 
@@ -27,9 +28,12 @@ router.post('/posts', async (req, res) => {
         publishPostCreated(data);
 
         res.status(201).send(post);
-    } catch (err) {
-        res.status(202).send(err);
+    } catch (error) {
+        res.status(202).send({error});
     }
 });
+
+process.on('SIGINT', () => signOut());
+process.on('SIGTERM', () => signOut());
 
 module.exports = router;

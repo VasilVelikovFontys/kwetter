@@ -1,10 +1,11 @@
 const express = require("express");
-const firebaseApp = require("../firebase");
-const publishAccountCreated = require('../nats');
-require("firebase/compat/firestore");
+const db = require("../firebase/db");
+const publishAccountCreated = require('../messaging/nats');
+const {authMiddleware, signOut} = require("../firebase/auth");
 
 const router = express.Router();
-const db = firebaseApp.firestore();
+
+router.use(authMiddleware);
 
 router.post('/accounts', async (req, res) => {
     const {uid, email, username} = req.body;
@@ -60,5 +61,8 @@ router.post('/accounts/check-username', async (req, res) => {
         res.status(202).send({error});
     }
 })
+
+process.on('SIGINT', () => signOut());
+process.on('SIGTERM', () => signOut());
 
 module.exports = router;
