@@ -2,7 +2,6 @@ const nats = require("node-nats-streaming");
 const db = require("../firebase/db");
 
 const dotenv = require("dotenv");
-const {authenticate, signOut} = require("../firebase/auth");
 dotenv.config();
 
 const {
@@ -42,15 +41,19 @@ stan.on('connect', () => {
         let username = null;
         try {
             const {text} = post;
-            username = text.substring(text.indexOf('@'));
-            username = username.substring(1, username.indexOf(' '));
+            username = text.substring(text.indexOf('@') + 1);
+
+            if(username.indexOf(' ') > -1) {
+                username = username.substring(0, username.indexOf(' '));
+            }
         } catch (error) {
             console.log(error);
         }
 
-        if (!username) return;
-
-        await authenticate();
+        if (!username) {
+            msg.ack();
+            return console.log('No username found!');
+        }
 
         await db.collection('mentions').add({postId: post.id, username});
 
@@ -65,11 +68,5 @@ stan.on('connect', () => {
 
 module.exports = stan;
 
-process.on('SIGINT', () => {
-    stan.close();
-    signOut();
-});
-process.on('SIGTERM', () => {
-    stan.close();
-    signOut();
-});
+process.on('SIGINT', () => stan.close());
+process.on('SIGTERM', () => stan.close());

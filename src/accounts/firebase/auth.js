@@ -7,17 +7,17 @@ dotenv.config();
 
 const {
     FIRESTORE_SERVICE_EMAIL,
-    FIRESTORE_SERVICE_PASSWORD
+    FIRESTORE_SERVICE_PASSWORD,
+    NATS_CLIENT_ID
 } = process.env;
 
-const authMiddleware = (req, res, next) => {
-    auth.signInWithEmailAndPassword(FIRESTORE_SERVICE_EMAIL, FIRESTORE_SERVICE_PASSWORD)
-        .then(() => {
-            next();
-        })
-        .catch(error => {
-            return res.status(202).send({error});
-        });
+const authenticate = async () => {
+    try {
+        await auth.signInWithEmailAndPassword(FIRESTORE_SERVICE_EMAIL, FIRESTORE_SERVICE_PASSWORD)
+        return console.log(`${NATS_CLIENT_ID} logged in to firebase`);
+    } catch (error) {
+        return console.log(error);
+    }
 };
 
 const signOut = () => {
@@ -26,6 +26,6 @@ const signOut = () => {
 
 module.exports = {
     auth,
-    authMiddleware,
+    authenticate,
     signOut
 };

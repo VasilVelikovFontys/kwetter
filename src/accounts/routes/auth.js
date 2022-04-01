@@ -1,9 +1,7 @@
 const express = require("express");
-const {auth, authMiddleware, signOut} = require("../firebase/auth");
+const {auth} = require("../firebase/auth");
 
 const router = express.Router();
-
-router.use(authMiddleware);
 
 router.post('/auth/register', async (req, res) => {
     const {email, password} = req.body;
@@ -40,8 +38,5 @@ router.post('/auth/authenticate', async (req, res) => {
         res.status(202).send({error});
     }
 });
-
-process.on('SIGINT', () => signOut());
-process.on('SIGTERM', () => signOut());
 
 module.exports = router;

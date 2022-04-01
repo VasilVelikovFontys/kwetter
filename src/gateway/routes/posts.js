@@ -17,34 +17,37 @@ const MENTIONING_POSTS_SERVICE_URL = `${MENTIONING_POSTS_SERVICE_HOST}:${MENTION
 router.use(authenticateToken);
 
 router.get('/posts', async (req, res) => {
-    console.log(req.user);
-
     try {
         const response = await axios.get(`${POSTS_SERVICE_URL}/posts`);
         res.status(200).send(response.data);
-    } catch (err) {
-        res.status(204).send(err);
+    } catch (error) {
+        res.status(204).send({error});
     }
 });
 
 router.post('/posts', async (req, res) => {
     const data = req.body;
+    const {uid} = req.user;
+
+    if (!data.text) return res.status(202).send({error: "Post text is required!"});
+
+    const post = {userId: uid, text: data.text}
     try {
-        await axios.post(`${POSTS_SERVICE_URL}/posts`, data);
-        res.status(201).send(data);
-    } catch (err) {
-        res.status(202).send(err);
+        await axios.post(`${POSTS_SERVICE_URL}/posts`, post);
+        res.status(201).send(post);
+    } catch (error) {
+        res.status(202).send({error});
     }
 });
 
 router.get('/posts/mentioning', async (req, res) => {
-    const {user} = req.user;
+    const {user} = req;
 
     try {
         const response = await axios.get(`${MENTIONING_POSTS_SERVICE_URL}/mentioning-posts/${user.uid}`);
         res.status(200).send(response.data);
-    } catch (err) {
-        res.status(204).send(err);
+    } catch (error) {
+        res.status(204).send({error});
     }
 })
 

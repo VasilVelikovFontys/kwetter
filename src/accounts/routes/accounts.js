@@ -1,23 +1,14 @@
 const express = require("express");
 const db = require("../firebase/db");
 const publishAccountCreated = require('../messaging/nats');
-const {authMiddleware, signOut} = require("../firebase/auth");
+const {authenticate} = require("../firebase/auth");
 
 const router = express.Router();
-
-router.use(authMiddleware);
 
 router.post('/accounts', async (req, res) => {
     const {uid, email, username} = req.body;
 
-    try {
-        const snapshot = await db.collection('accounts').where('username', '==', username).get();
-        const usernameExists = snapshot.docs.length;
-
-        if (usernameExists) return res.status(202).send({error: "Username already taken!"});
-    } catch (error) {
-        res.status(202).send({error});
-    }
+    await authenticate();
 
     try {
         const roles = ['USER'];
@@ -37,6 +28,8 @@ router.post('/accounts', async (req, res) => {
 
 router.get('/accounts/:uid', async (req, res) => {
     const {uid} = req.params;
+
+    await authenticate();
 
     try {
         const accountDocument = await db.collection('accounts').doc(uid).get();
@@ -61,8 +54,5 @@ router.post('/accounts/check-username', async (req, res) => {
         res.status(202).send({error});
     }
 })
-
-process.on('SIGINT', () => signOut());
-process.on('SIGTERM', () => signOut());
 
 module.exports = router;
