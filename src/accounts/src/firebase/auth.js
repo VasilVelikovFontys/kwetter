@@ -11,7 +11,7 @@ const {
     NATS_CLIENT_ID
 } = process.env;
 
-const authenticate = async () => {
+const authenticateService = async () => {
     try {
         await auth.signInWithEmailAndPassword(FIRESTORE_SERVICE_EMAIL, FIRESTORE_SERVICE_PASSWORD)
         return console.log(`${NATS_CLIENT_ID} logged in to firebase`);
@@ -20,12 +20,23 @@ const authenticate = async () => {
     }
 };
 
-const signOut = () => {
-    auth.signOut();
+const signOutService = async () => {
+    await auth.signOut();
+};
+
+const registerUser = async (email, password) => {
+    const response = await auth.createUserWithEmailAndPassword(email, password);
+    return response.user.uid;
+};
+
+const authenticateUser = async (email, password) => {
+    const response = await auth.signInWithEmailAndPassword(email, password);
+    return response.user.uid;
 };
 
 module.exports = {
-    auth,
-    authenticate,
-    signOut
+    authenticateService,
+    signOutService,
+    registerUser,
+    authenticateUser
 };
