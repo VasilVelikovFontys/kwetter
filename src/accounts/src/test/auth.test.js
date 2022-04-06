@@ -50,7 +50,7 @@ describe('POST /auth/register', () => {
     });
 
     describe('when the email or password is missing', () => {
-        test('should respond with a 400 status code', async () => {
+        test('should respond with a 202 status code', async () => {
             const bodyData = [
                 {email: "email"},
                 {password: "password"},
@@ -58,7 +58,7 @@ describe('POST /auth/register', () => {
             ];
             for (const body of bodyData) {
                 const response = await request(app).post('/auth/register').send(body);
-                expect(response.statusCode).toBe(400);
+                expect(response.statusCode).toBe(202);
             }
         });
     });
@@ -107,7 +107,7 @@ describe('POST /auth/authenticate', () => {
     });
 
     describe('when the email or password is missing', () => {
-        test('should respond with a 400 status code', async () => {
+        test('should respond with a 202 status code', async () => {
             const bodyData = [
                 {email: "email"},
                 {password: "password"},
@@ -115,7 +115,7 @@ describe('POST /auth/authenticate', () => {
             ];
             for (const body of bodyData) {
                 const response = await request(app).post('/auth/authenticate').send(body);
-                expect(response.statusCode).toBe(400);
+                expect(response.statusCode).toBe(202);
             }
         });
     });

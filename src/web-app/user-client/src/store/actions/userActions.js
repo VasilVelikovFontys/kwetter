@@ -1,22 +1,24 @@
 import axios from 'axios';
 import {envGet} from "../../utils/envHelper";
-import {GET_USER} from "../../constants";
+import {SET_USER, SET_USER_ERROR} from "../../constants";
+import {store} from "../../index";
 
 const SERVER_HOST = envGet('SERVER_HOST');
 const SERVER_PORT = envGet('SERVER_PORT');
 
-export const register = () => {
+export const getCurrentUser = () => {
     return async dispatch => {
-        const response = await axios.get(`${SERVER_HOST}:${SERVER_PORT}/auth/register`);
+        const {jwt} = store.getState().auth;
 
-        dispatch({type: GET_USER, data: response.data});
+        const {data} = await axios.get(`${SERVER_HOST}:${SERVER_PORT}/users/current-user`, {
+            headers: {
+                'authorization': jwt
+            }
+        });
+
+        const {user, error} = data
+        if (error) return dispatch({type: SET_USER_ERROR, error});
+
+        dispatch({type: SET_USER, user});
     }
 };
-
-export const login = () => {
-    return async dispatch => {
-        const response = await axios.get(`${SERVER_HOST}:${SERVER_PORT}/auth/login`);
-
-        dispatch({type: GET_USER, data: response.data});
-    }
-}

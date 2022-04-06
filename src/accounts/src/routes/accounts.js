@@ -6,6 +6,10 @@ const createAccountsRouter = (auth, database, messaging) => {
     router.post('/accounts', async (req, res) => {
         const {uid, email, username} = req.body;
 
+        if (!uid) return res.status(202).send({error: "Uid is required!"});
+        if (!email) return res.status(202).send({error: "Email is required!"});
+        if (!username) return res.status(202).send({error: "Username is required!"});
+
         if (auth) await auth.authenticateService();
 
         try {
@@ -29,10 +33,12 @@ const createAccountsRouter = (auth, database, messaging) => {
     router.get('/accounts/:uid', async (req, res) => {
         const {uid} = req.params;
 
+        if (!uid) return res.status(202).send({error: "Uid is required!"});
+
         if (auth) await auth.authenticateService();
 
         try {
-            const account = database.getAccountByUid(uid);
+            const account = await database.getAccountByUid(uid);
 
             res.status(200).send({account});
         } catch (error) {
@@ -43,10 +49,12 @@ const createAccountsRouter = (auth, database, messaging) => {
     router.post('/accounts/check-username', async (req, res) => {
         const {username} = req.body;
 
-        try {
-            const usernameAvailable = database.checkUsernameAvailable(username);
+        if (!username) return res.status(202).send({error: "Username is required!"});
 
-            if (!usernameAvailable) res.status(200).send({error: "Username already taken!"});
+        try {
+            const usernameAvailable = await database.checkUsernameAvailable(username);
+
+            if (!usernameAvailable) return res.status(202).send({error: "Username already taken!"});
 
             res.sendStatus(200);
         } catch (error) {

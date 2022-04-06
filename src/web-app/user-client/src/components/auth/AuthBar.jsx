@@ -1,27 +1,28 @@
-import React from "react";
-import { useNavigate } from "react-router-dom";
-import "../../styles/auth/authBar.css";
+import React, {useEffect} from "react";
+import "../../styles/components/auth/authBar.css";
 import {useDispatch, useSelector} from "react-redux";
+import {getCurrentUser} from "../../store/actions/userActions";
+import LoginButton from "./LoginButton";
+import AuthenticatedSearch from "./AuthenticatedSearch";
 
 const AuthBar = () => {
-    const navigate = useNavigate();
     const dispatch = useDispatch();
-    const {user} = useSelector(state => state.user);
+    const {jwt} = useSelector(state => state.auth);
 
-    const handleLoginButton = () => {
-        navigate('/login');
-    };
+    useEffect(() => {
+        if(jwt) {
+            dispatch(getCurrentUser());
+        }
+    }, [dispatch, jwt]);
 
     return (
-        <>
-            {user ?
-                <div>Logged in {user.username}</div>
+        <div id='auth-bar'>
+            {jwt ?
+                <AuthenticatedSearch/>
                 :
-                <div className='login-button' onClick={handleLoginButton}>
-                    Login
-                </div>
+                <LoginButton />
             }
-        </>
+        </div>
     )
 }
 

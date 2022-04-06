@@ -1,21 +1,21 @@
-import {GET_USER, SET_USER_ERROR} from '../../constants';
+import {SET_USER, SET_USER_ERROR} from '../../constants';
 
 const initState = {
     user: null,
-    error: null
+    userError: null
 }
 
 const userReducer = (state = initState, action) => {
     switch (action.type) {
-        case GET_USER:
+        case SET_USER:
             return {
-                user: action.data,
-                error: null
+                user: action.user,
+                authError: null
             }
         case SET_USER_ERROR:
             return {
                 user: null,
-                error: action.data
+                userError: action.error
             }
         default:
             return state
