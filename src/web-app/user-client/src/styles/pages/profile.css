@@ -1,0 +1,15 @@
+#profile-page {
+    height: 100vh;
+    padding: 10px;
+}
+
+#profile-contents {
+    display: flex;
+    justify-content: space-evenly;
+}
+
+.profile-column {
+    display: flex;
+    flex-direction: column;
+    width: 45%;
+}
