@@ -6,6 +6,7 @@ const dotenv = require("dotenv");
 dotenv.config();
 
 const authRoutes = require('./routes/auth');
+const userRoutes = require('./routes/users');
 const postRoutes = require('./routes/posts');
 
 const {
@@ -24,6 +25,7 @@ app.use(bodyParser.json());
 app.use(cors(corsOptions));
 
 app.use(authRoutes);
+app.use(userRoutes);
 app.use(postRoutes);
 
 app.listen(PORT || 4000, () => {

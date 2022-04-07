@@ -106,7 +106,7 @@ metadata:
   namespace: kwetter
 spec:
   selector:
-    app: posts
+    app: accounts
   ports:
     - protocol: TCP
       port: 4001

@@ -22,7 +22,11 @@ const publishAccountCreated = data => {
     stan.publish(NATS_ACCOUNT_CREATED_CHANNEL, data);
 }
 
-process.on('SIGINT', () => stan.close());
-process.on('SIGTERM', () => stan.close());
+const closeStan = () => {
+    stan.close();
+}
 
-module.exports = publishAccountCreated
+module.exports = {
+    publishAccountCreated,
+    closeStan
+}

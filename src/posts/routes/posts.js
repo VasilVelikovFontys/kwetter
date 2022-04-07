@@ -1,11 +1,8 @@
 const express = require("express");
 const db = require("../firebase/db");
-const {authMiddleware, signOut} = require("../firebase/auth");
 const publishPostCreated = require("../messaging/nats");
 
 const router = express.Router();
-
-router.use(authMiddleware);
 
 router.get('/posts', async (req, res) => {
     try {
@@ -32,8 +29,5 @@ router.post('/posts', async (req, res) => {
         res.status(202).send({error});
     }
 });
-
-process.on('SIGINT', () => signOut());
-process.on('SIGTERM', () => signOut());
 
 module.exports = router;

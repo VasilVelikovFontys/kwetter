@@ -1,0 +1,22 @@
+#authenticated-search {
+    width: 100%;
+    background-color: lightgray;
+    border: 2px solid black;
+    border-radius: 5px;
+    padding: 10px;
+    display: flex;
+    justify-content: flex-end;
+}
+
+select {
+    border: 2px solid black;
+    border-radius: 5px;
+}
+
+select:focus-visible {
+    outline: none;
+}
+
+option {
+    font-size: 20px;
+}

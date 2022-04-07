@@ -1,6 +1,5 @@
 const nats = require("node-nats-streaming");
 const db = require("../firebase/db");
-const {authenticate, signOut} = require("../firebase/auth");
 
 const dotenv = require("dotenv");
 dotenv.config();
@@ -40,14 +39,12 @@ stan.on('connect', () => {
         const data = msg.getData();
         const account = JSON.parse(data);
 
-        const {id, username} = account
+        const {uid, username} = account
 
-        if (!id) return console.log('Cannot deconstruct account id!');
+        if (!uid) return console.log('Cannot deconstruct account id!');
         if (!username) return console.log('Cannot deconstruct account username!');
 
-        await authenticate();
-
-        await db.collection('users').doc(id).set({username});
+        await db.collection('users').doc(uid).set({username});
 
         msg.ack();
     });
@@ -62,8 +59,6 @@ stan.on('connect', () => {
 
         if (!id) return console.log('Cannot deconstruct post id!');
         if (!text) return console.log('Cannot deconstruct post text!');
-
-        await authenticate();
 
         await db.collection('posts').doc(id).set({text, mentions: []});
 
@@ -80,8 +75,6 @@ stan.on('connect', () => {
 
         if (!username) return console.log('Cannot deconstruct mention username!');
         if (!postId) return console.log('Cannot deconstruct mention post id!');
-
-        await authenticate();
 
         const userSnapshot = await db.collection('users').where('username', '==', username).get();
 
@@ -100,17 +93,13 @@ stan.on('connect', () => {
                 });
                 msg.ack();
             }
+        } else {
+            msg.ack();
         }
     });
 });
 
-process.on('SIGINT', () => {
-    stan.close();
-    signOut();
-});
-process.on('SIGTERM', () => {
-    stan.close();
-    signOut();
-});
+process.on('SIGINT', () => stan.close());
+process.on('SIGTERM', () => stan.close());
 
 module.exports = stan;

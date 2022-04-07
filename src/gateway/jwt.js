@@ -10,6 +10,16 @@ const generateToken = data => {
     return jwt.sign({data}, JWT_SECRET, { expiresIn: '1800s' });
 }
 
+const verifyToken = token => {
+    let response = {error: null};
+
+    jwt.verify(token, JWT_SECRET, (error) => {
+        response = {error}
+    });
+
+    return response;
+};
+
 const authenticateToken = (req, res, next) => {
     const token = req.headers['authorization'];
 
@@ -25,5 +35,6 @@ const authenticateToken = (req, res, next) => {
 
 module.exports = {
     generateToken,
-    authenticateToken
+    authenticateToken,
+    verifyToken
 }
