@@ -2,7 +2,7 @@ version: '3'
 services:
   #Gateway
   gateway:
-    image: vasilvelikovkwetter.azurecr.io/gateway
+    image: vjv2143/kwetter.gateway
     container_name: gateway
     depends_on:
       - nats-streaming
@@ -14,7 +14,7 @@ services:
 
   #Accounts Service
   accounts:
-    image: vasilvelikovkwetter.azurecr.io/accounts
+    image: vjv2143/kwetter.accounts
     container_name: accounts
     depends_on:
       - nats-streaming
@@ -24,7 +24,7 @@ services:
 
   #Posts Service
   posts:
-    image: vasilvelikovkwetter.azurecr.io/posts
+    image: vjv2143/kwetter.posts
     container_name: posts
     depends_on:
       - nats-streaming
@@ -34,7 +34,7 @@ services:
 
   #Mentions Service
   mentions:
-    image: vasilvelikovkwetter.azurecr.io/mentions
+    image: vjv2143/kwetter.mentions
     container_name: mentions
     depends_on:
       - nats-streaming
@@ -44,7 +44,7 @@ services:
 
   #Mentioning Posts Service
   mentioning-posts:
-    image: vasilvelikovkwetter.azurecr.io/mentioning-posts
+    image: vjv2143/kwetter.mentioning-posts
     container_name: mentioning-posts
     depends_on:
       - nats-streaming

@@ -7,7 +7,7 @@ on:
 
 jobs:
   build-and-push-docker-image:
-    name: Build Docker image and push to repository
+    name: Build Docker image and push to ACR
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
