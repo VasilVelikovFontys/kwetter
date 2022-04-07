@@ -17,7 +17,7 @@ form {
     margin-bottom: 20px;
 }
 
-input {
+.auth-input {
     font-size: 20px;
     border-radius: 5px;
     padding: 5px;
@@ -26,11 +26,11 @@ input {
     width: 300px;
 }
 
-input:focus-visible {
+.auth-input:focus-visible {
     outline: none;
 }
 
-input:last-child {
+.auth-input:last-child {
     margin-bottom: 0;
 }
 

@@ -17,24 +17,33 @@ const MENTIONING_POSTS_SERVICE_URL = `${MENTIONING_POSTS_SERVICE_HOST}:${MENTION
 router.use(authenticateToken);
 
 router.get('/posts', async (req, res) => {
+    const {uid} = req.user;
+
     try {
-        const response = await axios.get(`${POSTS_SERVICE_URL}/posts`);
-        res.status(200).send(response.data);
+        const response = await axios.get(`${POSTS_SERVICE_URL}/posts/user/${uid}`);
+        const {posts} = response.data;
+        const postsError = response.data.error;
+        if (postsError) return res.status(202).send({error: postsError});
+
+        res.status(200).send({posts});
     } catch (error) {
         res.status(204).send({error});
     }
 });
 
 router.post('/posts', async (req, res) => {
-    const data = req.body;
-    const {uid} = req.user;
+    const {text} = req.body;
+    const {uid, username} = req.user;
 
-    if (!data.text) return res.status(202).send({error: "Post text is required!"});
+    if (!text) return res.status(202).send({error: "Post text is required!"});
 
-    const post = {userId: uid, text: data.text}
+    const post = {userId: uid, username, text}
     try {
-        await axios.post(`${POSTS_SERVICE_URL}/posts`, post);
-        res.status(201).send(post);
+        const response = await axios.post(`${POSTS_SERVICE_URL}/posts`, post);
+        const postError = response.data.error;
+        if (postError) return res.status(202).send({error: postError});
+
+        res.status(201).send({post});
     } catch (error) {
         res.status(202).send({error});
     }
@@ -45,7 +54,11 @@ router.get('/posts/mentioning', async (req, res) => {
 
     try {
         const response = await axios.get(`${MENTIONING_POSTS_SERVICE_URL}/mentioning-posts/${user.uid}`);
-        res.status(200).send(response.data);
+        const {posts} = response.data;
+        const postsError = response.data.error;
+        if (postsError) return res.status(202).send({error: postsError});
+
+        res.status(200).send({posts});
     } catch (error) {
         res.status(204).send({error});
     }

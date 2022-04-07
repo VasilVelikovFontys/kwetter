@@ -1,0 +1,43 @@
+#post-bar {
+    margin-bottom: 20px;
+}
+
+#post-bar-title {
+    font-size: 20px;
+    margin-bottom: 10px;
+}
+
+#post-input {
+    font-size: 16px;
+    border-radius: 5px;
+    padding: 5px;
+    border: 2px solid black;
+    margin-right: 10px;
+    width: 300px;
+    margin-bottom: 10px;
+}
+
+#post-input:focus-visible {
+    outline: none;
+}
+
+#post-button {
+    padding: 5px;
+    border: 2px solid black;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.3s;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+#post-button:hover {
+    background-color: black;
+    color: white;
+}
+
+#post-error {
+    color: darkred;
+}

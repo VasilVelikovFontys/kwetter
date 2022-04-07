@@ -1,13 +1,13 @@
-import React, {useEffect, useState} from 'react';
-import '../../../styles/components/profile/posts/posts.css';
+import React, {useEffect, useState} from 'react'
+import '../../../styles/components/start/feed/mentions.css';
 import {useDispatch, useSelector} from "react-redux";
-import {getUserPosts} from "../../../store/actions/postActions";
-import Post from "./Post";
+import {getMentions} from "../../../store/actions/mentionsActions";
+import Post from "../../profile/posts/Post";
 
-const Posts = () => {
+const Mentions = () => {
     const dispatch = useDispatch();
     const {jwt} = useSelector(state => state.auth);
-    const {posts, postsError} = useSelector(state => state.posts);
+    const {posts, postsError} = useSelector(state => state.mentions);
 
     const [styledPosts, setStyledPosts] = useState([]);
 
@@ -15,15 +15,14 @@ const Posts = () => {
     const [error, setError] = useState('');
 
     useEffect(() => {
-        if(jwt) {
+        if (jwt) {
             setLoading(true);
-            dispatch(getUserPosts())
+            dispatch(getMentions())
                 .then(() => {
                     setLoading(false);
                 })
                 .catch(error => {
-                    setError(error);
-                    setLoading(false);
+                    setError(error)
                 });
         }
     }, [dispatch, jwt]);
@@ -35,18 +34,18 @@ const Posts = () => {
     }, [postsError]);
 
     useEffect(() => {
-        const newPosts = posts.map(post => <Post key={post.id} post={post} own/>);
+        const newPosts = posts.map(post => <Post key={post.id} post={post}/>);
 
         setStyledPosts(newPosts)
     }, [posts]);
 
     return (
-        <div id='posts'>
+        <div id='mentions'>
             {loading ?
                 <div>Loading...</div>
                 :
                 <>
-                    {styledPosts.length > 0 ? styledPosts : 'No recent posts'}
+                    {styledPosts.length > 0 ? styledPosts : 'No mentioning posts'}
                 </>
             }
 
@@ -57,4 +56,4 @@ const Posts = () => {
     )
 }
 
-export default Posts;
+export default Mentions;

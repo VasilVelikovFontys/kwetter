@@ -65,19 +65,21 @@ const Login = () => {
                 Login
             </div>
             <form>
-                <input name={'email'}
-                       value={email}
-                       placeholder={'E-mail'}
+                <input value={email}
+                       placeholder='E-mail'
                        autoComplete='email'
                        onChange={handleEmailChange}
+                       className='auth-input'
+                       name='email'
                 />
 
-                <input type={'password'}
+                <input type='password'
                        value={password}
-                       name={'password'}
-                       placeholder={'Password'}
+                       placeholder='Password'
                        autoComplete='current-password'
                        onChange={handlePasswordChange}
+                       className='auth-input'
+                       name='password'
                 />
 
                 {loading && (
@@ -88,8 +90,7 @@ const Login = () => {
 
                 {error && (
                     <div className='auth-error'>
-                        {/*{error}*/}
-                        error
+                        {error}
                     </div>
                 )}
             </form>

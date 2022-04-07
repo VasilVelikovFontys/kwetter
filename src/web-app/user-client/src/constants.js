@@ -3,3 +3,9 @@ export const SET_AUTH_ERROR = "SET_AUTH_ERROR";
 
 export const SET_USER = "SET_USER";
 export const SET_USER_ERROR = "SET_USER_ERROR";
+
+export const SET_USER_POSTS = "SET_USER_POSTS";
+export const SET_USER_POSTS_ERROR = "SET_USER_POSTS_ERROR";
+
+export const SET_MENTIONS = "SET_MENTIONS";
+export const SET_MENTIONS_ERROR = "SET_MENTIONS_ERROR";

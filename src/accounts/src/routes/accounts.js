@@ -6,7 +6,7 @@ const createAccountsRouter = (auth, database, messaging) => {
     router.post('/accounts', async (req, res) => {
         const {uid, email, username} = req.body;
 
-        if (!uid) return res.status(202).send({error: "Uid is required!"});
+        if (!uid) return res.status(202).send({error: "User id is required!"});
         if (!email) return res.status(202).send({error: "Email is required!"});
         if (!username) return res.status(202).send({error: "Username is required!"});
 
@@ -33,7 +33,7 @@ const createAccountsRouter = (auth, database, messaging) => {
     router.get('/accounts/:uid', async (req, res) => {
         const {uid} = req.params;
 
-        if (!uid) return res.status(202).send({error: "Uid is required!"});
+        if (!uid) return res.status(202).send({error: "User id is required!"});
 
         if (auth) await auth.authenticateService();
 

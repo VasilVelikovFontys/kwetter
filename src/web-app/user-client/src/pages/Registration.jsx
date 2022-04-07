@@ -74,34 +74,38 @@ const Registration = () => {
                 Registration
             </div>
             <form>
-                <input name={'username'}
+                <input className='auth-input'
                        value={username}
                        placeholder={'Username'}
                        autoComplete='username'
                        onChange={handleUsernameChange}
+                       name='username'
                 />
 
-                <input name={'email'}
+                <input className='auth-input'
                        value={email}
                        placeholder={'E-mail'}
                        autoComplete='email'
                        onChange={handleEmailChange}
+                       name='email'
                 />
 
-                <input type={'password'}
+                <input className='auth-input'
+                       type={'password'}
                        value={password}
-                       name={'password'}
                        placeholder={'Password'}
                        autoComplete='current-password'
                        onChange={handlePasswordChange}
+                       name='password'
                 />
 
-                <input type={'password'}
+                <input className='auth-input'
+                       type={'password'}
                        value={confirmPassword}
-                       name={'confirm-password'}
                        placeholder={'Confirm Password'}
                        autoComplete='confirm-password'
                        onChange={handleConfirmPasswordChange}
+                       name='password'
                 />
 
                 {loading && (

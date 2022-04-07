@@ -41,10 +41,13 @@ stan.on('connect', () => {
         let username = null;
         try {
             const {text} = post;
-            username = text.substring(text.indexOf('@') + 1);
 
-            if(username.indexOf(' ') > -1) {
-                username = username.substring(0, username.indexOf(' '));
+            if (text.indexOf('@') > -1) {
+                username = text.substring(text.indexOf('@') + 1);
+
+                if(username.indexOf(' ') > -1) {
+                    username = username.substring(0, username.indexOf(' '));
+                }
             }
         } catch (error) {
             console.log(error);

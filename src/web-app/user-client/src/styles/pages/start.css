@@ -1,0 +1,15 @@
+#start-page {
+    height: 100vh;
+    padding: 10px;
+}
+
+#start-contents {
+    display: flex;
+    justify-content: space-evenly;
+}
+
+.start-column {
+    display: flex;
+    flex-direction: column;
+    width: 45%;
+}

@@ -1,4 +1,5 @@
 const nats = require("node-nats-streaming");
+const firebase = require("firebase/compat/app");
 const db = require("../firebase/db");
 
 const dotenv = require("dotenv");
@@ -55,12 +56,16 @@ stan.on('connect', () => {
         const data = msg.getData();
         const post = JSON.parse(data);
 
-        const {id, text} = post;
+        const {id, username, text, date} = post;
+
+        const postTimestamp = new firebase.firestore.Timestamp(date.seconds, date.nanoseconds);
 
         if (!id) return console.log('Cannot deconstruct post id!');
+        if (!username) return console.log('Cannot deconstruct post username!');
         if (!text) return console.log('Cannot deconstruct post text!');
+        if (!date) return console.log('Cannot deconstruct post date!');
 
-        await db.collection('posts').doc(id).set({text, mentions: []});
+        await db.collection('posts').doc(id).set({username, text, date: postTimestamp, mentions: []});
 
         msg.ack();
     });

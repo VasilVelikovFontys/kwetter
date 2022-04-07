@@ -1,0 +1,67 @@
+import React, {useState} from 'react'
+import '../../../styles/components/start/posting/postBar.css';
+import {postIsValid} from "../../../utils/validator";
+import {useDispatch} from "react-redux";
+import {createPost} from "../../../store/actions/postActions";
+
+const PostBar = () => {
+    const dispatch = useDispatch();
+
+    const [text, setText] = useState('');
+
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState('');
+
+    const handleTextChange = e => {
+        setText(e.target.value);
+    };
+
+    const handlePost = () => {
+        if (!postIsValid(text)) return setError('Invalid post!');
+
+        setLoading(true);
+        dispatch(createPost(text))
+            .then(() => {
+                setLoading(false);
+                setText('');
+            })
+            .catch(error => {
+                setLoading(false);
+
+                if (error.message) return setError(error.message);
+                setError(error)
+            });
+    }
+
+    return (
+        <div id='post-bar'>
+            <div id='post-bar-title'>
+                What's happening?
+            </div>
+            <input id='post-input'
+                   value={text}
+                   placeholder={'Text'}
+                   onChange={handleTextChange}
+            />
+            <div id='post-button'
+                 onClick={handlePost}
+            >
+                Post
+            </div>
+
+            {loading && (
+                <div>
+                    Loading...
+                </div>
+            )}
+
+            {error && (
+                <div id='post-error'>
+                    {error}
+                </div>
+            )}
+        </div>
+    )
+}
+
+export default PostBar
