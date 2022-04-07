@@ -55,19 +55,19 @@ router.post('/auth/login', async (req, res) => {
         const loginResponse = await axios.post(`${ACCOUNTS_SERVICE_URL}/auth/authenticate`, {email, password});
         const {uid} = loginResponse.data;
         const loginError = loginResponse.data.error;
-        console.log(loginError)
 
         if (loginError) return res.status(202).send({error: loginError});
 
         const accountResponse = await axios.get(`${ACCOUNTS_SERVICE_URL}/accounts/${uid}`);
         const {account} = accountResponse.data;
         const accountError = accountResponse.data.error;
-        console.log(accountError)
 
         if (accountError) return res.status(202).send({error: accountError});
 
         const user = {uid, ...account}
         const jwt = generateToken(user);
+
+        if (!jwt) return res.status(202).send({error: 'Cannot create JWT!'});
 
         res.status(200).send({jwt});
     } catch (error) {
