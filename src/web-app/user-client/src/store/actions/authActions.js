@@ -34,6 +34,7 @@ export const login = (email, password) => {
         const {data} = await axios.post(`${SERVER_HOST}:${SERVER_PORT}/auth/login`, {email, password});
 
         const {jwt, error} = data
+        console.log(error)
         if (error) return dispatch({type: SET_AUTH_ERROR, error});
 
         localStorage.setItem('jwt', jwt);

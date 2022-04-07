@@ -42,6 +42,7 @@ const createAuthRouter = (auth) => {
 
             res.status(200).send({uid});
         } catch (error) {
+            console.log(error)
             switch (error.code) {
                 case "auth/invalid-email":
                     res.status(202).send({error: "Invalid email!"});

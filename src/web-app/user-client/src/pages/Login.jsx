@@ -88,7 +88,8 @@ const Login = () => {
 
                 {error && (
                     <div className='auth-error'>
-                        {error}
+                        {/*{error}*/}
+                        error
                     </div>
                 )}
             </form>
