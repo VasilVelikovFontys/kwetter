@@ -3,3 +3,7 @@
     border-radius: 5px;
     padding: 5px;
 }
+
+.posts-error {
+    color: darkred;
+}

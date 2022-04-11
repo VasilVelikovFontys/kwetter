@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <testExecutions version="1">
-    <file path="/Users/vjv/Fontys/sm6/Individual/kwetter/src/accounts/src/test/accounts.test.js">
-        <testCase name="POST /accounts given a uid, email and username should save uid, email and username to the database" duration="35"/>
-    </file>
     <file path="/Users/vjv/Fontys/sm6/Individual/kwetter/src/accounts/src/test/auth.test.js">
-        <testCase name="POST /auth/register given an email and password should save the email and password to the auth provider" duration="7"/>
-        <testCase name="POST /auth/register given an email and password should respond with a 201 status code" duration="3"/>
-        <testCase name="POST /auth/register given an email and password should specify json in the content type header" duration="4"/>
+        <testCase name="POST /auth/register given an email and password should save the email and password to the auth provider" duration="30"/>
+        <testCase name="POST /auth/register given an email and password should respond with a 201 status code" duration="4"/>
+        <testCase name="POST /auth/register given an email and password should specify json in the content type header" duration="2"/>
         <testCase name="POST /auth/register given an email and password should respond with a json object containing a unique user id" duration="3"/>
-        <testCase name="POST /auth/register when the email or password is missing should respond with a 400 status code" duration="15"/>
-        <testCase name="POST /auth/authenticate given an email and password should retrieve account from auth provider" duration="4"/>
+        <testCase name="POST /auth/register when the email or password is missing should respond with a 202 status code" duration="6"/>
+        <testCase name="POST /auth/authenticate given an email and password should retrieve account from auth provider" duration="3"/>
         <testCase name="POST /auth/authenticate given an email and password should respond with a 200 status code" duration="2"/>
         <testCase name="POST /auth/authenticate given an email and password should specify json in the content type header" duration="3"/>
-        <testCase name="POST /auth/authenticate given an email and password should respond with a json object containing a unique user id" duration="3"/>
-        <testCase name="POST /auth/authenticate when the email or password is missing should respond with a 400 status code" duration="7"/>
+        <testCase name="POST /auth/authenticate given an email and password should respond with a json object containing a unique user id" duration="2"/>
+        <testCase name="POST /auth/authenticate when the email or password is missing should respond with a 202 status code" duration="6"/>
+    </file>
+    <file path="/Users/vjv/Fontys/sm6/Individual/kwetter/src/accounts/src/test/accounts.test.js">
+        <testCase name="POST /accounts given a uid, email and username should save uid, email and username to the database" duration="11"/>
     </file>
 </testExecutions>

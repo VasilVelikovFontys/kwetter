@@ -5,7 +5,21 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test": "jest --coverage",
+    "sonar": "node sonar-project.js"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "coveragePathIgnorePatterns": [
+      "/node_modules/"
+    ],
+    "testResultsProcessor": "jest-sonar-reporter"
+  },
+  "jestSonar": {
+    "reportPath": "coverage",
+    "reportFile": "test-reporter.xml",
+    "indent": 4
   },
   "dependencies": {
     "axios": "^0.26.1",
@@ -18,6 +32,10 @@
   },
   "devDependencies": {
     "@vitejs/plugin-react": "^1.0.7",
+    "jest": "^27.5.1",
+    "jest-sonar-reporter": "^2.0.0",
+    "sonar-scanner": "^3.1.0",
+    "sonarqube-scanner": "^2.8.1",
     "vite": "^2.9.0"
   }
 }

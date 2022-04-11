@@ -21,8 +21,11 @@ const Mentions = () => {
                 .then(() => {
                     setLoading(false);
                 })
-                .catch(error => {
-                    setError(error)
+                .catch(mentionsError => {
+                    setLoading(false);
+
+                    if (mentionsError.message) return setError(mentionsError.message)
+                    setError(mentionsError)
                 });
         }
     }, [dispatch, jwt]);
@@ -50,7 +53,7 @@ const Mentions = () => {
             }
 
             {error && (
-                <div>{error}</div>
+                <div className="mentions-error">{error}</div>
             )}
         </div>
     )

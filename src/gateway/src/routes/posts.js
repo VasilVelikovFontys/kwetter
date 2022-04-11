@@ -1,67 +1,62 @@
 const express = require("express");
 const axios = require("axios");
-const {authenticateToken} = require("../jwt");
 
-const router = express.Router();
+const createPostsRouter = (postsUrl, mentioningPostsUrl, jwtUtils) => {
+    const router = express.Router();
+    router.use(jwtUtils.authenticateToken)
 
-const {
-    POSTS_SERVICE_HOST,
-    POSTS_SERVICE_PORT,
-    MENTIONING_POSTS_SERVICE_HOST,
-    MENTIONING_POSTS_SERVICE_PORT
-} = process.env;
+    router.get('/posts', async (req, res) => {
+        const {uid} = req.user;
 
-const POSTS_SERVICE_URL = `${POSTS_SERVICE_HOST}:${POSTS_SERVICE_PORT}`;
-const MENTIONING_POSTS_SERVICE_URL = `${MENTIONING_POSTS_SERVICE_HOST}:${MENTIONING_POSTS_SERVICE_PORT}`;
+        try {
+            const response = await axios.get(`${postsUrl}/posts/user/${uid}`);
+            const {posts} = response.data;
+            const postsError = response.data.error;
+            if (postsError) return res.status(202).send({error: postsError});
 
-router.use(authenticateToken);
+            res.status(200).send({posts});
+        } catch (error) {
+            if (error.code === "ECONNREFUSED") return res.sendStatus(503);
+            res.status(204).send({error});
+        }
+    });
 
-router.get('/posts', async (req, res) => {
-    const {uid} = req.user;
+    router.post('/posts', async (req, res) => {
+        const {text} = req.body;
+        const {uid, username} = req.user;
 
-    try {
-        const response = await axios.get(`${POSTS_SERVICE_URL}/posts/user/${uid}`);
-        const {posts} = response.data;
-        const postsError = response.data.error;
-        if (postsError) return res.status(202).send({error: postsError});
+        if (!text) return res.status(202).send({error: "Post text is required!"});
 
-        res.status(200).send({posts});
-    } catch (error) {
-        res.status(204).send({error});
-    }
-});
+        const post = {userId: uid, username, text}
+        try {
+            const response = await axios.post(`${postsUrl}/posts`, post);
+            const postError = response.data.error;
+            if (postError) return res.status(202).send({error: postError});
 
-router.post('/posts', async (req, res) => {
-    const {text} = req.body;
-    const {uid, username} = req.user;
+            res.status(201).send({post});
+        } catch (error) {
+            if (error.code === "ECONNREFUSED") return res.sendStatus(503);
+            res.status(202).send({error});
+        }
+    });
 
-    if (!text) return res.status(202).send({error: "Post text is required!"});
+    router.get('/posts/mentioning', async (req, res) => {
+        const {user} = req;
 
-    const post = {userId: uid, username, text}
-    try {
-        const response = await axios.post(`${POSTS_SERVICE_URL}/posts`, post);
-        const postError = response.data.error;
-        if (postError) return res.status(202).send({error: postError});
+        try {
+            const response = await axios.get(`${mentioningPostsUrl}/mentioning-posts/${user.uid}`);
+            const {posts} = response.data;
+            const postsError = response.data.error;
+            if (postsError) return res.status(202).send({error: postsError});
 
-        res.status(201).send({post});
-    } catch (error) {
-        res.status(202).send({error});
-    }
-});
+            res.status(200).send({posts});
+        } catch (error) {
+            if (error.code === "ECONNREFUSED") return res.sendStatus(503);
+            res.status(204).send({error});
+        }
+    })
 
-router.get('/posts/mentioning', async (req, res) => {
-    const {user} = req;
+    return router;
+}
 
-    try {
-        const response = await axios.get(`${MENTIONING_POSTS_SERVICE_URL}/mentioning-posts/${user.uid}`);
-        const {posts} = response.data;
-        const postsError = response.data.error;
-        if (postsError) return res.status(202).send({error: postsError});
-
-        res.status(200).send({posts});
-    } catch (error) {
-        res.status(204).send({error});
-    }
-})
-
-module.exports = router;
+module.exports = createPostsRouter;

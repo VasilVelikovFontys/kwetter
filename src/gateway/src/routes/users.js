@@ -1,32 +1,28 @@
 const express = require("express");
 const axios = require("axios");
-const {authenticateToken} = require("../jwt");
 
-const router = express.Router();
+const createUsersRouter = (accountsUrl, jwtUtils) => {
+    const router = express.Router();
+    router.use(jwtUtils.authenticateToken);
 
-const {
-    ACCOUNTS_SERVICE_HOST,
-    ACCOUNTS_SERVICE_PORT
-} = process.env;
+    router.get('/users/current-user', async (req, res) => {
+        const {uid} = req.user;
 
-const ACCOUNTS_SERVICE_URL = `${ACCOUNTS_SERVICE_HOST}:${ACCOUNTS_SERVICE_PORT}`
+        try {
+            const accountResponse = await axios.get(`${accountsUrl}/accounts/${uid}`);
+            const {account} = accountResponse.data;
+            const accountError = accountResponse.data.error;
 
-router.use(authenticateToken);
+            if (accountError) return res.status(202).send({error: accountError});
 
-router.get('/users/current-user', async (req, res) => {
-    const {uid} = req.user;
+            res.status(201).send({user: account});
+        } catch (error) {
+            if (error.code === "ECONNREFUSED") return res.sendStatus(503);
+            res.status(202).send({error});
+        }
+    });
 
-    try {
-        const accountResponse = await axios.get(`${ACCOUNTS_SERVICE_URL}/accounts/${uid}`);
-        const {account} = accountResponse.data;
-        const accountError = accountResponse.data.error;
+    return router;
+}
 
-        if (accountError) return res.status(202).send({error: accountError});
-
-        res.status(201).send({user: account});
-    } catch (error) {
-        res.status(202).send({error});
-    }
-});
-
-module.exports = router;
+module.exports = createUsersRouter;

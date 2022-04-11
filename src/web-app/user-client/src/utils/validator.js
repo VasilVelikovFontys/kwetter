@@ -1,3 +1,7 @@
+export const nameIsValid = name => {
+    return !isEmpty(name);
+}
+
 export const usernameIsValid = username => {
     return !isEmpty(username);
 }

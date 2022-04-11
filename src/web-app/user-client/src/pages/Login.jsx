@@ -31,13 +31,13 @@ const Login = () => {
         setError(null);
 
         setLoading(true);
-        dispatch(login(email, password))
+        dispatch(login({email, password}))
             .then(() => setLoading(false))
-            .catch((error) => {
+            .catch((loginError) => {
                 setLoading(false);
 
-                if (error.message) return setError(error.message)
-                setError(error);
+                if (loginError.message) return setError(loginError.message)
+                setError(loginError);
             });
     };
 

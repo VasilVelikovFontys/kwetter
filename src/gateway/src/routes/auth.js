@@ -1,88 +1,86 @@
 const express = require("express");
 const axios = require("axios");
-const {generateToken, verifyToken} = require("../jwt");
 
-const router = express.Router();
+const createAuthRouter = (accountsUrl, jwtUtils) => {
+    const router = express.Router();
 
-const {
-    ACCOUNTS_SERVICE_HOST,
-    ACCOUNTS_SERVICE_PORT
-} = process.env;
+    router.post('/auth/register', async (req, res) => {
+        const {email, username, password} = req.body;
 
-const ACCOUNTS_SERVICE_URL = `${ACCOUNTS_SERVICE_HOST}:${ACCOUNTS_SERVICE_PORT}`
+        if (!email) return res.status(202).send({error: "Email is required!"});
+        if (!username) return res.status(202).send({error: "Username is required!"});
+        if (!password) return res.status(202).send({error: "Password is required!"});
 
-router.post('/auth/register', async (req, res) => {
-    const {email, username, password} = req.body;
+        try {
+            const usernameResponse = await axios.post(`${accountsUrl}/accounts/check-username`, {username});
+            const usernameError = usernameResponse.data.error;
 
-    if (!email) return res.status(202).send({error: "Email is required!"});
-    if (!username) return res.status(202).send({error: "Username is required!"});
-    if (!password) return res.status(202).send({error: "Password is required!"});
+            if (usernameError) return res.status(202).send({error: usernameError});
 
-    try {
-        const usernameResponse = await axios.post(`${ACCOUNTS_SERVICE_URL}/accounts/check-username`, {username});
-        const usernameError = usernameResponse.data.error;
+            const registerResponse = await axios.post(`${accountsUrl}/auth/register`, {email, password});
+            const {uid} = registerResponse.data;
+            const registerError = registerResponse.data.error;
 
-        if (usernameError) return res.status(202).send({error: usernameError});
+            if (registerError) return res.status(202).send({error: registerError});
 
-        const registerResponse = await axios.post(`${ACCOUNTS_SERVICE_URL}/auth/register`, {email, password});
-        const {uid} = registerResponse.data;
-        const registerError = registerResponse.data.error;
+            const accountResponse = await axios.post(`${accountsUrl}/accounts`, {uid, email, username});
+            const {account} = accountResponse.data;
+            const accountError = accountResponse.data.error;
 
-        if (registerError) return res.status(202).send({error: registerError});
+            if (accountError) return res.status(202).send({error: accountError});
 
-        const accountResponse = await axios.post(`${ACCOUNTS_SERVICE_URL}/accounts`, {uid, email, username});
-        const {account} = accountResponse.data;
-        const accountError = accountResponse.data.error;
+            const user = {uid, ...account}
+            const jwt = jwtUtils.generateToken(user);
 
-        if (accountError) return res.status(202).send({error: accountError});
+            res.status(201).send({jwt});
+        } catch (error) {
+            if (error.code === "ECONNREFUSED") return res.sendStatus(503);
+            res.status(202).send({error});
+        }
+    });
 
-        const user = {uid, ...account}
-        const jwt = generateToken(user);
+    router.post('/auth/login', async (req, res) => {
+        const {email, password} = req.body;
 
-        res.status(201).send({jwt});
-    } catch (error) {
-        res.status(202).send({error});
-    }
-});
+        if (!email) return res.status(202).send({error: "Email is required!"});
+        if (!password) return res.status(202).send({error: "Password is required!"});
 
-router.post('/auth/login', async (req, res) => {
-    const {email, password} = req.body;
+        try {
+            const loginResponse = await axios.post(`${accountsUrl}/auth/authenticate`, {email, password});
+            const {uid} = loginResponse.data;
+            const loginError = loginResponse.data.error;
 
-    if (!email) return res.status(202).send({error: "Email is required!"});
-    if (!password) return res.status(202).send({error: "Password is required!"});
+            if (loginError) return res.status(202).send({error: loginError});
 
-    try {
-        const loginResponse = await axios.post(`${ACCOUNTS_SERVICE_URL}/auth/authenticate`, {email, password});
-        const {uid} = loginResponse.data;
-        const loginError = loginResponse.data.error;
+            const accountResponse = await axios.get(`${accountsUrl}/accounts/${uid}`);
+            const {account} = accountResponse.data;
+            const accountError = accountResponse.data.error;
 
-        if (loginError) return res.status(202).send({error: loginError});
+            if (accountError) return res.status(202).send({error: accountError});
 
-        const accountResponse = await axios.get(`${ACCOUNTS_SERVICE_URL}/accounts/${uid}`);
-        const {account} = accountResponse.data;
-        const accountError = accountResponse.data.error;
+            const user = {uid, ...account}
+            const jwt = jwtUtils.generateToken(user);
 
-        if (accountError) return res.status(202).send({error: accountError});
+            if (!jwt) return res.status(202).send({error: 'Cannot create JWT!'});
 
-        const user = {uid, ...account}
-        const jwt = generateToken(user);
+            res.status(200).send({jwt});
+        } catch (error) {
+            if (error.code === "ECONNREFUSED") return res.sendStatus(503);
+            res.status(202).send({error});
+        }
+    });
 
-        if (!jwt) return res.status(202).send({error: 'Cannot create JWT!'});
+    router.post('/auth/verify-token', async (req, res) => {
+        const {jwt} = req.body;
 
-        res.status(200).send({jwt});
-    } catch (error) {
-        res.status(202).send({error});
-    }
-});
+        if (!jwt) return res.status(202).send({error: "JWT is required!"});
 
-router.post('/auth/verify-token', async (req, res) => {
-    const {jwt} = req.body;
+        const {error} = jwtUtils.verifyToken(jwt);
 
-    if (!jwt) return res.status(202).send({error: "JWT is required!"});
+        res.status(200).send({error});
+    });
 
-    const {error} = verifyToken(jwt);
+    return router;
+}
 
-    res.status(200).send({error});
-});
-
-module.exports = router;
+module.exports = createAuthRouter;

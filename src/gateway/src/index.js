@@ -1,32 +1,32 @@
-const express = require("express");
-const bodyParser = require("body-parser");
-const cors = require("cors");
-
 const dotenv = require("dotenv");
 dotenv.config();
 
-const authRoutes = require('./routes/auth');
-const userRoutes = require('./routes/users');
-const postRoutes = require('./routes/posts');
+const createApp = require("./app");
+const createJwtUtils = require("./jwt")
 
 const {
     PORT,
     CLIENT_HOST,
-    CLIENT_PORT
+    CLIENT_PORT,
+    ACCOUNTS_SERVICE_HOST,
+    ACCOUNTS_SERVICE_PORT,
+    POSTS_SERVICE_HOST,
+    POSTS_SERVICE_PORT,
+    MENTIONING_POSTS_SERVICE_HOST,
+    MENTIONING_POSTS_SERVICE_PORT,
+    JWT_SECRET
 } = process.env;
 
-const corsOptions = {
-    origin: `${CLIENT_HOST}:${CLIENT_PORT}`,
-    optionSuccessStatus: 200
-};
+const serviceUrls = {
+    accountsUrl: `${ACCOUNTS_SERVICE_HOST}:${ACCOUNTS_SERVICE_PORT}`,
+    postsUrl: `${POSTS_SERVICE_HOST}:${POSTS_SERVICE_PORT}`,
+    mentioningPostsUrl: `${MENTIONING_POSTS_SERVICE_HOST}:${MENTIONING_POSTS_SERVICE_PORT}`
+}
 
-const app = express();
-app.use(bodyParser.json());
-app.use(cors(corsOptions));
+const allowedOrigin = `${CLIENT_HOST}:${CLIENT_PORT}`;
 
-app.use(authRoutes);
-app.use(userRoutes);
-app.use(postRoutes);
+const jwtUtils = createJwtUtils(JWT_SECRET);
+const app = createApp(allowedOrigin, serviceUrls, jwtUtils);
 
 app.listen(PORT || 4000, () => {
     console.log(`Listening on port ${PORT || 4000}`);

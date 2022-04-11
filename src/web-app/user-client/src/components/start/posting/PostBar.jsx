@@ -25,11 +25,11 @@ const PostBar = () => {
                 setLoading(false);
                 setText('');
             })
-            .catch(error => {
+            .catch(postError => {
                 setLoading(false);
 
-                if (error.message) return setError(error.message);
-                setError(error)
+                if (postError.message) return setError(postError.message);
+                setError(postError)
             });
     }
 

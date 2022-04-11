@@ -21,9 +21,11 @@ const Posts = () => {
                 .then(() => {
                     setLoading(false);
                 })
-                .catch(error => {
-                    setError(error);
+                .catch(userPostsError => {
                     setLoading(false);
+
+                    if (userPostsError.message) return setError(userPostsError.message)
+                    setError(userPostsError);
                 });
         }
     }, [dispatch, jwt]);
@@ -51,7 +53,7 @@ const Posts = () => {
             }
 
             {error && (
-                <div>{error}</div>
+                <div className="posts-error">{error}</div>
             )}
         </div>
     )

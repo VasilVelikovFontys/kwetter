@@ -3,8 +3,7 @@ import {envGet} from "../../utils/envHelper";
 import {SET_AUTH_TOKEN, SET_AUTH_ERROR} from "../../constants";
 import {store} from "../../index";
 
-const SERVER_HOST = envGet('SERVER_HOST');
-const SERVER_PORT = envGet('SERVER_PORT');
+const SERVER_URL = `${envGet('SERVER_HOST')}:${envGet('SERVER_PORT')}`;
 
 export const getJwtFromLocalStorage = () => {
     return dispatch => {
@@ -16,7 +15,7 @@ export const getJwtFromLocalStorage = () => {
 export const verifyJwt = () => {
     return async dispatch => {
         const {jwt} = store.getState().auth;
-        const {data} = await axios.post(`${SERVER_HOST}:${SERVER_PORT}/auth/verify-token`, {jwt});
+        const {data} = await axios.post(`${SERVER_URL}/auth/verify-token`, {jwt});
 
         const {error} = data;
 
@@ -29,9 +28,9 @@ export const verifyJwt = () => {
     }
 }
 
-export const login = (email, password) => {
+export const login = details => {
     return async dispatch => {
-        const {data} = await axios.post(`${SERVER_HOST}:${SERVER_PORT}/auth/login`, {email, password});
+        const {data} = await axios.post(`${SERVER_URL}/auth/login`, {...details});
 
         const {jwt, error} = data
         if (error) return dispatch({type: SET_AUTH_ERROR, error});
@@ -41,9 +40,9 @@ export const login = (email, password) => {
     }
 }
 
-export const register = (username, email, password) => {
+export const register = details => {
     return async dispatch => {
-        const {data} = await axios.post(`${SERVER_HOST}:${SERVER_PORT}/auth/register`, {username, email, password});
+        const {data} = await axios.post(`${SERVER_URL}/auth/register`, {...details});
 
         const {jwt, error} = data
         if (error) return dispatch({type: SET_AUTH_ERROR, error});
