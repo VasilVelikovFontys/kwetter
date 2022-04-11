@@ -26,6 +26,7 @@ const createPostsRouter = (postsUrl, mentioningPostsUrl, jwtUtils) => {
         const {uid, username} = req.user;
 
         if (!text) return res.status(202).send({error: "Post text is required!"});
+        if ((text.match(/@/g) || []).length > 3) return res.status(202).send({error: "Maximum of 3 mentions is allowed!"});
 
         const post = {userId: uid, username, text}
         try {

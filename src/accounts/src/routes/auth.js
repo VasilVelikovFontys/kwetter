@@ -1,6 +1,6 @@
 const express = require("express");
 
-const createAuthRouter = (auth) => {
+const createAuthRouter = auth => {
     const router = express.Router();
 
     router.post('/auth/register', async (req, res) => {

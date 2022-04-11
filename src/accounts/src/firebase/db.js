@@ -6,12 +6,12 @@ const createAccount = async (uid, email, username, firstName, lastName, roles) =
     await db.collection('accounts').doc(uid).set({email, username, firstName, lastName, roles});
 }
 
-const getAccountByUid = async (uid) => {
+const getAccountByUid = async uid => {
     const accountDocument = await db.collection('accounts').doc(uid).get();
     return accountDocument.data();
 }
 
-const checkUsernameAvailable = async (username) => {
+const checkUsernameAvailable = async username => {
     const accountSnapshot = await db.collection('accounts').where('username', '==', username).get();
     return !accountSnapshot.docs[0];
 }

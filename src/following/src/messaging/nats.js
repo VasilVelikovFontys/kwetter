@@ -7,7 +7,7 @@ const {
     NATS_CLIENT_ID,
     NATS_HOST,
     NATS_PORT,
-    NATS_POST_CREATED_CHANNEL
+    NATS_USER_FOLLOWED_CHANNEL
 } = process.env;
 
 const stan = nats.connect(NATS_CLUSTER_ID, NATS_CLIENT_ID, {
@@ -18,8 +18,8 @@ stan.on('connect', () => {
     console.log(`${NATS_CLIENT_ID} connected to NATS`)
 });
 
-const publishPostCreated = data => {
-    stan.publish(NATS_POST_CREATED_CHANNEL, data);
+const publishUserFollowed = data => {
+    stan.publish(NATS_USER_FOLLOWED_CHANNEL, data);
 }
 
 const closeStan = () => {
@@ -27,6 +27,6 @@ const closeStan = () => {
 }
 
 module.exports = {
-    publishPostCreated,
+    publishUserFollowed,
     closeStan
 }

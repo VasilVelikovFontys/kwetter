@@ -11,21 +11,20 @@ const {
     NATS_CLIENT_ID
 } = process.env;
 
-const authenticate = () => {
-    auth.signInWithEmailAndPassword(FIRESTORE_SERVICE_EMAIL, FIRESTORE_SERVICE_PASSWORD)
-        .then(() => {
-            console.log(`${NATS_CLIENT_ID} logged in to firebase`)
-        })
-        .catch(error => {
-            console.log(error);
-        });
+const authenticateService = async () => {
+    try {
+        await auth.signInWithEmailAndPassword(FIRESTORE_SERVICE_EMAIL, FIRESTORE_SERVICE_PASSWORD)
+        return console.log(`${NATS_CLIENT_ID} logged in to firebase`);
+    } catch (error) {
+        return console.log(error);
+    }
 };
 
-const signOut = () => {
-    auth.signOut();
+const signOutService = async () => {
+    await auth.signOut();
 };
 
 module.exports = {
-    authenticate,
-    signOut
+    authenticateService,
+    signOutService
 };

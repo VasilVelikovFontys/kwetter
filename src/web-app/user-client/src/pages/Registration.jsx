@@ -88,7 +88,7 @@ const Registration = () => {
             <form>
                 <input className='auth-input'
                        value={firstName}
-                       placeholder={'Username'}
+                       placeholder={'First Name'}
                        autoComplete='first-name'
                        onChange={handleFirstNameChange}
                        name='first-name'

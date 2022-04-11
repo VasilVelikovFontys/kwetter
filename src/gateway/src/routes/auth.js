@@ -5,11 +5,12 @@ const createAuthRouter = (accountsUrl, jwtUtils) => {
     const router = express.Router();
 
     router.post('/auth/register', async (req, res) => {
-        const {email, username, password} = req.body;
+        const {email, username, firstName, lastName, password} = req.body;
 
         if (!email) return res.status(202).send({error: "Email is required!"});
         if (!username) return res.status(202).send({error: "Username is required!"});
         if (!password) return res.status(202).send({error: "Password is required!"});
+        if (!firstName || !lastName) return res.status(202).send({error: "Names are required!"});
 
         try {
             const usernameResponse = await axios.post(`${accountsUrl}/accounts/check-username`, {username});
@@ -23,7 +24,7 @@ const createAuthRouter = (accountsUrl, jwtUtils) => {
 
             if (registerError) return res.status(202).send({error: registerError});
 
-            const accountResponse = await axios.post(`${accountsUrl}/accounts`, {uid, email, username});
+            const accountResponse = await axios.post(`${accountsUrl}/accounts`, {uid, email, username, firstName, lastName});
             const {account} = accountResponse.data;
             const accountError = accountResponse.data.error;
 

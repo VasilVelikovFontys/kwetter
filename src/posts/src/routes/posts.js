@@ -1,56 +1,47 @@
 const express = require("express");
-const firebase = require("firebase/compat/app");
-const db = require("../firebase/db");
-const publishPostCreated = require("../messaging/nats");
 
-const router = express.Router();
+const createPostsRouter = (database, messaging) => {
+    const router = express.Router();
 
-router.get('/posts/user/:uid', async (req, res) => {
-    const {uid} = req.params;
+    router.get('/posts/user/:uid', async (req, res) => {
+        const {uid} = req.params;
 
-    if (!uid) return res.status(202).send({error: 'User id is required!'});
+        if (!uid) return res.status(202).send({error: 'User id is required!'});
 
-    try {
-        const snapshot = await db.collection('posts')
-            .where('userId', '==', uid)
-            .orderBy('date', 'desc')
-            .limit(10).get();
+        try {
+            const posts = await database.getPostsByUserId(uid);
 
-        const posts = snapshot.docs.map(doc => {
-            const data = doc.data();
-            const date = data.date.toDate();
+            return res.status(200).send({posts});
+        } catch (error) {
+            return res.status(204).send({error});
+        }
+    });
 
-            return {...data, date, id: doc.id}
-        });
+    router.post('/posts', async (req, res) => {
+        const {userId, username, text} = req.body;
 
-        res.status(200).send({posts});
-    } catch (error) {
-        res.status(204).send({error});
-    }
-});
+        if (!userId) return res.status(202).send({error: 'User id is required!'});
+        if (!username) return res.status(202).send({error: 'Username is required!'});
+        if (!text) return res.status(202).send({error: 'Text is required!'});
+        if ((text.match(/@/g) || []).length > 3) return res.status(202).send({error: "Maximum of 3 mentions is allowed!"});
 
-router.post('/posts', async (req, res) => {
-    const {userId, username, text} = req.body;
+        try {
+            const date = await database.createTimestampFromDate(new Date());
 
-    if (!userId) return res.status(202).send({error: 'User id is required!'});
-    if (!username) return res.status(202).send({error: 'Username is required!'});
-    if (!text) return res.status(202).send({error: 'Text is required!'});
+            const postId = await database.createPost(userId, username, text, date);
 
-    try {
-        const date = firebase.firestore.Timestamp.fromDate(new Date());
+            const post = {id: postId, userId, username, text, date};
 
-        const docRef = await db.collection('posts').add({userId, username, text, date});
+            const data = JSON.stringify(post);
+            messaging.publishPostCreated(data);
 
-        const post = {id: docRef.id, userId, username, text, date};
+            res.status(201).send(post);
+        } catch (error) {
+            res.status(202).send({error});
+        }
+    });
 
-        const data = JSON.stringify(post);
-        publishPostCreated(data);
+    return router;
+}
 
-        res.status(201).send(post);
-    } catch (error) {
-        console.log(error)
-        res.status(202).send({error});
-    }
-});
-
-module.exports = router;
+module.exports = createPostsRouter;

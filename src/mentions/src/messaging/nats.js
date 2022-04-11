@@ -37,39 +37,59 @@ stan.on('connect', () => {
     subscription.on('message', async (msg) => {
         const receivedData = msg.getData();
         const post = JSON.parse(receivedData);
+        const {text} = post;
 
-        let username = null;
-        try {
-            const {text} = post;
-
-            if (text.indexOf('@') > -1) {
-                username = text.substring(text.indexOf('@') + 1);
-
-                if(username.indexOf(' ') > -1) {
-                    username = username.substring(0, username.indexOf(' '));
+        getUsernamesFromText(text)
+            .then(usernames => {
+                if (usernames.length === 0) {
+                    msg.ack();
+                    return console.log('No username found!');
                 }
-            }
-        } catch (error) {
-            console.log(error);
-        }
 
-        if (!username) {
-            msg.ack();
-            return console.log('No username found!');
-        }
+                usernames.forEach(async (username) => {
+                    await db.createMention(post.id, username);
+                });
 
-        await db.collection('mentions').add({postId: post.id, username});
+                const mention = {postId: post.id, usernames};
 
-        const mention = {postId: post.id, username};
-
-        const sentData = JSON.stringify(mention);
-        stan.publish(NATS_USER_MENTIONED_CHANNEL, sentData);
+                const sentData = JSON.stringify(mention);
+                stan.publish(NATS_USER_MENTIONED_CHANNEL, sentData);
+            });
 
         msg.ack();
     })
 });
 
-module.exports = stan;
+const getUsernamesFromText = async text => {
+    return new Promise(resolve => {
+        let usernames = [];
+
+        //Clear duplicate '@';
+        text = text.replace(/(@)\1+/g, '$1');
+
+        while (text.indexOf('@') > -1 && text !== '@') {
+            let username = text.substring(text.indexOf('@') + 1);
+
+            if(username.indexOf(' ') > -1) {
+                username = username.substring(0, username.indexOf(' '));
+            }
+
+            if (!usernames.includes(username)) usernames.push(username);
+            text = text.replace(`@${username}`, '');
+        }
+
+        resolve(usernames);
+    });
+}
+
+const closeStan = () => {
+    stan.close();
+}
+
+module.exports = {
+    stan,
+    closeStan
+};
 
 process.on('SIGINT', () => stan.close());
 process.on('SIGTERM', () => stan.close());

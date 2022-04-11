@@ -37,6 +37,7 @@ const Posts = () => {
     }, [postsError]);
 
     useEffect(() => {
+        if (!posts) return;
         const newPosts = posts.map(post => <Post key={post.id} post={post} own/>);
 
         setStyledPosts(newPosts)

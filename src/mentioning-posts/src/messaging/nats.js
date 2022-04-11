@@ -1,5 +1,4 @@
 const nats = require("node-nats-streaming");
-const firebase = require("firebase/compat/app");
 const db = require("../firebase/db");
 
 const dotenv = require("dotenv");
@@ -36,7 +35,7 @@ stan.on('connect', () => {
 
     //On Account Created
     const accountCreatedSubscription = stan.subscribe(NATS_ACCOUNT_CREATED_CHANNEL, NATS_QUEUE_GROUP, options);
-    accountCreatedSubscription.on('message', async (msg) => {
+    accountCreatedSubscription.on('message', async msg => {
         const data = msg.getData();
         const account = JSON.parse(data);
 
@@ -45,66 +44,68 @@ stan.on('connect', () => {
         if (!uid) return console.log('Cannot deconstruct account id!');
         if (!username) return console.log('Cannot deconstruct account username!');
 
-        await db.collection('users').doc(uid).set({username});
+        await db.createUser(uid, username);
 
         msg.ack();
     });
 
     //On Post Created
     const postCreatedSubscription = stan.subscribe(NATS_POST_CREATED_CHANNEL, NATS_QUEUE_GROUP, options);
-    postCreatedSubscription.on('message', async (msg) => {
+    postCreatedSubscription.on('message', async msg => {
         const data = msg.getData();
         const post = JSON.parse(data);
 
         const {id, username, text, date} = post;
-
-        const postTimestamp = new firebase.firestore.Timestamp(date.seconds, date.nanoseconds);
 
         if (!id) return console.log('Cannot deconstruct post id!');
         if (!username) return console.log('Cannot deconstruct post username!');
         if (!text) return console.log('Cannot deconstruct post text!');
         if (!date) return console.log('Cannot deconstruct post date!');
 
-        await db.collection('posts').doc(id).set({username, text, date: postTimestamp, mentions: []});
+        await db.createPost(id, username, text, date)
 
         msg.ack();
     });
 
     //On User Mentioned
     const userMentionedSubscription = stan.subscribe(NATS_USER_MENTIONED_CHANNEL, NATS_QUEUE_GROUP, options);
-    userMentionedSubscription.on('message', async (msg) => {
+    userMentionedSubscription.on('message', async msg => {
         const data = msg.getData();
         const mention = JSON.parse(data);
 
-        const {username, postId} = mention;
+        const {usernames, postId} = mention;
 
-        if (!username) return console.log('Cannot deconstruct mention username!');
+        if (!usernames) return console.log('Cannot deconstruct mention usernames!');
         if (!postId) return console.log('Cannot deconstruct mention post id!');
 
-        const userSnapshot = await db.collection('users').where('username', '==', username).get();
+        const userIds = [];
+        for (const username of usernames) {
+            const userId = await db.getUserIdByUsername(username);
 
-        if(userSnapshot.docs.length > 0) {
-            const userId = userSnapshot.docs[0].id;
-            const postDocument = await db.collection('posts').doc(postId).get();
-
-            if(postDocument) {
-                const post = postDocument.data();
-
-                if (!post) return console.log('Cannot read post data!');
-
-                await db.collection('posts').doc(postId).set({
-                    ...post,
-                    mentions: [...post.mentions, userId]
-                });
+            if (!userId) {
                 msg.ack();
+                console.log('User with this username does not exist!');
             }
-        } else {
-            msg.ack();
+
+            userIds.push(userId);
         }
+
+        const post = await db.getPostById(postId);
+        if (!post) {
+            msg.ack();
+            return console.log('Post with this id does not exist!');
+        }
+
+        await db.updatePostMentions(post, postId, userIds);
+        msg.ack();
     });
 });
 
-process.on('SIGINT', () => stan.close());
-process.on('SIGTERM', () => stan.close());
+const closeStan = () => {
+    stan.close();
+}
 
-module.exports = stan;
+module.exports = {
+    stan,
+    closeStan
+};

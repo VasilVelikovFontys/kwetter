@@ -1,6 +1,6 @@
 const express = require("express");
-const {authenticate, signOut} = require("./firebase/auth");
-require("./messaging/nats");
+const auth = require("./firebase/auth");
+const nats = require("./messaging/nats");
 
 const dotenv = require("dotenv");
 dotenv.config();
@@ -9,13 +9,18 @@ const {
     PORT
 } = process.env;
 
+const handleShutdown = async () => {
+    await auth.signOutService();
+    nats.closeStan()
+}
+
 const app = express();
 
-app.listen(PORT || 4000, () => {
+app.listen(PORT || 4000, async () => {
     console.log(`Listening on port ${PORT || 4000}`);
 
-    authenticate();
+    await auth.authenticateService();
 });
 
-process.on('SIGINT', () => signOut());
-process.on('SIGTERM', () => signOut());
+process.on('SIGINT', () => handleShutdown());
+process.on('SIGTERM', () => handleShutdown());

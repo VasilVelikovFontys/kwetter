@@ -1,11 +1,12 @@
-import React, {useState} from 'react'
+import React, {useEffect, useState} from 'react'
 import '../../../styles/components/start/posting/postBar.css';
 import {postIsValid} from "../../../utils/validator";
-import {useDispatch} from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
 import {createPost} from "../../../store/actions/postActions";
 
 const PostBar = () => {
     const dispatch = useDispatch();
+    const {postsError} = useSelector(state => state.posts);
 
     const [text, setText] = useState('');
 
@@ -32,6 +33,12 @@ const PostBar = () => {
                 setError(postError)
             });
     }
+
+    useEffect(() => {
+        if (postsError) {
+            setError(postsError);
+        }
+    }, [postsError])
 
     return (
         <div id='post-bar'>
