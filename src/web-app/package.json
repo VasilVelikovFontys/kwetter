@@ -3,10 +3,8 @@
   "private": true,
   "version": "0.0.0",
   "scripts": {
-    "dev": "user-client/node_modules/.bin/vite",
-    "build": "user-client/node_modules/.bin/vite build",
-    "preview": "user-client/node_modules/.bin/vite preview",
-    "test": "user-client/node_modules/.bin/jest --coverage",
+    "dev": "vite",
+    "test": "jest --coverage",
     "sonar": "node sonar-project.js"
   },
   "jest": {

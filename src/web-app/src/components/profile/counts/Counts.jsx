@@ -69,7 +69,7 @@ const Counts = props => {
         if (followersLoading) return (<div>Loading...</div>)
         return (
             <div className='following-count count' onClick={showFollowers}>
-                {followers.length} followers{followers.length === 1 ? '' : 's'}
+                {followers.length} follower{followers.length === 1 ? '' : 's'}
             </div>
         )
     }

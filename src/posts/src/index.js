@@ -1,4 +1,5 @@
 const createApp = require('./app');
+const auth = require("./firebase/auth");
 const db = require("./firebase/db");
 const nats = require("./messaging/nats");
 
