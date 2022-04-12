@@ -53,7 +53,9 @@ const Registration = () => {
         setError(null);
 
         dispatch(register({firstName, lastName, username, email, password}))
-            .then(() => {})
+            .then(() => {
+                //No action needed
+            })
             .catch((registerError) => {
                 if (registerError.message) return setError(registerError.message)
                 setError(registerError);

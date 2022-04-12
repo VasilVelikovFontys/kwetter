@@ -57,7 +57,7 @@ const Counts = props => {
     }, [dispatch, jwt]);
 
     const displayFollowing = () => {
-        if (followingLoading) return (<div>Loading...</div>)
+        if (followingLoading) return <div>Loading...</div>
         return (
             <div className='following-count count'>
                 {following.length} following
@@ -66,7 +66,7 @@ const Counts = props => {
     }
 
     const displayFollowers = () => {
-        if (followersLoading) return (<div>Loading...</div>)
+        if (followersLoading) return <div>Loading...</div>
         return (
             <div className='following-count count' onClick={showFollowers}>
                 {followers.length} follower{followers.length === 1 ? '' : 's'}
@@ -75,7 +75,7 @@ const Counts = props => {
     }
 
     const displayPosts = () => {
-        if (postsLoading) return (<div>Loading...</div>)
+        if (postsLoading) return <div>Loading...</div>
         return (
             <div className='count' onClick={showPosts}>
                 {posts.length} post{posts.length === 1 ? '' : 's'}

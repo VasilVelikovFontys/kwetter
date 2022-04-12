@@ -20,15 +20,15 @@ const Posts = () => {
         if (!jwt) return setStyledPosts([]);
     }, [jwt]);
 
+    const displayPosts = () => {
+        if (postsLoading) return <div>Loading...</div>
+        if (styledPosts.length === 0) return <div>No recent posts</div>
+        return <div>{styledPosts}</div>
+    }
+
     return (
         <div id='posts'>
-            {postsLoading ?
-                <div>Loading...</div>
-                :
-                <>
-                    {styledPosts.length > 0 ? styledPosts : 'No recent posts'}
-                </>
-            }
+            {displayPosts()}
 
             {postsError && (
                 <div className="posts-error">

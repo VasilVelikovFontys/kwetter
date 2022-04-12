@@ -9,17 +9,19 @@ const Mentions = () => {
     const {jwt} = useSelector(state => state.auth);
     const {mentions, loading: mentionsLoading, error: mentionsError} = useSelector(state => state.mentions);
 
-    const [styledPosts, setStyledPosts] = useState([]);
+    const [styledMentions, setStyledMentions] = useState([]);
 
     const [error, setError] = useState('');
 
     useEffect(() => {
         if (jwt) {
             dispatch(getMentions())
-                .then(() => {})
-                .catch(mentionsError => {
-                    if (mentionsError.message) return setError(mentionsError.message)
-                    setError(mentionsError)
+                .then(() => {
+                    //No action needed
+                })
+                .catch(userMentionsError => {
+                    if (userMentionsError.message) return setError(userMentionsError.message)
+                    setError(userMentionsError)
                 });
         }
     }, [dispatch, jwt]);
@@ -31,18 +33,18 @@ const Mentions = () => {
     useEffect(() => {
         const newMentions = mentions.map(post => <Post key={post.id} post={post}/>);
 
-        setStyledPosts(newMentions)
+        setStyledMentions(newMentions)
     }, [mentions]);
+
+    const displayMentions = () => {
+        if (mentionsLoading) return <div>Loading...</div>
+        if (styledMentions.length === 0) return <div>No mentioning posts</div>
+         return <div>{styledMentions}</div>
+    }
 
     return (
         <div id='mentions'>
-            {mentionsLoading ?
-                <div>Loading...</div>
-                :
-                <>
-                    {styledPosts.length > 0 ? styledPosts : 'No mentioning posts'}
-                </>
-            }
+            {displayMentions()}
 
             {error && (
                 <div className="mentions-error">{error}</div>

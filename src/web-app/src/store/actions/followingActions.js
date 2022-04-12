@@ -6,7 +6,7 @@ import {store} from "../../index";
 
 const SERVER_URL = `${envGet('SERVER_HOST')}:${envGet('SERVER_PORT')}`;
 
-export const follow = followedUsername => {
+export const followUser = followedUsername => {
     return async dispatch => {
         dispatch({type: SET_FOLLOWING_LOADING});
 

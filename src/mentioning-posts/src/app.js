@@ -3,7 +3,7 @@ const bodyParser = require("body-parser");
 
 const createMentioningPostsRouter = require('./routes/mentioningPosts');
 
-const createApp = (database) => {
+const createApp = database => {
     const app = express();
     app.disable('x-powered-by');
 

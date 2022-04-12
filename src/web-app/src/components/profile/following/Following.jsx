@@ -20,15 +20,15 @@ const Following = () => {
         if (!jwt) return setStyledFollowing([]);
     }, [jwt]);
 
+    const displayFollowing = () => {
+        if (followingLoading) return <div>Loading...</div>
+        if (styledFollowing.length === 0) return <div>No followed users</div>
+        return <div>{styledFollowing}</div>
+    }
+
     return (
         <div id='following'>
-            {followingLoading ?
-                <div>Loading...</div>
-                :
-                <>
-                    {styledFollowing.length > 0 ? styledFollowing : 'No followed users'}
-                </>
-            }
+            {displayFollowing()}
 
             {followingError && (
                 <div className="following-error">

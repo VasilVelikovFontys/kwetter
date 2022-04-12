@@ -30,7 +30,9 @@ const Login = () => {
         setError(null);
 
         dispatch(login({email, password}))
-            .then(() => {})
+            .then(() => {
+                //No action needed
+            })
             .catch((loginError) => {
                 if (loginError.message) return setError(loginError.message)
                 setError(loginError);

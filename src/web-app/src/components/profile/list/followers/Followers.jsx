@@ -7,28 +7,28 @@ const Followers = () => {
     const {jwt} = useSelector(state => state.auth);
     const {followers, loading: followersLoading, error: followersError} = useSelector(state => state.followers);
 
-    const [styledPosts, setStyledPosts] = useState([]);
+    const [styledFollowers, setStyledFollowers] = useState([]);
 
     useEffect(() => {
         if (!followers) return;
-        const newPosts = followers.map(username => <Follower key={username} username={username}/>);
+        const newFollowers = followers.map(username => <Follower key={username} username={username}/>);
 
-        setStyledPosts(newPosts);
+        setStyledFollowers(newFollowers);
     }, [followers]);
 
     useEffect(() => {
-        if (!jwt) return setStyledPosts([]);
+        if (!jwt) return setStyledFollowers([]);
     }, [jwt]);
+
+    const displayFollowers = () => {
+        if (followersLoading) return <div>Loading...</div>
+        if (styledFollowers.length === 0) return <div>No followers</div>
+        return <div>{styledFollowers}</div>
+    }
 
     return (
         <div id='followers'>
-            {followersLoading ?
-                <div>Loading...</div>
-                :
-                <>
-                    {styledPosts.length > 0 ? styledPosts : 'No followers'}
-                </>
-            }
+            {displayFollowers()}
 
             {followersError && (
                 <div className="followers-error">
