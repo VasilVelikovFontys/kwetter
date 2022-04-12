@@ -8,14 +8,9 @@ export const getPostDate = utcDate => {
     const minutes = Math.floor(difference / (1000 * 60));
     const seconds = Math.floor(difference / (1000));
 
-    let formattedDifference = date.toLocaleDateString("en-EU", {year: 'numeric', month: 'short', day: 'numeric'});
-
-    if (days <= 7) {
-        if (seconds > 0) formattedDifference = `${seconds} second${seconds > 1 ? 's' : ''} ago`;
-        if (minutes > 0) formattedDifference = `${minutes} minute${minutes > 1 ? 's' : ''} ago`;
-        if (hours > 0) formattedDifference = `${hours} hour${hours > 1 ? 's' : ''} ago`;
-        if (days > 0) formattedDifference = `${days} day${days > 1 ? 's' : ''} ago`;
-    }
-
-    return formattedDifference;
+    if (days > 7) return date.toLocaleDateString("en-EU", {year: 'numeric', month: 'short', day: 'numeric'});
+    if (seconds > 0) return `${seconds} second${seconds > 1 ? 's' : ''} ago`;
+    if (minutes > 0) return `${minutes} minute${minutes > 1 ? 's' : ''} ago`;
+    if (hours > 0) return `${hours} hour${hours > 1 ? 's' : ''} ago`;
+    if (days > 0) return `${days} day${days > 1 ? 's' : ''} ago`;
 }
