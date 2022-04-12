@@ -14,7 +14,9 @@ const AuthBar = () => {
     useEffect(() => {
         if(jwt) {
             dispatch(getCurrentUser())
-                .then(() => {})
+                .then(() => {
+                    //No need for action
+                })
                 .catch((userError) => {
                     if (userError.message) return setError(userError.message)
                     setError(userError);

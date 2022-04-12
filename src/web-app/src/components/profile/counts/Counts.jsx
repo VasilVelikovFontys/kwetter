@@ -28,21 +28,27 @@ const Counts = props => {
     useEffect(() => {
         if(jwt) {
             dispatch(getUserPosts())
-                .then(() => {})
+                .then(() => {
+                    //No need for action
+                })
                 .catch((postsError) => {
                     if (postsError.message) return setError(postsError.message)
                     setError(postsError);
                 });
 
             dispatch(getFollowing())
-                .then(() => {})
+                .then(() => {
+                    //No need for action
+                })
                 .catch((followingError) => {
                     if (followingError.message) return setError(followingError.message)
                     setError(followingError);
                 });
 
             dispatch(getFollowers())
-                .then(() => {})
+                .then(() => {
+                    //No need for action
+                })
                 .catch((followersError) => {
                     if (followersError.message) return setError(followersError.message)
                     setError(followersError);
@@ -50,48 +56,56 @@ const Counts = props => {
         }
     }, [dispatch, jwt]);
 
+    const displayFollowing = () => {
+        if (followingLoading) return (<div>Loading...</div>)
+        return (
+            <div className='following-count count'>
+                {following.length} following
+            </div>
+        )
+    }
+
+    const displayFollowers = () => {
+        if (followersLoading) return (<div>Loading...</div>)
+        return (
+            <div className='following-count count' onClick={showFollowers}>
+                {followers.length} followers{followers.length === 1 ? '' : 's'}
+            </div>
+        )
+    }
+
+    const displayPosts = () => {
+        if (postsLoading) return (<div>Loading...</div>)
+        return (
+            <div className='count' onClick={showPosts}>
+                {posts.length} post{posts.length === 1 ? '' : 's'}
+            </div>
+        )
+    }
+
     return (
         <div id='counts'>
-            {jwt ?
+            {jwt && (
                 <>
                     <div id='following-counts'>
-                        {followingLoading ?
-                            <div>Loading...</div>
-                            :
-                            <div className='following-count count'>
-                                {following.length} following
-                            </div>
-                        }
-
-                        {followersLoading ?
-                            <div>Loading...</div>
-                            :
-                            <div className='following-count count' onClick={showFollowers}>
-                                {followers.length} follower{followers.length === 1 ? '' : 's'}
-                            </div>
-                        }
+                        {displayFollowing()}
+                        {displayFollowers()}
                     </div>
                     <div>
-                        {postsLoading ?
-                            <div>Loading...</div>
-                            :
-                            <div className='count' onClick={showPosts}>
-                                {posts.length} post{posts.length === 1 ? '' : 's'}
-                            </div>
-                        }
+                        {displayPosts()}
                     </div>
+                </>
+            )}
 
-                    {error && (
-                        <div className='count-error'>
-                            {error}
-                        </div>
-                    )}
-                </>
-                :
-                <>
-                    No information
-                </>
-            }
+            {error && (
+                <div className='count-error'>
+                    {error}
+                </div>
+            )}
+
+            {!jwt && (
+                <div>No information</div>
+            )}
         </div>
     )
 }
