@@ -39,7 +39,7 @@ const Mentions = () => {
     const displayMentions = () => {
         if (mentionsLoading) return <div>Loading...</div>
         if (styledMentions.length === 0) return <div>No mentioning posts</div>
-         return <div>{styledMentions}</div>
+        return <div>{styledMentions}</div>
     }
 
     return (
