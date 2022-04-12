@@ -15,6 +15,7 @@ const handleShutdown = async () => {
 }
 
 const app = express();
+app.disable('x-powered-by');
 
 app.listen(PORT || 4000, async () => {
     console.log(`Listening on port ${PORT || 4000}`);

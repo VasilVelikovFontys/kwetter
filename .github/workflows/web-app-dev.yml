@@ -1,0 +1,21 @@
+name: Accounts Dev
+
+on:
+  push:
+    branches: [dev]
+    paths: 'src/web-app/**'
+
+jobs:
+  sonar:
+    name: Scan With Sonarqube
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - uses: sonarsource/sonarqube-scan-action@master
+        with:
+          projectBaseDir: ./src/web-app
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_WEB_APP }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}

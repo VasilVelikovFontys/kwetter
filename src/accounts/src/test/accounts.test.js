@@ -32,8 +32,4 @@ describe('POST /accounts', () => {
             expect(publishAccountCreated.mock.calls.length).toBe(1);
         });
     });
-
-    describe('when the email or password is missing', () => {
-
-    });
 });

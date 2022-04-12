@@ -1,6 +1,6 @@
 const express = require("express");
 
-const createFollowingRouter = (auth, database) => {
+const createFollowingRouter = database => {
     const router = express.Router();
 
     router.post('/follow/:followedUsername', async (req, res) => {

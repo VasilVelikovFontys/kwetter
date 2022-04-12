@@ -3,7 +3,7 @@ const bodyParser = require("body-parser");
 
 const createPostsRouter = require('./routes/posts');
 
-const createApp = (auth, database, messaging) => {
+const createApp = (database, messaging) => {
     const app = express();
     app.disable('x-powered-by');
 
