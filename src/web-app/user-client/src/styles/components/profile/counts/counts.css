@@ -1,5 +1,30 @@
 #counts {
     border: 2px solid black;
     border-radius: 5px;
+    padding: 5px;
     margin-bottom: 20px;
+}
+
+#following-counts {
+    display: flex;
+}
+
+.following-count {
+    margin-right: 20px;
+}
+
+.following-count:last-child {
+    margin-right: 0;
+}
+
+.count {
+    cursor: pointer;
+}
+
+.count:hover {
+    text-decoration: underline;
+}
+
+.count-error {
+    color: darkred;
 }

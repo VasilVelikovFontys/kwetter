@@ -1,4 +1,9 @@
 #following {
     border: 2px solid black;
     border-radius: 5px;
+    padding: 5px;
+}
+
+.following-error {
+    color: darkred;
 }

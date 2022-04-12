@@ -1,13 +1,15 @@
-import React  from 'react'
+import React, {useState} from 'react'
 import '../styles/pages/profile.css';
 import AuthBar from "../components/auth/AuthBar";
 import NameAndPicture from "../components/profile/name-and-picture/NameAndPicture";
 import Details from "../components/profile/details/Details";
-import Posts from "../components/profile/posts/Posts";
 import Counts from "../components/profile/counts/Counts";
 import Following from "../components/profile/following/Following";
+import ProfileList from "../components/profile/list/ProfileList";
 
 const Profile = () => {
+    const [selectedList, setSelectedList] = useState('posts');
+
     return (
         <div id='profile-page'>
             <AuthBar />
@@ -15,12 +17,12 @@ const Profile = () => {
             <div id='profile-contents'>
                 <div className='profile-column'>
                     <NameAndPicture />
-                    <Posts />
+                    <ProfileList selectedList={selectedList}/>
                 </div>
 
                 <div className='profile-column'>
                     <Details />
-                    <Counts />
+                    <Counts setSelectedList={setSelectedList}/>
                     <Following />
                 </div>
             </div>

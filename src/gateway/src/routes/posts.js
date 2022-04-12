@@ -50,7 +50,7 @@ const createPostsRouter = (postsUrl, mentioningPostsUrl, jwtUtils) => {
             const postsError = response.data.error;
             if (postsError) return res.status(202).send({error: postsError});
 
-            res.status(200).send({posts});
+            res.status(200).send({mentions: posts});
         } catch (error) {
             if (error.code === "ECONNREFUSED") return res.sendStatus(503);
             res.status(204).send({error});

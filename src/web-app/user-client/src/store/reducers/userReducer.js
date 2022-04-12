@@ -1,8 +1,9 @@
-import {SET_USER, SET_USER_ERROR} from '../../constants';
+import {SET_USER, SET_USER_LOADING, SET_USER_ERROR} from '../../constants';
 
 const initState = {
     user: null,
-    userError: null
+    loading: false,
+    error: null
 }
 
 const userReducer = (state = initState, action) => {
@@ -10,12 +11,20 @@ const userReducer = (state = initState, action) => {
         case SET_USER:
             return {
                 user: action.user,
-                authError: null
+                loading: false,
+                error: null
+            }
+        case SET_USER_LOADING:
+            return {
+                user: null,
+                loading: true,
+                error: null
             }
         case SET_USER_ERROR:
             return {
                 user: null,
-                userError: action.error
+                loading: false,
+                error: action.error
             }
         default:
             return state

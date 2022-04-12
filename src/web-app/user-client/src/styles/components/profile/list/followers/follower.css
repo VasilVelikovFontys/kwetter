@@ -1,0 +1,13 @@
+.follower {
+    border: 1px solid black;
+    border-top: 0;
+    padding: 5px;
+}
+
+.follower:first-child {
+    border-top: 1px solid black;
+}
+
+.follower:nth-child(even) {
+    background-color: lightgray;
+}

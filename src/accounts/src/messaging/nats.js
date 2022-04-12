@@ -15,7 +15,11 @@ const stan = nats.connect(NATS_CLUSTER_ID, NATS_CLIENT_ID, {
 });
 
 stan.on('connect', () => {
-    console.log(`${NATS_CLIENT_ID} connected to NATS`)
+    console.log(`${NATS_CLIENT_ID} connected to NATS`);
+
+    stan.on('close', () => {
+        process.exit();
+    });
 });
 
 const publishAccountCreated = data => {

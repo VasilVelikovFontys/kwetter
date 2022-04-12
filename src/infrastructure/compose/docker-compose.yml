@@ -42,6 +42,16 @@ services:
     networks:
       - network-name
 
+  #Following Service
+  following:
+    image: vjv2143/kwetter.following
+    container_name: following
+    depends_on:
+      - nats-streaming
+    env_file: .following.env
+    networks:
+      - network-name
+
   #Mentioning Posts Service
   mentioning-posts:
     image: vjv2143/kwetter.mentioning-posts

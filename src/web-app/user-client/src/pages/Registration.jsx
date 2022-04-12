@@ -7,7 +7,7 @@ import {useDispatch, useSelector} from "react-redux";
 const Registration = () => {
     const navigate = useNavigate();
     const dispatch = useDispatch();
-    const {jwt, authError} = useSelector(state => state.auth);
+    const {jwt, loading: authLoading, error: authError} = useSelector(state => state.auth);
 
     const [firstName, setFirstName] = useState('');
     const [lastName, setLastName] = useState('');
@@ -16,7 +16,6 @@ const Registration = () => {
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
 
-    const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
 
     const handleFirstNameChange = e => {
@@ -53,12 +52,9 @@ const Registration = () => {
 
         setError(null);
 
-        setLoading(true);
         dispatch(register({firstName, lastName, username, email, password}))
-            .then(() => setLoading(false))
+            .then(() => {})
             .catch((registerError) => {
-                setLoading(false);
-
                 if (registerError.message) return setError(registerError.message)
                 setError(registerError);
             });
@@ -136,7 +132,7 @@ const Registration = () => {
                        name='password'
                 />
 
-                {loading && (
+                {authLoading && (
                     <div className='auth-loading'>
                         Loading...
                     </div>

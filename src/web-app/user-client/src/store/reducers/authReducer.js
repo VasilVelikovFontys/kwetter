@@ -1,21 +1,30 @@
-import {SET_AUTH_TOKEN, SET_AUTH_ERROR} from '../../constants';
+import {SET_AUTH, SET_AUTH_LOADING, SET_AUTH_ERROR} from '../../constants';
 
 const initState = {
     jwt: null,
-    authError: null
+    loading: false,
+    error: null
 }
 
 const authReducer = (state = initState, action) => {
     switch (action.type) {
-        case SET_AUTH_TOKEN:
+        case SET_AUTH:
             return {
                 jwt: action.jwt,
-                authError: null
+                loading: false,
+                error: null
+            }
+        case SET_AUTH_LOADING:
+            return {
+                jwt: null,
+                loading: true,
+                error: null
             }
         case SET_AUTH_ERROR:
             return {
                 jwt: null,
-                authError: action.error
+                loading: true,
+                error: action.error
             }
         default:
             return state

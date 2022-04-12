@@ -8,12 +8,11 @@ import {login} from "../store/actions/authActions";
 const Login = () => {
     const navigate = useNavigate();
     const dispatch = useDispatch();
-    const {jwt, authError} = useSelector(state => state.auth);
+    const {jwt, loading: authLoading, error: authError} = useSelector(state => state.auth);
 
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
 
-    const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
 
     const handleEmailChange = e => {
@@ -30,12 +29,9 @@ const Login = () => {
 
         setError(null);
 
-        setLoading(true);
         dispatch(login({email, password}))
-            .then(() => setLoading(false))
+            .then(() => {})
             .catch((loginError) => {
-                setLoading(false);
-
                 if (loginError.message) return setError(loginError.message)
                 setError(loginError);
             });
@@ -50,9 +46,7 @@ const Login = () => {
     }, [jwt]);
 
     useEffect(() => {
-        if (authError) {
-            setError(authError);
-        }
+        if (authError) return setError(authError);
     }, [authError]);
 
     useEffect(() => {
@@ -82,7 +76,7 @@ const Login = () => {
                        name='password'
                 />
 
-                {loading && (
+                {authLoading && (
                     <div className='auth-loading'>
                         Loading...
                     </div>

@@ -5,6 +5,7 @@ const cors = require("cors");
 const createAuthRouter = require('./routes/auth');
 const createPostsRouter = require('./routes/posts');
 const createUsersRouter = require('./routes/users');
+const createFollowingRouter = require('./routes/following');
 
 const createApp = (allowedOrigin, serviceUrls, jwtUtils) => {
     const app = express();
@@ -15,11 +16,12 @@ const createApp = (allowedOrigin, serviceUrls, jwtUtils) => {
         optionSuccessStatus: 200
     };
 
-    const {accountsUrl, postsUrl, mentioningPostsUrl} = serviceUrls;
+    const {accountsUrl, postsUrl, mentioningPostsUrl, followingUrl} = serviceUrls;
 
     const authRouter = createAuthRouter(accountsUrl, jwtUtils);
     const postsRouter = createPostsRouter(postsUrl, mentioningPostsUrl, jwtUtils);
     const usersRouter = createUsersRouter(accountsUrl, jwtUtils);
+    const followingRouter = createFollowingRouter(followingUrl, jwtUtils);
 
     app.use(bodyParser.json());
     app.use(cors(corsOptions));
@@ -27,6 +29,7 @@ const createApp = (allowedOrigin, serviceUrls, jwtUtils) => {
     app.use(authRouter);
     app.use(postsRouter);
     app.use(usersRouter);
+    app.use(followingRouter);
 
     return app;
 }

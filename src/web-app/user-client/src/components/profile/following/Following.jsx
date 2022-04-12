@@ -1,10 +1,40 @@
-import React  from 'react';
+import React, {useEffect, useState} from 'react';
 import '../../../styles/components/profile/following/following.css';
+import {useSelector} from "react-redux";
+import FollowedUser from "./FollowedUser";
 
 const Following = () => {
+    const {jwt} = useSelector(state => state.auth);
+    const {following, loading: followingLoading, error: followingError} = useSelector(state => state.following);
+
+    const [styledFollowing, setStyledFollowing] = useState([]);
+
+    useEffect(() => {
+        if (!following) return;
+        const newFollowing = following.map(username => <FollowedUser key={username} username={username} />);
+
+        setStyledFollowing(newFollowing);
+    }, [following]);
+
+    useEffect(() => {
+        if (!jwt) return setStyledFollowing([]);
+    }, [jwt]);
+
     return (
         <div id='following'>
-            Following
+            {followingLoading ?
+                <div>Loading...</div>
+                :
+                <>
+                    {styledFollowing.length > 0 ? styledFollowing : 'No followed users'}
+                </>
+            }
+
+            {followingError && (
+                <div className="following-error">
+                    {followingError.message ? followingError.message : followingError}
+                </div>
+            )}
         </div>
     )
 }

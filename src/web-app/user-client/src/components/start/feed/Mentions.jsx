@@ -2,28 +2,22 @@ import React, {useEffect, useState} from 'react'
 import '../../../styles/components/start/feed/mentions.css';
 import {useDispatch, useSelector} from "react-redux";
 import {getMentions} from "../../../store/actions/mentionsActions";
-import Post from "../../profile/posts/Post";
+import Post from "../../profile/list/posts/Post";
 
 const Mentions = () => {
     const dispatch = useDispatch();
     const {jwt} = useSelector(state => state.auth);
-    const {posts, postsError} = useSelector(state => state.mentions);
+    const {mentions, loading: mentionsLoading, error: mentionsError} = useSelector(state => state.mentions);
 
     const [styledPosts, setStyledPosts] = useState([]);
 
-    const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
 
     useEffect(() => {
         if (jwt) {
-            setLoading(true);
             dispatch(getMentions())
-                .then(() => {
-                    setLoading(false);
-                })
+                .then(() => {})
                 .catch(mentionsError => {
-                    setLoading(false);
-
                     if (mentionsError.message) return setError(mentionsError.message)
                     setError(mentionsError)
                 });
@@ -31,20 +25,18 @@ const Mentions = () => {
     }, [dispatch, jwt]);
 
     useEffect(() => {
-        if (postsError) {
-            setError(postsError);
-        }
-    }, [postsError]);
+        if (mentionsError) return setError(mentionsError);
+    }, [mentionsError]);
 
     useEffect(() => {
-        const newPosts = posts.map(post => <Post key={post.id} post={post}/>);
+        const newMentions = mentions.map(post => <Post key={post.id} post={post}/>);
 
-        setStyledPosts(newPosts)
-    }, [posts]);
+        setStyledPosts(newMentions)
+    }, [mentions]);
 
     return (
         <div id='mentions'>
-            {loading ?
+            {mentionsLoading ?
                 <div>Loading...</div>
                 :
                 <>

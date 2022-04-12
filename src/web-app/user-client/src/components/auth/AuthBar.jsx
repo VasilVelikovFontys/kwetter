@@ -1,4 +1,4 @@
-import React, {useEffect} from "react";
+import React, {useEffect, useState} from "react";
 import "../../styles/components/auth/authBar.css";
 import {useDispatch, useSelector} from "react-redux";
 import {getCurrentUser} from "../../store/actions/userActions";
@@ -9,9 +9,16 @@ const AuthBar = () => {
     const dispatch = useDispatch();
     const {jwt} = useSelector(state => state.auth);
 
+    const [error, setError] = useState('');
+
     useEffect(() => {
         if(jwt) {
-            dispatch(getCurrentUser());
+            dispatch(getCurrentUser())
+                .then(() => {})
+                .catch((userError) => {
+                    if (userError.message) return setError(userError.message)
+                    setError(userError);
+                });
         }
     }, [dispatch, jwt]);
 
@@ -22,6 +29,10 @@ const AuthBar = () => {
                 :
                 <LoginButton />
             }
+
+            {error && (
+                <span>{error}</span>
+            )}
         </div>
     )
 }

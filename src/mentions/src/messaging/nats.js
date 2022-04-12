@@ -32,6 +32,7 @@ stan.on('connect', () => {
         .setDeliverAllAvailable()
         .setDurableName(NATS_DURABLE_NAME);
 
+    //On Post Created
     const subscription = stan.subscribe(NATS_POST_CREATED_CHANNEL, NATS_QUEUE_GROUP, options);
 
     subscription.on('message', async (msg) => {

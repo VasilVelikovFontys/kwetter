@@ -15,7 +15,7 @@ const handleShutdown = async () => {
     nats.closeStan()
 }
 
-const app = createApp(auth, db, nats);
+const app = createApp(auth, db);
 
 app.listen(PORT || 4000, async () => {
     console.log(`Listening on port ${PORT || 4000}`);

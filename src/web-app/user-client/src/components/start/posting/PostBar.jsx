@@ -6,11 +6,10 @@ import {createPost} from "../../../store/actions/postActions";
 
 const PostBar = () => {
     const dispatch = useDispatch();
-    const {postsError} = useSelector(state => state.posts);
+    const {loading: postsLoading, error: postsError} = useSelector(state => state.posts);
 
     const [text, setText] = useState('');
 
-    const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
 
     const handleTextChange = e => {
@@ -20,24 +19,18 @@ const PostBar = () => {
     const handlePost = () => {
         if (!postIsValid(text)) return setError('Invalid post!');
 
-        setLoading(true);
         dispatch(createPost(text))
             .then(() => {
-                setLoading(false);
                 setText('');
             })
             .catch(postError => {
-                setLoading(false);
-
                 if (postError.message) return setError(postError.message);
                 setError(postError)
             });
     }
 
     useEffect(() => {
-        if (postsError) {
-            setError(postsError);
-        }
+        if (postsError) setError(postsError);
     }, [postsError])
 
     return (
@@ -56,7 +49,7 @@ const PostBar = () => {
                 Post
             </div>
 
-            {loading && (
+            {postsLoading && (
                 <div>
                     Loading...
                 </div>

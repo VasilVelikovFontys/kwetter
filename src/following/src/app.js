@@ -3,11 +3,11 @@ const bodyParser = require("body-parser");
 
 const createFollowingRouter = require('./routes/following');
 
-const createApp = (auth, database, messaging) => {
+const createApp = (auth, database) => {
     const app = express();
     app.disable('x-powered-by');
 
-    const followingRouter = createFollowingRouter(auth);
+    const followingRouter = createFollowingRouter(auth, database);
 
     app.use(bodyParser.json());
 

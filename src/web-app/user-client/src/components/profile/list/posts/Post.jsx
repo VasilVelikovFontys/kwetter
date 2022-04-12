@@ -1,6 +1,6 @@
 import React  from 'react'
-import '../../../styles/components/profile/posts/post.css';
-import {getPostDate} from "../../../utils/dates";
+import '../../../../styles/components/profile/list/posts/post.css';
+import {getPostDate} from "../../../../utils/dates";
 
 const Post = props => {
     const {post, own} = props;

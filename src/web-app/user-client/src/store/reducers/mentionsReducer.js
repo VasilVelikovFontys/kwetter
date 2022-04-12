@@ -1,21 +1,30 @@
-import {SET_MENTIONS, SET_MENTIONS_ERROR} from '../../constants';
+import {SET_MENTIONS, SET_MENTIONS_ERROR, SET_MENTIONS_LOADING} from '../../constants';
 
 const initState = {
-    posts: [],
-    postsError: null
+    mentions: [],
+    loading: false,
+    error: null
 }
 
 const mentionsReducer = (state = initState, action) => {
     switch (action.type) {
         case SET_MENTIONS:
             return {
-                posts: action.posts,
-                postsError: null
+                mentions: action.mentions,
+                loading: false,
+                error: null
+            }
+        case SET_MENTIONS_LOADING:
+            return {
+                mentions: [],
+                loading: true,
+                error: null
             }
         case SET_MENTIONS_ERROR:
             return {
-                posts: null,
-                postsError: action.error
+                mentions: null,
+                loading: false,
+                error: action.error
             }
         default:
             return state

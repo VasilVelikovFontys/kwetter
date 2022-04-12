@@ -41,8 +41,8 @@ stan.on('connect', () => {
 
         const {uid, username} = account
 
-        if (!uid) return console.log('Cannot deconstruct account id!');
-        if (!username) return console.log('Cannot deconstruct account username!');
+        if (!uid) return console.log('Cannot destructure account id!');
+        if (!username) return console.log('Cannot destructure account username!');
 
         await db.createUser(uid, username);
 
@@ -57,10 +57,10 @@ stan.on('connect', () => {
 
         const {id, username, text, date} = post;
 
-        if (!id) return console.log('Cannot deconstruct post id!');
-        if (!username) return console.log('Cannot deconstruct post username!');
-        if (!text) return console.log('Cannot deconstruct post text!');
-        if (!date) return console.log('Cannot deconstruct post date!');
+        if (!id) return console.log('Cannot destructure post id!');
+        if (!username) return console.log('Cannot destructure post username!');
+        if (!text) return console.log('Cannot destructure post text!');
+        if (!date) return console.log('Cannot destructure post date!');
 
         await db.createPost(id, username, text, date)
 
@@ -75,8 +75,8 @@ stan.on('connect', () => {
 
         const {usernames, postId} = mention;
 
-        if (!usernames) return console.log('Cannot deconstruct mention usernames!');
-        if (!postId) return console.log('Cannot deconstruct mention post id!');
+        if (!usernames) return console.log('Cannot destructure mention usernames!');
+        if (!postId) return console.log('Cannot destructure mention post id!');
 
         const userIds = [];
         for (const username of usernames) {
