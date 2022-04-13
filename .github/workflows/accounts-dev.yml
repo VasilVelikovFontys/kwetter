@@ -70,6 +70,9 @@ jobs:
     name: Scan With Sonarqube
     runs-on: ubuntu-latest
     needs: test
+    defaults:
+      run:
+        working-directory: 'src/accounts'
     steps:
       - name: Check out code
         uses: actions/checkout@v2
@@ -81,46 +84,42 @@ jobs:
         with:
           name: coverage
 
-#      - name: Copy coverage to GitHub workspace
-#        run: cp 'src/accounts/coverage' '${{ github.workspace }}'
-
       - name: Run Sonarqube scan
         uses: sonarsource/sonarqube-scan-action@master
         with:
-          projectBaseDir: src/accounts
           args: >
-            -Dsonar.python.coverage.reportPaths=${{ github.workspace }}/src/accounts/coverage/test-reporter.xml
-            -Dsonar.javascript.lcov.reportPaths=${{ github.workspace }}/src/accounts/coverage/lcov.info
+            -Dsonar.python.coverage.reportPaths=${{ github.workspace }}/coverage/test-reporter.xml
+            -Dsonar.javascript.lcov.reportPaths=${{ github.workspace }}/coverage/lcov.info
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_ACCOUNTS }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
 
-  build:
-    name: Build Docker image and push to DockerHub
-    runs-on: ubuntu-latest
-    needs: test
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-
-      - name: Set up Docker Buildx
-        id: buildx
-        uses: docker/setup-buildx-action@v1
-
-      - name: Login to DockerHub
-        uses: docker/login-action@v1
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-
-      - name: Build image and push to Docker Hub
-        uses: docker/build-push-action@v2
-        with:
-          context: src/accounts
-
-          tags: vjv2143/kwetter.accounts:latest
-
-          push: ${{ github.ref == 'refs/heads/dev' }}
-
-      - name: Image digest
-        run: echo ${{ steps.docker_build.outputs.digest }}
+#  build:
+#    name: Build Docker image and push to DockerHub
+#    runs-on: ubuntu-latest
+#    needs: test
+#    steps:
+#      - name: Checkout code
+#        uses: actions/checkout@v2
+#
+#      - name: Set up Docker Buildx
+#        id: buildx
+#        uses: docker/setup-buildx-action@v1
+#
+#      - name: Login to DockerHub
+#        uses: docker/login-action@v1
+#        with:
+#          username: ${{ secrets.DOCKERHUB_USERNAME }}
+#          password: ${{ secrets.DOCKERHUB_TOKEN }}
+#
+#      - name: Build image and push to Docker Hub
+#        uses: docker/build-push-action@v2
+#        with:
+#          context: src/accounts
+#
+#          tags: vjv2143/kwetter.accounts:latest
+#
+#          push: ${{ github.ref == 'refs/heads/dev' }}
+#
+#      - name: Image digest
+#        run: echo ${{ steps.docker_build.outputs.digest }}
