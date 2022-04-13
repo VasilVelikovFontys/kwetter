@@ -17,7 +17,7 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Set up Node.js
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v3
         with:
           node-version: '12'
           cache: 'npm'
@@ -32,7 +32,9 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: coverage
-          path: coverage
+          path: |
+            coverage/lcov.info
+            coverage/test-reporter.xml
 
       - name: Tests ✅
         if: ${{ success() }}
