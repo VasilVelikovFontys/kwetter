@@ -30,6 +30,7 @@ jobs:
         run: npm run test:ci
 
       - name: Create coverage artifact
+        if: ${{ success() }}
         uses: actions/upload-artifact@v2
         with:
           name: coverage
@@ -80,13 +81,16 @@ jobs:
         with:
           name: coverage
 
+      - name: Copy coverage to GitHub workspace
+        run: Copy 'src/accounts/coverage' '${{ githun.workspace }}'
+
       - name: Run Sonarqube scan
         uses: sonarsource/sonarqube-scan-action@master
         with:
           projectBaseDir: src/accounts
           args: >
-            -Dsonar.python.coverage.reportPaths=home/runner/work/kwetter/kwetter/src/accounts/coverage/test-report.xml
-            -Dsonar.javascript.lcov.reportPaths=home/runner/work/kwetter/kwetter/src/accounts/coverage/lcov.info
+            -Dsonar.python.coverage.reportPaths=
+            -Dsonar.javascript.lcov.reportPaths=
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_ACCOUNTS }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
