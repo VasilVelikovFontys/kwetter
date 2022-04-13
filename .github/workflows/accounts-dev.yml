@@ -88,10 +88,11 @@ jobs:
           projectBaseDir: src/accounts
           args: >
             -Dsonar.projectKey=kwetter-accounts
+            -Dsonar.language=JavaScript
             -Dsonar.sources=src
             -Dsonar.tests=src
             -Dsonar.inclusions=**
-            -Dsonar.test.inclusions=src/**/*.spec.js,src/**/*.test.js
+            -Dsonar.test.inclusions=src/test/*.test.js
             -Dsonar.testExecutionReportPaths=coverage/test-reporter.xml
             -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
         env:
