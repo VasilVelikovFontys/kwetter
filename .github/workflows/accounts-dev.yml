@@ -90,6 +90,7 @@ jobs:
             -Dsonar.projectKey=kwetter-accounts
             -Dsonar.sources=src
             -Dsonar.tests=src
+            -Dsonar.inclusions=**
             -Dsonar.test.inclusions=src/**/*.spec.js,src/**/*.test.js
             -Dsonar.testExecutionReportPaths=coverage/test-reporter.xml
             -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
@@ -121,6 +122,29 @@ jobs:
 #          context: src/accounts
 #          tags: vjv2143/kwetter.accounts:latest
 #          push: ${{ github.ref == 'refs/heads/dev' }}
+#
+#      - name: Image digest
+#        run: echo ${{ steps.docker_build.outputs.digest }}
+
+#  build:
+#    name: Build Docker image and push to ACR
+#    runs-on: ubuntu-latest
+#    needs: [test, sonar]
+#    steps:
+#      - name: Checkout code
+#        uses: actions/checkout@v2
+#
+#      - name: Login to Azure Container Registry
+#        uses: azure/docker-login@v1
+#        with:
+#          login-server: vasilvelikovkwetter.azurecr.io
+#          username: ${{ secrets.ACR_USERNAME }}
+#          password: ${{ secrets.ACR_PASSWORD }}
+#
+#      - name: Build and Push Image
+#        run: |
+#          docker build ./src/accounts -t vasilvelikovkwetter.azurecr.io/accounts:latest
+#          docker push vasilvelikovkwetter.azurecr.io/accounts:latest
 #
 #      - name: Image digest
 #        run: echo ${{ steps.docker_build.outputs.digest }}
