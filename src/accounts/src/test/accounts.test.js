@@ -15,12 +15,14 @@ describe('POST /accounts', () => {
         createAccount.mockReset();
     });
 
-    describe('given a uid, email and username', () => {
+    describe('given a uid, email, username, first name and last name', () => {
         test('should save uid, email and username to the database', async () => {
             await request(app).post('/accounts').send({
                 uid: "uid",
                 email: "email",
-                username: "username"
+                username: "username",
+                firstName: "first name",
+                lastName: "last name"
             });
             const roles = ['USER'];
             expect(authenticateService.mock.calls.length).toBe(1);
@@ -28,7 +30,9 @@ describe('POST /accounts', () => {
             expect(createAccount.mock.calls[0][0]).toBe("uid");
             expect(createAccount.mock.calls[0][1]).toBe("email");
             expect(createAccount.mock.calls[0][2]).toBe("username");
-            expect(createAccount.mock.calls[0][3]).toStrictEqual(roles);
+            expect(createAccount.mock.calls[0][3]).toBe("first name");
+            expect(createAccount.mock.calls[0][4]).toBe("last name");
+            expect(createAccount.mock.calls[0][5]).toStrictEqual(roles);
             expect(publishAccountCreated.mock.calls.length).toBe(1);
         });
     });
