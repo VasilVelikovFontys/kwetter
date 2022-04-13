@@ -90,8 +90,7 @@ jobs:
             -Dsonar.projectKey=kwetter-accounts
             -Dsonar.sources=src
             -Dsonar.tests=src
-            -Dsonar.inclusions=**
-            -Dsonar.test.inclusions=src/test/*.test.js
+            -Dsonar.test.inclusions=src/**/*.test.js
             -Dsonar.testExecutionReportPaths=coverage/test-reporter.xml
             -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
         env:
