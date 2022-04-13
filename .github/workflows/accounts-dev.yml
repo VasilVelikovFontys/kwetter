@@ -82,7 +82,7 @@ jobs:
           name: coverage
 
       - name: Copy coverage to GitHub workspace
-        run: Copy 'src/accounts/coverage' '${{ githun.workspace }}'
+        run: Copy 'src/accounts/coverage' '${{ github.workspace }}'
 
       - name: Run Sonarqube scan
         uses: sonarsource/sonarqube-scan-action@master
