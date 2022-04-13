@@ -87,8 +87,6 @@ jobs:
           args: >
             -Dsonar.python.coverage.reportPaths=home/runner/work/kwetter/kwetter/src/accounts/coverage/test-report.xml
             -Dsonar.javascript.lcov.reportPaths=home/runner/work/kwetter/kwetter/src/accounts/coverage/lcov.info
-            -Dsonar.tests=tests/
-            -Dsonar.verbose=true
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_ACCOUNTS }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
