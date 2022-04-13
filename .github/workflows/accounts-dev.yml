@@ -49,6 +49,7 @@ jobs:
   sonar:
     name: Scan With Sonarqube
     runs-on: ubuntu-latest
+    needs: test
     steps:
       - uses: actions/checkout@v2
         with:
