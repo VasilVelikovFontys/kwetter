@@ -4,7 +4,6 @@
   "description": "",
   "main": "src/index.js",
   "scripts": {
-    "sonar": "node sonar-project.js",
     "test": "jest",
     "test:ci": "jest --ci --coverage --reporters='default' --reporters='./github-actions-reporter'"
   },

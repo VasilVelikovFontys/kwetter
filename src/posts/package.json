@@ -4,7 +4,20 @@
   "description": "",
   "main": "src/index.js",
   "scripts": {
-    "start": "nodemon src/index.js"
+    "test": "jest",
+    "test:ci": "jest --ci --coverage --reporters='default' --reporters='./github-actions-reporter'"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "coveragePathIgnorePatterns": [
+      "/node_modules/"
+    ],
+    "testResultsProcessor": "jest-sonar-reporter"
+  },
+  "jestSonar": {
+    "reportPath": "coverage",
+    "reportFile": "test-reporter.xml",
+    "indent": 4
   },
   "keywords": [],
   "author": "",
@@ -17,6 +30,10 @@
     "node-nats-streaming": "^0.3.2"
   },
   "devDependencies": {
-    "nodemon": "^2.0.15"
+    "@jest/globals": "^27.5.1",
+    "jest": "^27.5.1",
+    "jest-sonar-reporter": "^2.0.0",
+    "nodemon": "^2.0.15",
+    "supertest": "^6.2.2"
   }
 }
