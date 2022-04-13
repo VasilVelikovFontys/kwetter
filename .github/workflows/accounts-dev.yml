@@ -88,7 +88,6 @@ jobs:
           projectBaseDir: src/accounts
           args: >
             -Dsonar.projectKey=kwetter-accounts
-            -Dsonar.language=JavaScript
             -Dsonar.sources=src
             -Dsonar.tests=src
             -Dsonar.inclusions=**
