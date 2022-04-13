@@ -5,7 +5,8 @@
   "main": "src/index.js",
   "scripts": {
     "sonar": "node sonar-project.js",
-    "test": "jest --coverage"
+    "test": "jest --coverage",
+    "test:ci": "jest --ci --reporters='default' --reporters='./github-actions-reporter'"
   },
   "jest": {
     "testEnvironment": "node",
@@ -34,7 +35,6 @@
     "jest": "^27.5.1",
     "jest-sonar-reporter": "^2.0.0",
     "nodemon": "^2.0.15",
-    "sonarqube-scanner": "^2.8.1",
     "supertest": "^6.2.2"
   }
 }
