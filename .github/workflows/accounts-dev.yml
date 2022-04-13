@@ -14,7 +14,7 @@ jobs:
       - name: Test using Node.js
         uses: actions/setup-node@v1
         with:
-          context: ./src/accounts
+          scope: ./src/accounts
           node-version: '12'
       - run: npm install
       - run: npm run test:ci
