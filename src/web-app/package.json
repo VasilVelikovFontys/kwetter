@@ -4,8 +4,8 @@
   "version": "0.0.0",
   "scripts": {
     "dev": "vite",
-    "test": "jest --coverage",
-    "sonar": "node sonar-project.js"
+    "test": "jest",
+    "test:ci": "jest --ci --coverage --passWithNoTests --reporters='default' --reporters='./github-actions-reporter'"
   },
   "jest": {
     "testEnvironment": "node",
