@@ -70,9 +70,6 @@ jobs:
     name: Scan With Sonarqube
     runs-on: ubuntu-latest
     needs: test
-    defaults:
-      run:
-        working-directory: 'src/accounts'
     steps:
       - name: Check out code
         uses: actions/checkout@v2
@@ -83,13 +80,14 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: coverage
+          path: ~/src/accounts
 
       - name: Run Sonarqube scan
         uses: sonarsource/sonarqube-scan-action@master
         with:
           args: >
-            -Dsonar.python.coverage.reportPaths=${{ github.workspace }}/coverage/test-reporter.xml
-            -Dsonar.javascript.lcov.reportPaths=${{ github.workspace }}/coverage/lcov.info
+            -Dsonar.python.coverage.reportPaths=${{ github.workspace }}/src/accounts/coverage/test-reporter.xml
+            -Dsonar.javascript.lcov.reportPaths=${{ github.workspace }}/src/accounts/coverage/lcov.info
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_ACCOUNTS }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
