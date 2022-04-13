@@ -9,12 +9,14 @@ jobs:
   test:
     name: Test with Jest
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: 'src/accounts'
     steps:
       - uses: actions/checkout@v2
       - name: Test using Node.js
         uses: actions/setup-node@v1
         with:
-          scope: ./src/accounts
           node-version: '12'
       - run: npm install
       - run: npm run test:ci
