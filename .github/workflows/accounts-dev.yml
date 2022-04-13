@@ -89,8 +89,8 @@ jobs:
           args: >
             -Dsonar.projectKey=kwetter-accounts
             -Dsonar.sources=src
-            -Dsonar.tests=src/test
-            -Dsonar.test.inclusions=src/**/*.test.js
+            -Dsonar.tests=src
+            -Dsonar.test.inclusions=src/**/*.spec.js,src/**/*.test.js
             -Dsonar.testExecutionReportPaths=coverage/test-reporter.xml
             -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
         env:
@@ -119,9 +119,7 @@ jobs:
 #        uses: docker/build-push-action@v2
 #        with:
 #          context: src/accounts
-#
 #          tags: vjv2143/kwetter.accounts:latest
-#
 #          push: ${{ github.ref == 'refs/heads/dev' }}
 #
 #      - name: Image digest
