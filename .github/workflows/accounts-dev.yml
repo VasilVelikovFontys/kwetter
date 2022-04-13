@@ -80,15 +80,14 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: coverage
-          path: ${{ github.workspace }}/src/accounts
 
       - name: Run Sonarqube scan
         uses: sonarsource/sonarqube-scan-action@master
         with:
           projectBaseDir: src/accounts
           args: >
-            -Dsonar.python.coverage.reportPaths=${{ github.workspace }}/src/accounts/coverage/test-reporter.xml
-            -Dsonar.javascript.lcov.reportPaths=${{ github.workspace }}/src/accounts/coverage/lcov.info
+            -Dsonar.python.coverage.reportPaths=coverage/test-reporter.xml
+            -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_ACCOUNTS }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
