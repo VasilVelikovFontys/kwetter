@@ -89,7 +89,7 @@ jobs:
           args: >
             -Dsonar.projectKey=kwetter-accounts
             -Dsonar.sources=src
-            -Dsonar.exclusions=src/test
+            -Dsonar.exclusions=src/test/**
             -Dsonar.tests=src/test
             -Dsonar.testExecutionReportPaths=coverage/test-reporter.xml
             -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
