@@ -34,8 +34,8 @@ jobs:
         with:
           name: coverage
           path: |
-            ~/src/accounts/coverage/lcov.info
-            ~/src/accounts/coverage/test-reporter.xml
+            home/runner/work/kwetter/kwetter/src/accounts/coverage/lcov.info
+            home/runner/work/kwetter/kwetter/src/accounts/coverage/test-reporter.xml
 
       - name: Tests ✅
         if: ${{ success() }}
