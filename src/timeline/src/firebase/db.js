@@ -49,17 +49,21 @@ const likePost = async (postId, userId) => {
 const getTimelinePosts = async userId => {
     const timelinePosts = [];
 
+    const snapshotIntoTimeline = snapshot => {
+        snapshot.docs.forEach(doc => {
+            const data = doc.data();
+            const date = data.date.toDate();
+
+            timelinePosts.push({...data, date, id: doc.id});
+        });
+    }
+
     const ownPostsSnapshot = await db.collection('posts')
         .where('userId', '==', userId)
         .orderBy('date', 'desc')
         .limit(10).get();
 
-    ownPostsSnapshot.docs.forEach(doc => {
-        const data = doc.data();
-        const date = data.date.toDate();
-
-        timelinePosts.push({...data, date, id: doc.id});
-    });
+    snapshotIntoTimeline(ownPostsSnapshot);
 
     const followedUsernamesSnapshot = await db.collection('users').doc(userId).get();
     const followedUsernames = followedUsernamesSnapshot.data().following;
@@ -70,12 +74,7 @@ const getTimelinePosts = async userId => {
             .orderBy('date', 'desc')
             .limit(10).get();
 
-        followedPostsSnapshot.docs.forEach(doc => {
-            const data = doc.data();
-            const date = data.date.toDate();
-
-            timelinePosts.push({...data, date, id: doc.id});
-        });
+        snapshotIntoTimeline(followedPostsSnapshot);
     }
 
     timelinePosts.sort((a, b) => {

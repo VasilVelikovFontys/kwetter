@@ -24,16 +24,16 @@ export const likePost = postId => {
         const {error} = data
         if (error) return dispatch({type: SET_LIKE_ERROR, postId: postId, error});
 
-        const mention = mentions.find(mention => mention.id === postId)
-        const timelinePost = timelinePosts.find(post => post.id === postId)
+        const likedMention = mentions.find(mention => mention.id === postId)
+        const likedTimelinePost = timelinePosts.find(post => post.id === postId)
 
-        if (mention) {
-            mention.likes.push(user.id);
+        if (likedMention) {
+            likedMention.likes.push(user.id);
             dispatch({type: SET_MENTIONS, mentions});
         }
 
-        if (timelinePost) {
-            timelinePost.likes.push(user.id);
+        if (likedTimelinePost) {
+            likedTimelinePost.likes.push(user.id);
             dispatch({type: SET_TIMELINE_POSTS, timelinePosts});
         }
 
