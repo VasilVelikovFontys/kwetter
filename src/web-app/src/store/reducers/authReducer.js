@@ -23,7 +23,7 @@ const authReducer = (state = initState, action) => {
         case SET_AUTH_ERROR:
             return {
                 jwt: null,
-                loading: true,
+                loading: false,
                 error: action.error
             }
         default:

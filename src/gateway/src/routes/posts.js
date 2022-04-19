@@ -1,7 +1,7 @@
 const express = require("express");
 const axios = require("axios");
 
-const createPostsRouter = (postsUrl, mentioningPostsUrl, jwtUtils) => {
+const createPostsRouter = (postsUrl, mentioningPostsUrl, likesUrl, timelineUrl, jwtUtils) => {
     const router = express.Router();
     router.use(jwtUtils.authenticateToken)
 
@@ -34,7 +34,7 @@ const createPostsRouter = (postsUrl, mentioningPostsUrl, jwtUtils) => {
             const postError = response.data.error;
             if (postError) return res.status(202).send({error: postError});
 
-            res.status(201).send({post});
+            res.status(201).send({post: response.data});
         } catch (error) {
             if (error.code === "ECONNREFUSED") return res.sendStatus(503);
             res.status(202).send({error});
@@ -55,7 +55,40 @@ const createPostsRouter = (postsUrl, mentioningPostsUrl, jwtUtils) => {
             if (error.code === "ECONNREFUSED") return res.sendStatus(503);
             res.status(204).send({error});
         }
-    })
+    });
+
+    router.post('/posts/:postId/like', async (req, res) => {
+        const {user} = req;
+        const {postId} = req.params;
+
+        try {
+            const response = await axios.post(`${likesUrl}/like/${postId}`, {userId: user.uid});
+            const {like} = response.data;
+            const likeError = response.data.error;
+            if (likeError) return res.status(202).send({error: likeError});
+
+            res.status(200).send({like});
+        } catch (error) {
+            if (error.code === "ECONNREFUSED") return res.sendStatus(503);
+            res.status(204).send({error});
+        }
+    });
+
+    router.get('/posts/timeline', async (req, res) => {
+        const {user} = req;
+
+        try {
+            const response = await axios.get(`${timelineUrl}/timeline-posts/${user.uid}`);
+            const {posts} = response.data;
+            const postsError = response.data.error;
+            if (postsError) return res.status(202).send({error: postsError});
+
+            res.status(200).send({posts});
+        } catch (error) {
+            if (error.code === "ECONNREFUSED") return res.sendStatus(503);
+            res.status(204).send({error});
+        }
+    });
 
     return router;
 }

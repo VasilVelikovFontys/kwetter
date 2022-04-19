@@ -22,6 +22,7 @@ const PostBar = () => {
         dispatch(createPost(text))
             .then(() => {
                 setText('');
+                setError('')
             })
             .catch(postError => {
                 if (postError.message) return setError(postError.message);

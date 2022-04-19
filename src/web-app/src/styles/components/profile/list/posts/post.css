@@ -1,7 +1,7 @@
 .post {
     border: 1px solid black;
     border-top: 0;
-    padding: 5px;
+    padding: 5px 5px 10px;
 }
 
 .post:first-child {
@@ -18,4 +18,31 @@
 
 .post-username {
     margin-bottom: 5px;
+}
+
+.post-info {
+    display: flex;
+    justify-content: space-between;
+}
+
+.post-heart {
+    cursor: pointer;
+}
+
+.post-ok {
+    cursor: pointer;
+    border-radius: 5px;
+    border: 1px solid black;
+    padding: 5px;
+    transition: all 0.3s;
+}
+
+.post-ok:hover {
+    background-color: black;
+    color: white;
+}
+
+.post-error {
+    color: darkred;
+    margin-right: 5px;
 }

@@ -6,7 +6,7 @@ const initState = {
     error: null
 }
 
-const mentionsReducer = (state = initState, action) => {
+const mentionReducer = (state = initState, action) => {
     switch (action.type) {
         case SET_MENTIONS:
             return {
@@ -31,4 +31,4 @@ const mentionsReducer = (state = initState, action) => {
     }
 }
 
-export default mentionsReducer;
+export default mentionReducer;

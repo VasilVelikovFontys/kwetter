@@ -26,11 +26,13 @@ const AuthBar = () => {
 
     return (
         <div id='auth-bar'>
-            {jwt ?
+            {jwt && (
                 <AuthenticatedSearch/>
-                :
+            )}
+
+            {!jwt && !error && (
                 <LoginButton />
-            }
+            )}
 
             {error && (
                 <span>{error}</span>

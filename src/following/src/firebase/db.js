@@ -7,6 +7,8 @@ const createUser = async (uid, username) => {
 }
 
 const followUser = async (uid, username, followedUsername) => {
+    if (username === followedUsername) return {error: "Users cannot follow themselves!"};
+
     //Add followed user's username to the user's following
     try {
         const userDocument = await db.collection('users').doc(uid).get();
@@ -15,6 +17,7 @@ const followUser = async (uid, username, followedUsername) => {
         const user = userDocument.data();
 
         if (user.following.includes(followedUsername)) return {error: 'Followed user already exists!'};
+        if (user.following.length === 10) return {error: 'Users can follow up to 10 other users!'};
         await userDocument.ref.set({...user, following: [...user.following, followedUsername]});
 
     } catch (error) {

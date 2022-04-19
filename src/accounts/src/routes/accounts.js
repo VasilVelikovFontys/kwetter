@@ -41,7 +41,7 @@ const createAccountsRouter = (auth, database, messaging) => {
         try {
             const account = await database.getAccountByUid(uid);
 
-            res.status(200).send({account});
+            res.status(200).send({account: {...account, id: uid}});
         } catch (error) {
             res.status(202).send({error});
         }

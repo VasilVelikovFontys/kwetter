@@ -1,6 +1,6 @@
 const express = require("express");
 
-const createFollowingRouter = database => {
+const createFollowingRouter = (database, messaging) => {
     const router = express.Router();
 
     router.post('/follow/:followedUsername', async (req, res) => {
@@ -10,6 +10,7 @@ const createFollowingRouter = database => {
         if (!uid) return res.status(202).send({error: "User id is required!"});
         if (!username) return res.status(202).send({error: "Username is required!"});
         if (!followedUsername) return res.status(202).send({error: "Followed username is required!"});
+        if (username === followedUsername) return res.status(202).send({error: "Users cannot follow themselves!"});
 
         try {
             const followResponse = await database.followUser(uid, username, followedUsername)
@@ -17,6 +18,9 @@ const createFollowingRouter = database => {
             const followError = followResponse.error;
 
             if (followError) res.status(202).send({error: followError});
+
+            const data = JSON.stringify(follow);
+            messaging.publishUserFollowed(data);
 
             res.status(201).send({follow});
         } catch (error) {

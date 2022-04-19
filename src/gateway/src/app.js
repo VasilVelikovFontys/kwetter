@@ -16,10 +16,10 @@ const createApp = (allowedOrigin, serviceUrls, jwtUtils) => {
         optionSuccessStatus: 200
     };
 
-    const {accountsUrl, postsUrl, mentioningPostsUrl, followingUrl} = serviceUrls;
+    const {accountsUrl, postsUrl, mentioningPostsUrl, followingUrl, likesUrl, timelineUrl} = serviceUrls;
 
     const authRouter = createAuthRouter(accountsUrl, jwtUtils);
-    const postsRouter = createPostsRouter(postsUrl, mentioningPostsUrl, jwtUtils);
+    const postsRouter = createPostsRouter(postsUrl, mentioningPostsUrl, likesUrl, timelineUrl, jwtUtils);
     const usersRouter = createUsersRouter(accountsUrl, jwtUtils);
     const followingRouter = createFollowingRouter(followingUrl, jwtUtils);
 

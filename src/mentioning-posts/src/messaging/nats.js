@@ -12,6 +12,7 @@ const {
     NATS_POST_CREATED_CHANNEL,
     NATS_ACCOUNT_CREATED_CHANNEL,
     NATS_USER_MENTIONED_CHANNEL,
+    NATS_POST_LIKED_CHANNEL,
     NATS_DURABLE_NAME,
     NATS_QUEUE_GROUP
 } = process.env;
@@ -44,9 +45,12 @@ stan.on('connect', () => {
         if (!uid) return console.log('Cannot destructure account id!');
         if (!username) return console.log('Cannot destructure account username!');
 
-        await db.createUser(uid, username);
-
-        msg.ack();
+        try {
+            await db.createUser(uid, username);
+            msg.ack();
+        } catch (error) {
+            console.log(error)
+        }
     });
 
     //On Post Created
@@ -62,9 +66,31 @@ stan.on('connect', () => {
         if (!text) return console.log('Cannot destructure post text!');
         if (!date) return console.log('Cannot destructure post date!');
 
-        await db.createPost(id, username, text, date)
+        try {
+            await db.createPost(id, username, text, date)
+            msg.ack();
+        } catch (error) {
+            console.log(error)
+        }
+    });
 
-        msg.ack();
+    //On Post Liked
+    const postLikedSubscription = stan.subscribe(NATS_POST_LIKED_CHANNEL, NATS_QUEUE_GROUP, options);
+    postLikedSubscription.on('message', async msg => {
+        const data = msg.getData();
+        const like = JSON.parse(data);
+
+        const {postId, userId} = like;
+
+        if (!postId) return console.log('Cannot destructure post id!');
+        if (!userId) return console.log('Cannot destructure user id!');
+
+        try {
+            await db.likePost(postId, userId);
+            msg.ack();
+        } catch (error) {
+            console.log(error)
+        }
     });
 
     //On User Mentioned
@@ -96,8 +122,12 @@ stan.on('connect', () => {
             return console.log('Post with this id does not exist!');
         }
 
-        await db.updatePostMentions(post, postId, userIds);
-        msg.ack();
+        try {
+            await db.updatePostMentions(post, postId, userIds);
+            msg.ack();
+        } catch (error) {
+            console.log(error)
+        }
     });
 });
 

@@ -13,7 +13,22 @@ const createUser = async (uid, username) => {
 
 const createPost = async (id, username, text, date) => {
     const postTimestamp = createTimestampFromDate(date);
-    await db.collection('posts').doc(id).set({username, text, date: postTimestamp, mentions: []});
+    await db.collection('posts').doc(id).set({username, text, date: postTimestamp, mentions: [], likes: []});
+}
+
+const likePost = async (postId, userId) => {
+    try {
+        const postDocument = await db.collection('posts').doc(postId).get();
+
+        if (!postDocument) return {error: 'Post not found!'};
+        const post = postDocument.data();
+
+        if (post.likes.includes(userId)) return {error: 'User already liked this post!'};
+        await postDocument.ref.set({...post, likes: [...post.likes, userId]});
+
+    } catch (error) {
+        return {error};
+    }
 }
 
 const getUserIdByUsername = async username => {
@@ -53,6 +68,7 @@ const getMentioningPosts = async userId => {
 module.exports = {
     createUser,
     createPost,
+    likePost,
     getUserIdByUsername,
     getPostById,
     updatePostMentions,

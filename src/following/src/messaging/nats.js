@@ -10,6 +10,7 @@ const {
     NATS_HOST,
     NATS_PORT,
     NATS_ACCOUNT_CREATED_CHANNEL,
+    NATS_USER_FOLLOWED_CHANNEL,
     NATS_DURABLE_NAME,
     NATS_QUEUE_GROUP
 } = process.env;
@@ -48,10 +49,15 @@ stan.on('connect', () => {
     });
 });
 
+const publishUserFollowed = data => {
+    stan.publish(NATS_USER_FOLLOWED_CHANNEL, data);
+}
+
 const closeStan = () => {
     stan.close();
 }
 
 module.exports = {
-    closeStan
+    closeStan,
+    publishUserFollowed
 }

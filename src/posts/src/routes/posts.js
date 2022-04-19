@@ -30,7 +30,7 @@ const createPostsRouter = (database, messaging) => {
 
             const postId = await database.createPost(userId, username, text, date);
 
-            const post = {id: postId, userId, username, text, date};
+            const post = {id: postId, userId, username, text, date, likes: []};
 
             const data = JSON.stringify(post);
             messaging.publishPostCreated(data);

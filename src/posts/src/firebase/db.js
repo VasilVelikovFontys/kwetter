@@ -8,7 +8,7 @@ const createTimestampFromDate = date => {
 };
 
 const createPost = async (userId, username, text, date) => {
-    const docRef = await db.collection('posts').add({userId, username, text, date});
+    const docRef = await db.collection('posts').add({userId, username, text, date, likes: []});
     return docRef.id;
 }
 
@@ -26,8 +26,24 @@ const getPostsByUserId = async uid => {
     })
 };
 
+const likePost = async (postId, userId) => {
+    try {
+        const postDocument = await db.collection('posts').doc(postId).get();
+
+        if (!postDocument) return {error: 'Post not found!'};
+        const post = postDocument.data();
+
+        if (post.likes.includes(userId)) return {error: 'User already liked this post!'};
+        await postDocument.ref.set({...post, likes: [...post.likes, userId]});
+
+    } catch (error) {
+        return {error};
+    }
+}
+
 module.exports = {
     createTimestampFromDate,
     createPost,
-    getPostsByUserId
+    getPostsByUserId,
+    likePost
 };
