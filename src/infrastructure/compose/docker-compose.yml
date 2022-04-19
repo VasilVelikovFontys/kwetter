@@ -52,6 +52,16 @@ services:
     networks:
       - network-name
 
+  #Likes Service
+  likes:
+    image: vjv2143/kwetter.likes
+    container_name: likes
+    depends_on:
+      - nats-streaming
+    env_file: .likes.env
+    networks:
+      - network-name
+
   #Mentioning Posts Service
   mentioning-posts:
     image: vjv2143/kwetter.mentioning-posts
@@ -59,6 +69,16 @@ services:
     depends_on:
       - nats-streaming
     env_file: .mentioning-posts.env
+    networks:
+      - network-name
+
+  #Timeline Service
+  timeline:
+    image: vjv2143/kwetter.timeline
+    container_name: timeline
+    depends_on:
+      - nats-streaming
+    env_file: .timeline.env
     networks:
       - network-name
 
