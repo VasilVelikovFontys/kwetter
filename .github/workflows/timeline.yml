@@ -154,6 +154,7 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           context: src/timeline
+          push: true
           tags: vjv2143/kwetter.timeline:latest
 
       - name: Image digest

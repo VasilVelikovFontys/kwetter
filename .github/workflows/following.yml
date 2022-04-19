@@ -154,6 +154,7 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           context: src/following
+          push: true
           tags: vjv2143/kwetter.following:latest
 
       - name: Image digest
