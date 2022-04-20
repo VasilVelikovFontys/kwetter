@@ -1,7 +1,7 @@
 const express = require("express");
 const axios = require("axios");
 
-const createPostsRouter = (postsUrl, mentioningPostsUrl, likesUrl, timelineUrl, jwtUtils) => {
+const createPostsRouter = (postsUrl, mentioningPostsUrl, trendPostsUrl, likesUrl, timelineUrl, jwtUtils) => {
     const router = express.Router();
     router.use(jwtUtils.authenticateToken)
 
@@ -57,9 +57,29 @@ const createPostsRouter = (postsUrl, mentioningPostsUrl, likesUrl, timelineUrl, 
         }
     });
 
+    router.get('/posts/trend/:trendId', async (req, res) => {
+        const {trendId} = req.params;
+
+        if (!trendId) return res.status(202).send({error: "Trend id is required!"});
+
+        try {
+            const response = await axios.get(`${trendPostsUrl}/trend-posts/${trendId}`);
+            const {posts} = response.data;
+            const postsError = response.data.error;
+            if (postsError) return res.status(202).send({error: postsError});
+
+            res.status(200).send({posts});
+        } catch (error) {
+            if (error.code === "ECONNREFUSED") return res.sendStatus(503);
+            res.status(204).send({error});
+        }
+    });
+
     router.post('/posts/:postId/like', async (req, res) => {
         const {user} = req;
         const {postId} = req.params;
+
+        if (!postId) return res.status(202).send({error: "Post id is required!"});
 
         try {
             const response = await axios.post(`${likesUrl}/like/${postId}`, {userId: user.uid});

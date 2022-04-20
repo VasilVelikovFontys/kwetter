@@ -1,7 +1,7 @@
 .post {
     border: 1px solid black;
     border-top: 0;
-    padding: 5px 5px 10px;
+    padding: 5px;
 }
 
 .post:first-child {
@@ -27,6 +27,10 @@
 
 .post-heart {
     cursor: pointer;
+}
+
+.post-message {
+    transform: translate(0, -5px);
 }
 
 .post-ok {

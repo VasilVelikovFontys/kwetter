@@ -1,28 +1,28 @@
-import {SET_FOLLOWERS, SET_FOLLOWERS_ERROR, SET_FOLLOWERS_LOADING} from '../../constants';
+import {SET_TREND_POSTS, SET_TREND_POSTS_ERROR, SET_TREND_POSTS_LOADING} from '../../constants';
 
 const initState = {
-    followers: [],
+    posts: [],
     loading: false,
     error: null
 }
 
-const followersReducer = (state = initState, action) => {
+const trendPostReducer = (state = initState, action) => {
     switch (action.type) {
-        case SET_FOLLOWERS:
+        case SET_TREND_POSTS:
             return {
-                followers: action.followers,
+                posts: action.posts,
                 loading: false,
                 error: null
             }
-        case SET_FOLLOWERS_LOADING:
+        case SET_TREND_POSTS_LOADING:
             return {
-                followers: [],
+                posts: [],
                 loading: true,
                 error: null
             }
-        case SET_FOLLOWERS_ERROR:
+        case SET_TREND_POSTS_ERROR:
             return {
-                followers: null,
+                posts: null,
                 loading: false,
                 error: action.error
             }
@@ -31,4 +31,4 @@ const followersReducer = (state = initState, action) => {
     }
 }
 
-export default followersReducer;
+export default trendPostReducer;

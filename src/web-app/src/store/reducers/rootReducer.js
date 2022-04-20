@@ -4,9 +4,11 @@ import userReducer from "./userReducer";
 import postReducer from "./postReducer";
 import mentionReducer from "./mentionReducer";
 import followingReducer from "./followingReducer";
-import followersReducer from "./followersReducer";
+import followerReducer from "./followerReducer";
 import timelineReducer from "./timelineReducer";
 import likeReducer from "./likeReducer";
+import trendReducer from "./trendReducer";
+import trendPostReducer from "./trendPostReducer";
 
 const rootReducer = combineReducers({
     auth: authReducer,
@@ -14,9 +16,11 @@ const rootReducer = combineReducers({
     posts: postReducer,
     mentions: mentionReducer,
     following: followingReducer,
-    followers: followersReducer,
+    followers: followerReducer,
     timeline: timelineReducer,
-    likes: likeReducer
+    likes: likeReducer,
+    trends: trendReducer,
+    trendPosts: trendPostReducer
 });
 
 export default rootReducer;

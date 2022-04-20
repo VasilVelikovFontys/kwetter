@@ -1,6 +1,6 @@
 import React from 'react'
-import Posts from "./posts/Posts";
-import Followers from "./followers/Followers";
+import Posts from "./Posts";
+import Followers from "./Followers";
 
 const ProfileList = props => {
     const {selectedList} = props;

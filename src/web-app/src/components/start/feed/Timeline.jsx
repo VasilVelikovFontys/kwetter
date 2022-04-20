@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react'
 import '../../../styles/components/start/feed/timeline.css';
 import {useDispatch, useSelector} from "react-redux";
-import Post from "../../profile/list/posts/Post";
+import Post from "../../common/Post";
 import {getTimelinePosts} from "../../../store/actions/timelineActions";
 
 const Timeline = () => {

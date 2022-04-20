@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import '../../../../styles/components/profile/list/followers/followers.css';
+import '../../../styles/components/profile/list/followers/followers.css';
 import {useSelector} from "react-redux";
 import Follower from "./Follower";
 

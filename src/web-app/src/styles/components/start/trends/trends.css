@@ -1,0 +1,24 @@
+#trends {
+    border-radius: 5px;
+    border: 2px solid black;
+    padding: 5px;
+}
+
+.trend {
+    text-decoration: underline;
+    color: dodgerblue;
+    margin-bottom: 5px;
+    cursor: pointer;
+}
+
+.trend:hover {
+    color: darkblue;
+}
+
+.trend:last-child {
+    margin-bottom: 0;
+}
+
+.trends-error {
+    color: darkred;
+}

@@ -1,0 +1,38 @@
+{
+  "name": "trends",
+  "version": "1.0.0",
+  "description": "",
+  "main": "src/index.js",
+  "scripts": {
+    "test": "jest",
+    "test:ci": "jest --ci --coverage --passWithNoTests --reporters='default' --reporters='./github-actions-reporter'"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "coveragePathIgnorePatterns": [
+      "/node_modules/"
+    ],
+    "testResultsProcessor": "jest-sonar-reporter"
+  },
+  "jestSonar": {
+    "reportPath": "coverage",
+    "reportFile": "test-reporter.xml",
+    "indent": 4
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^16.0.0",
+    "express": "^4.17.3",
+    "firebase": "^9.6.11",
+    "node-nats-streaming": "^0.3.2"
+  },
+  "devDependencies": {
+    "@jest/globals": "^27.5.1",
+    "jest": "^27.5.1",
+    "jest-sonar-reporter": "^2.0.0",
+    "nodemon": "^2.0.15",
+    "supertest": "^6.2.2"
+  }
+}

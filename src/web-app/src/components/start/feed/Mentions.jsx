@@ -2,7 +2,7 @@ import React, {useEffect, useState} from 'react'
 import '../../../styles/components/start/feed/mentions.css';
 import {useDispatch, useSelector} from "react-redux";
 import {getMentions} from "../../../store/actions/mentionActions";
-import Post from "../../profile/list/posts/Post";
+import Post from "../../common/Post";
 
 const Mentions = () => {
     const dispatch = useDispatch();

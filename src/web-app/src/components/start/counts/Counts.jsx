@@ -4,10 +4,11 @@ import {getUserPosts} from "../../../store/actions/postActions";
 import {useDispatch, useSelector} from "react-redux";
 import {getFollowing} from "../../../store/actions/followingActions";
 import {getFollowers} from "../../../store/actions/followerActions";
+import {useNavigate} from "react-router-dom";
+import Post from "../../common/Post";
 
-const Counts = props => {
-    const {setSelectedList} = props;
-
+const Counts = () => {
+    const navigate = useNavigate();
     const dispatch = useDispatch();
     const {jwt} = useSelector(state => state.auth);
 
@@ -17,12 +18,8 @@ const Counts = props => {
 
     const [error, setError] = useState('');
 
-    const showPosts = () => {
-        setSelectedList('posts');
-    }
-
-    const showFollowers = () => {
-        setSelectedList('followers');
+    const redirectToProfile = () => {
+        navigate('/profile');
     }
 
     useEffect(() => {
@@ -56,10 +53,26 @@ const Counts = props => {
         }
     }, [dispatch, jwt]);
 
+    const displayPosts = () => {
+        if (postsLoading) return <div>Loading...</div>
+        return (
+            <div className='count'>
+                Your posts {posts.length}
+            </div>
+        )
+    }
+
+    const displayLastPost = () => {
+        if (postsLoading || posts.length === 0) return null;
+        return (
+            <Post own post={posts[0]} />
+        )
+    }
+
     const displayFollowing = () => {
         if (followingLoading) return <div>Loading...</div>
         return (
-            <div className='following-count count'>
+            <div className='following-count count' onClick={redirectToProfile}>
                 {following.length} following
             </div>
         )
@@ -68,17 +81,8 @@ const Counts = props => {
     const displayFollowers = () => {
         if (followersLoading) return <div>Loading...</div>
         return (
-            <div className='following-count count' onClick={showFollowers}>
+            <div className='following-count count' onClick={redirectToProfile}>
                 {followers.length} follower{followers.length === 1 ? '' : 's'}
-            </div>
-        )
-    }
-
-    const displayPosts = () => {
-        if (postsLoading) return <div>Loading...</div>
-        return (
-            <div className='count' onClick={showPosts}>
-                {posts.length} post{posts.length === 1 ? '' : 's'}
             </div>
         )
     }
@@ -87,12 +91,13 @@ const Counts = props => {
         <div id='counts'>
             {jwt && (
                 <>
+                    <div>
+                        {displayPosts()}
+                        {displayLastPost()}
+                    </div>
                     <div id='following-counts'>
                         {displayFollowing()}
                         {displayFollowers()}
-                    </div>
-                    <div>
-                        {displayPosts()}
                     </div>
                 </>
             )}

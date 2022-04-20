@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react';
-import '../../../../styles/components/profile/list/posts/posts.css';
+import '../../../styles/components/profile/list/posts/posts.css';
 import {useSelector} from "react-redux";
-import Post from "./Post";
+import Post from "../../common/Post";
 
 const Posts = () => {
     const {jwt} = useSelector(state => state.auth);

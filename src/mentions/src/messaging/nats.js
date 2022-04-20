@@ -38,26 +38,27 @@ stan.on('connect', () => {
     subscription.on('message', async (msg) => {
         const receivedData = msg.getData();
         const post = JSON.parse(receivedData);
-        const {text} = post;
+        const {username, text} = post;
 
         getUsernamesFromText(text)
             .then(usernames => {
                 if (usernames.length === 0) {
                     msg.ack();
-                    return console.log('No username found!');
+                    return console.log('No usernames found!');
                 }
 
-                usernames.forEach(async (username) => {
-                    await db.createMention(post.id, username);
+                usernames.forEach(async mentionedUsername => {
+                    if (username === mentionedUsername) return;
+                    await db.createMention(post.id, mentionedUsername);
                 });
 
                 const mention = {postId: post.id, usernames};
 
                 const sentData = JSON.stringify(mention);
                 stan.publish(NATS_USER_MENTIONED_CHANNEL, sentData);
-            });
 
-        msg.ack();
+                msg.ack();
+            });
     })
 });
 
@@ -68,12 +69,16 @@ const getUsernamesFromText = async text => {
         //Clear duplicate '@';
         text = text.replace(/(@)\1+/g, '$1');
 
+        const separators = [' ', '@', '#'];
+
         while (text.indexOf('@') > -1 && text !== '@') {
             let username = text.substring(text.indexOf('@') + 1);
 
-            if(username.indexOf(' ') > -1) {
-                username = username.substring(0, username.indexOf(' '));
-            }
+            separators.forEach(separator => {
+                if (username.indexOf(separator) > -1) {
+                    username = username.substring(0, username.indexOf(separator));
+                }
+            });
 
             if (!usernames.includes(username)) usernames.push(username);
             text = text.replace(`@${username}`, '');

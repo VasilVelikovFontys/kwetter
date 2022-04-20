@@ -1,5 +1,5 @@
 import React  from 'react'
-import '../../../../styles/components/profile/list/followers/follower.css';
+import '../../../styles/components/profile/list/followers/follower.css';
 
 const Follower = props => {
     const {username} = props;

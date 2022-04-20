@@ -1,8 +1,8 @@
 import React, {useEffect, useState} from 'react'
-import '../../../../styles/components/profile/list/posts/post.css';
-import {getPostDate} from "../../../../utils/dates";
+import '../../styles/components/profile/list/posts/post.css';
+import {getPostDate} from "../../utils/dates";
 import {useDispatch, useSelector} from "react-redux";
-import {likePost} from "../../../../store/actions/likeActions";
+import {likePost} from "../../store/actions/likeActions";
 
 const Post = props => {
     const dispatch = useDispatch();
@@ -37,7 +37,7 @@ const Post = props => {
 
     const displayLikes = () => {
         if (error) return (
-            <div>
+            <div className='post-message'>
                 <span className='post-error'>{error}</span>
                 <span className='post-ok' onClick={handleOk}>OK</span>
             </div>

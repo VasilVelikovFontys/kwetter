@@ -1,7 +1,7 @@
 #counts {
     border: 2px solid black;
     border-radius: 5px;
-    padding: 5px;
+    padding: 0 5px;
     margin-bottom: 20px;
 }
 
@@ -11,6 +11,8 @@
 
 .following-count {
     margin-right: 20px;
+    margin-bottom: 5px;
+    margin-top: 5px;
 }
 
 .following-count:last-child {
@@ -19,6 +21,8 @@
 
 .count {
     cursor: pointer;
+    margin-bottom: 5px;
+    margin-top: 5px;
 }
 
 .count:hover {
