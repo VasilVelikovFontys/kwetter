@@ -42,6 +42,16 @@ services:
     networks:
       - network-name
 
+  #Trends Service
+  trends:
+    image: vjv2143/kwetter.trends
+    container_name: trends
+    depends_on:
+      - nats-streaming
+    env_file: .trends.env
+    networks:
+      - network-name
+
   #Following Service
   following:
     image: vjv2143/kwetter.following
@@ -69,6 +79,16 @@ services:
     depends_on:
       - nats-streaming
     env_file: .mentioning-posts.env
+    networks:
+      - network-name
+
+  #Trend Posts Service
+  trend-posts:
+    image: vjv2143/kwetter.trend-posts
+    container_name: trend-posts
+    depends_on:
+      - nats-streaming
+    env_file: .trend-posts.env
     networks:
       - network-name
 

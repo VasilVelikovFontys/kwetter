@@ -5,7 +5,7 @@ const createTrendsRouter = (trendsUrl, jwtUtils) => {
     const router = express.Router();
     router.use(jwtUtils.authenticateToken);
 
-    router.get('/trends', async (req, res) => {
+    router.get('/trends', async (_req, res) => {
         try {
             const trendsResponse = await axios.get(`${trendsUrl}/trends`);
             const {trends} = trendsResponse.data;
