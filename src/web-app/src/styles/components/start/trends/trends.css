@@ -4,6 +4,10 @@
     padding: 5px;
 }
 
+#trends-title {
+    margin-bottom: 5px;
+}
+
 .trend {
     text-decoration: underline;
     color: dodgerblue;

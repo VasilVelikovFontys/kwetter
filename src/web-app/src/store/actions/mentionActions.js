@@ -11,9 +11,9 @@ export const getMentions = () => {
 
         const {data} = await axios.get(`${SERVER_URL}/posts/mentioning`, {headers: getAuthHeader()});
 
-        const {mentions, error} = data
+        const {posts, error} = data
         if (error) return dispatch({type: SET_MENTIONS_ERROR, error});
 
-        dispatch({type: SET_MENTIONS, mentions});
+        dispatch({type: SET_MENTIONS, mentions: posts});
     }
 }

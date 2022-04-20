@@ -62,13 +62,18 @@ const Trends = props => {
         return <div>{styledTrends}</div>
     }
     return (
-        <div id='trends'>
-            {displayTrends()}
+        <>
+            <div id='trends-title'>
+                Trends
+            </div>
+            <div id='trends'>
+                {displayTrends()}
 
-            {error && (
-                <div className="trends-error">{error}</div>
-            )}
-        </div>
+                {error && (
+                    <div className="trends-error">{error}</div>
+                )}
+            </div>
+        </>
     )
 }
 

@@ -5,6 +5,20 @@ const createPostsRouter = (postsUrl, mentioningPostsUrl, trendPostsUrl, likesUrl
     const router = express.Router();
     router.use(jwtUtils.authenticateToken)
 
+    const sendError = (res, error) => {
+        if (error.code === "ECONNREFUSED") return res.sendStatus(503);
+        res.status(204).send({error});
+    }
+
+    const getPosts = async (res, url) => {
+        const response = await axios.get(url);
+        const {posts} = response.data;
+        const postsError = response.data.error;
+        if (postsError) return res.status(202).send({error: postsError});
+
+        res.status(200).send({posts});
+    }
+
     router.get('/posts', async (req, res) => {
         const {uid} = req.user;
 
@@ -16,8 +30,7 @@ const createPostsRouter = (postsUrl, mentioningPostsUrl, trendPostsUrl, likesUrl
 
             res.status(200).send({posts});
         } catch (error) {
-            if (error.code === "ECONNREFUSED") return res.sendStatus(503);
-            res.status(204).send({error});
+            sendError(res, error);
         }
     });
 
@@ -36,8 +49,7 @@ const createPostsRouter = (postsUrl, mentioningPostsUrl, trendPostsUrl, likesUrl
 
             res.status(201).send({post: response.data});
         } catch (error) {
-            if (error.code === "ECONNREFUSED") return res.sendStatus(503);
-            res.status(202).send({error});
+            sendError(res, error);
         }
     });
 
@@ -45,15 +57,9 @@ const createPostsRouter = (postsUrl, mentioningPostsUrl, trendPostsUrl, likesUrl
         const {user} = req;
 
         try {
-            const response = await axios.get(`${mentioningPostsUrl}/mentioning-posts/${user.uid}`);
-            const {posts} = response.data;
-            const postsError = response.data.error;
-            if (postsError) return res.status(202).send({error: postsError});
-
-            res.status(200).send({mentions: posts});
+            await getPosts(res, `${mentioningPostsUrl}/mentioning-posts/${user.uid}`);
         } catch (error) {
-            if (error.code === "ECONNREFUSED") return res.sendStatus(503);
-            res.status(204).send({error});
+            sendError(res, error);
         }
     });
 
@@ -63,15 +69,9 @@ const createPostsRouter = (postsUrl, mentioningPostsUrl, trendPostsUrl, likesUrl
         if (!trendId) return res.status(202).send({error: "Trend id is required!"});
 
         try {
-            const response = await axios.get(`${trendPostsUrl}/trend-posts/${trendId}`);
-            const {posts} = response.data;
-            const postsError = response.data.error;
-            if (postsError) return res.status(202).send({error: postsError});
-
-            res.status(200).send({posts});
+            await getPosts(res, `${trendPostsUrl}/trend-posts/${trendId}`);
         } catch (error) {
-            if (error.code === "ECONNREFUSED") return res.sendStatus(503);
-            res.status(204).send({error});
+            sendError(res, error);
         }
     });
 
@@ -89,8 +89,7 @@ const createPostsRouter = (postsUrl, mentioningPostsUrl, trendPostsUrl, likesUrl
 
             res.status(200).send({like});
         } catch (error) {
-            if (error.code === "ECONNREFUSED") return res.sendStatus(503);
-            res.status(204).send({error});
+            sendError(res, error);
         }
     });
 
@@ -98,15 +97,9 @@ const createPostsRouter = (postsUrl, mentioningPostsUrl, trendPostsUrl, likesUrl
         const {user} = req;
 
         try {
-            const response = await axios.get(`${timelineUrl}/timeline-posts/${user.uid}`);
-            const {posts} = response.data;
-            const postsError = response.data.error;
-            if (postsError) return res.status(202).send({error: postsError});
-
-            res.status(200).send({posts});
+            await getPosts(res, `${timelineUrl}/timeline-posts/${user.uid}`);
         } catch (error) {
-            if (error.code === "ECONNREFUSED") return res.sendStatus(503);
-            res.status(204).send({error});
+            sendError(res, error);
         }
     });
 
