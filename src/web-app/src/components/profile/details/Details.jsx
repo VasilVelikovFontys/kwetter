@@ -57,9 +57,9 @@ const Details = () => {
             .then(() => {
                 //No action needed
             })
-            .catch(detailsError => {
-                if (detailsError.message) return setError(detailsError.message)
-                setError(detailsError);
+            .catch(detailsUpdateError => {
+                if (detailsUpdateError.message) return setError(detailsUpdateError.message)
+                setError(detailsUpdateError);
             });
 
         setUpdating(false);

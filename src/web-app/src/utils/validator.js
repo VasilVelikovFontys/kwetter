@@ -11,7 +11,7 @@ export const websiteIsValid = website => {
 }
 
 export const bioIsValid = bio => {
-    return !isEmpty(bio) && !(bio.length > 160);
+    return !isEmpty(bio) && bio.length <= 160;
 }
 
 export const usernameIsValid = username => {
@@ -31,7 +31,7 @@ export const passwordsMatch = (password, confirmPassword) => {
 }
 
 export const postIsValid = text => {
-    return !isEmpty(text) && !(text.length > 140);
+    return !isEmpty(text) && text.length <= 140;
 }
 
 const isEmpty = string => {
