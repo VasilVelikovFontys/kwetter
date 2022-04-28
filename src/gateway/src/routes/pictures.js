@@ -1,9 +1,15 @@
 const express = require("express");
 const axios = require("axios");
 const multer = require("multer");
-const upload = multer({ dest: "uploads/" });
 const FormData = require("form-data");
 const fs = require("fs");
+
+const upload = multer({
+    dest: "uploads/",
+    limits: {
+        fileSize: 8000000
+    }
+});
 
 const createPicturesRouter = (picturesUrl, jwtUtils) => {
     const router = express.Router();

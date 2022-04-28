@@ -1,7 +1,13 @@
 const express = require("express");
 const multer = require("multer");
-const upload = multer({ dest: "uploads/" });
 const fs = require("fs");
+
+const upload = multer({
+    dest: "uploads/",
+    limits: {
+        fileSize: 8000000
+    }
+});
 
 const createPicturesRouter = (storage, messaging) => {
     const router = express.Router();
