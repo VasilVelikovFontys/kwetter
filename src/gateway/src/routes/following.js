@@ -9,9 +9,6 @@ const createFollowingRouter = (followingUrl, jwtUtils) => {
         const {uid, username} = req.user;
         const {followedUsername} = req.params;
 
-        if (!username) return res.status(202).send({error: "Username is required!"});
-        if (username === followedUsername) return res.status(202).send({error: "Users cannot follow themselves!"});
-
         try {
             const followResponse = await axios.post(`${followingUrl}/follow/${followedUsername}`, {uid, username});
             const {follow} = followResponse.data;

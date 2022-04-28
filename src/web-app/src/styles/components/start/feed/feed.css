@@ -6,14 +6,16 @@
 
 #feed-tabs {
     display: flex;
+    padding-left: 5px;
 }
 
 .feed-tab {
-    padding: 5px;
+    padding: 5px 10px;
     cursor: pointer;
     border: 2px solid black;
     border-bottom: 0;
     border-top-right-radius: 20px;
+    border-top-left-radius: 20px;
     transition: all 0.3s;
 }
 
@@ -25,10 +27,11 @@
 .feed-tab-selected {
     background-color: black;
     color: white;
-    padding: 5px;
+    padding: 5px 10px;
     cursor: pointer;
     border: 2px solid black;
     border-bottom: 0;
     border-top-right-radius: 20px;
+    border-top-left-radius: 20px;
     transition: all 0.3s;
 }

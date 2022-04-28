@@ -2,8 +2,8 @@ const firebaseApp = require("./app");
 require("firebase/compat/firestore");
 const db = firebaseApp.firestore();
 
-const createAccount = async (uid, email, username, firstName, lastName, roles) => {
-    await db.collection('accounts').doc(uid).set({email, username, firstName, lastName, roles});
+const createAccount = async (uid, email, username, roles) => {
+    await db.collection('accounts').doc(uid).set({email, username, roles});
 }
 
 const getAccountByUid = async uid => {

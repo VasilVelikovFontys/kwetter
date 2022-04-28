@@ -9,6 +9,8 @@ import timelineReducer from "./timelineReducer";
 import likeReducer from "./likeReducer";
 import trendReducer from "./trendReducer";
 import trendPostReducer from "./trendPostReducer";
+import pictureReducer from "./pictureReducer";
+import detailsReducer from "./detailsReducer";
 
 const rootReducer = combineReducers({
     auth: authReducer,
@@ -20,7 +22,9 @@ const rootReducer = combineReducers({
     timeline: timelineReducer,
     likes: likeReducer,
     trends: trendReducer,
-    trendPosts: trendPostReducer
+    trendPosts: trendPostReducer,
+    picture: pictureReducer,
+    details: detailsReducer
 });
 
 export default rootReducer;

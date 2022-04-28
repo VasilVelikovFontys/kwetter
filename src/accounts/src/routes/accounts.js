@@ -4,19 +4,18 @@ const createAccountsRouter = (auth, database, messaging) => {
     const router = express.Router();
 
     router.post('/accounts', async (req, res) => {
-        const {uid, email, username, firstName, lastName} = req.body;
+        const {uid, email, username} = req.body;
 
         if (!uid) return res.status(202).send({error: "User id is required!"});
         if (!email) return res.status(202).send({error: "Email is required!"});
         if (!username) return res.status(202).send({error: "Username is required!"});
-        if (!firstName || !lastName) return res.status(202).send({error: "Names are required!"});
 
         if (auth) await auth.authenticateService();
 
         try {
             const roles = ['USER'];
 
-            await database.createAccount(uid, email, username, firstName, lastName, roles);
+            await database.createAccount(uid, email, username, roles);
 
             const account = {uid, username};
 

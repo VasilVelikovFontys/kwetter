@@ -6,12 +6,14 @@ import {getFollowing} from "../../../store/actions/followingActions";
 import {getFollowers} from "../../../store/actions/followerActions";
 import {useNavigate} from "react-router-dom";
 import Post from "../../common/Post";
+import Picture from "../../profile/name-and-picture/Picture";
 
 const Counts = () => {
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const {jwt} = useSelector(state => state.auth);
 
+    const {user, loading: userLoading} = useSelector(state => state.user)
     const {posts, loading: postsLoading} = useSelector(state => state.posts);
     const {following, loading: followingLoading} = useSelector(state => state.following);
     const {followers, loading: followersLoading} = useSelector(state => state.followers);
@@ -53,6 +55,15 @@ const Counts = () => {
         }
     }, [dispatch, jwt]);
 
+    const displayPicture = () => {
+        if (userLoading) return <div>Loading...</div>
+        if (!jwt || !user) return <div>No current user</div>
+
+        return (
+            <Picture picture={user.picture}/>
+        )
+    }
+
     const displayPosts = () => {
         if (postsLoading) return <div>Loading...</div>
         return (
@@ -93,7 +104,10 @@ const Counts = () => {
                 <>
                     <div>
                         {displayPosts()}
-                        {displayLastPost()}
+                        <div id='picture-and-post'>
+                            {displayPicture()}
+                            {displayLastPost()}
+                        </div>
                     </div>
                     <div id='following-counts'>
                         {displayFollowing()}

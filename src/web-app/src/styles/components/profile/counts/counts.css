@@ -1,8 +1,14 @@
 #counts {
     border: 2px solid black;
     border-radius: 5px;
-    padding: 0 5px;
+    padding: 5px;
     margin-bottom: 20px;
+}
+
+#picture-and-post {
+    margin-top: 5px;
+    display: flex;
+    flex-direction: row;
 }
 
 #following-counts {

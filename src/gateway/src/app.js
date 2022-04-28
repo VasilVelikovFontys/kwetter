@@ -7,6 +7,7 @@ const createPostsRouter = require('./routes/posts');
 const createUsersRouter = require('./routes/users');
 const createFollowingRouter = require('./routes/following');
 const createTrendsRouter = require('./routes/trends');
+const createPicturesRouter = require('./routes/pictures');
 
 const createApp = (allowedOrigin, serviceUrls, jwtUtils) => {
     const app = express();
@@ -25,14 +26,18 @@ const createApp = (allowedOrigin, serviceUrls, jwtUtils) => {
         likesUrl,
         timelineUrl,
         trendsUrl,
-        trendPostsUrl
+        trendPostsUrl,
+        picturesUrl,
+        usersUrl,
+        detailsUrl
     } = serviceUrls;
 
     const authRouter = createAuthRouter(accountsUrl, jwtUtils);
     const postsRouter = createPostsRouter(postsUrl, mentioningPostsUrl, trendPostsUrl, likesUrl, timelineUrl, jwtUtils);
-    const usersRouter = createUsersRouter(accountsUrl, jwtUtils);
+    const usersRouter = createUsersRouter(usersUrl, detailsUrl, jwtUtils);
     const followingRouter = createFollowingRouter(followingUrl, jwtUtils);
     const trendsRouter = createTrendsRouter(trendsUrl, jwtUtils);
+    const picturesRouter = createPicturesRouter(picturesUrl, jwtUtils);
 
     app.use(bodyParser.json());
     app.use(cors(corsOptions));
@@ -42,6 +47,7 @@ const createApp = (allowedOrigin, serviceUrls, jwtUtils) => {
     app.use(usersRouter);
     app.use(followingRouter);
     app.use(trendsRouter);
+    app.use(picturesRouter);
 
     return app;
 }

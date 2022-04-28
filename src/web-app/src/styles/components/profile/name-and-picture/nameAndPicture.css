@@ -2,4 +2,14 @@
     border: 2px solid black;
     border-radius: 5px;
     margin-bottom: 20px;
+    padding: 5px;
+}
+
+#name-and-picture-container {
+    display: flex;
+    align-items: center;
+}
+
+.name-and-picture-error {
+    color: darkred;
 }

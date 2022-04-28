@@ -4,6 +4,7 @@ import {getUserPosts} from "../../../store/actions/postActions";
 import {useDispatch, useSelector} from "react-redux";
 import {getFollowing} from "../../../store/actions/followingActions";
 import {getFollowers} from "../../../store/actions/followerActions";
+import {FOLLOWERS_LIST, POSTS_LIST} from "../../../constants";
 
 const Counts = props => {
     const {setSelectedList} = props;
@@ -18,11 +19,11 @@ const Counts = props => {
     const [error, setError] = useState('');
 
     const showPosts = () => {
-        setSelectedList('posts');
+        setSelectedList(POSTS_LIST);
     }
 
     const showFollowers = () => {
-        setSelectedList('followers');
+        setSelectedList(FOLLOWERS_LIST);
     }
 
     useEffect(() => {

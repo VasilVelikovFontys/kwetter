@@ -38,9 +38,6 @@ const createPostsRouter = (postsUrl, mentioningPostsUrl, trendPostsUrl, likesUrl
         const {text} = req.body;
         const {uid, username} = req.user;
 
-        if (!text) return res.status(202).send({error: "Post text is required!"});
-        if ((text.match(/@/g) || []).length > 3) return res.status(202).send({error: "Maximum of 3 mentions is allowed!"});
-
         const post = {userId: uid, username, text}
         try {
             const response = await axios.post(`${postsUrl}/posts`, post);
@@ -66,8 +63,6 @@ const createPostsRouter = (postsUrl, mentioningPostsUrl, trendPostsUrl, likesUrl
     router.get('/posts/trend/:trendId', async (req, res) => {
         const {trendId} = req.params;
 
-        if (!trendId) return res.status(202).send({error: "Trend id is required!"});
-
         try {
             await getPosts(res, `${trendPostsUrl}/trend-posts/${trendId}`);
         } catch (error) {
@@ -78,8 +73,6 @@ const createPostsRouter = (postsUrl, mentioningPostsUrl, trendPostsUrl, likesUrl
     router.post('/posts/:postId/like', async (req, res) => {
         const {user} = req;
         const {postId} = req.params;
-
-        if (!postId) return res.status(202).send({error: "Post id is required!"});
 
         try {
             const response = await axios.post(`${likesUrl}/like/${postId}`, {userId: user.uid});
