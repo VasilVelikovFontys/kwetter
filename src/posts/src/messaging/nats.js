@@ -70,8 +70,8 @@ stan.on('connect', () => {
         posts.forEach(post => {
             algolia.deletePost(post.id);
 
-            const data = JSON.stringify({postId: post.id});
-            publishPostDeleted(data);
+            const sentData = JSON.stringify({postId: post.id});
+            publishPostDeleted(sentData);
         });
 
         const {error: postsDeletionError} = await db.deleteUserPosts(userId);

@@ -63,8 +63,8 @@ stan.on('connect', () => {
 
         if (postIds) {
             postIds.forEach(postId => {
-                const data = JSON.stringify({postId, userId});
-                publishLikeDeleted(data);
+                const sentData = JSON.stringify({postId, userId});
+                publishLikeDeleted(sentData);
             });
         }
 

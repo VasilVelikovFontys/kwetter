@@ -77,8 +77,8 @@ stan.on('connect', () => {
         if (error) return;
 
         mentions.forEach(mention => {
-           const data = JSON.stringify(mention);
-           publishMentionDeleted(data);
+           const sentData = JSON.stringify(mention);
+           publishMentionDeleted(sentData);
         });
 
         msg.ack();
@@ -98,8 +98,8 @@ stan.on('connect', () => {
         if (error) return;
 
         mentions.forEach(mention => {
-            const data = JSON.stringify(mention);
-            publishMentionDeleted(data);
+            const sentData = JSON.stringify(mention);
+            publishMentionDeleted(sentData);
         });
 
         msg.ack();

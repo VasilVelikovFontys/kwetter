@@ -10,7 +10,9 @@ const createAccountsRouter = (accountsUrl, jwtUtils) => {
         let hasAccess = false;
 
         allowedRoles.forEach(role => {
-            if (user.roles.indexOf(role) > -1) return hasAccess = true;
+            if (user.roles.indexOf(role) > -1) {
+                hasAccess = true;
+            }
         });
 
         if (!hasAccess) return {hasAccess: false};
@@ -20,7 +22,9 @@ const createAccountsRouter = (accountsUrl, jwtUtils) => {
 
         hasAccess = false;
         allowedRoles.forEach(role => {
-            if (account.roles.indexOf(role) > -1) return hasAccess = true;
+            if (account.roles.indexOf(role) > -1) {
+                hasAccess = true;
+            }
         });
 
         return {hasAccess};

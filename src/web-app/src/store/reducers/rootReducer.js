@@ -13,7 +13,7 @@ import pictureReducer from "./pictureReducer";
 import detailsReducer from "./detailsReducer";
 import userReducer from "./userReducer";
 import followReducer from "./followReducer";
-import searchPostReducer from "./searchPostsReducer";
+import searchPostReducer from "./searchPostReducer";
 import accountReducer from "./accountReducer";
 
 const rootReducer = combineReducers({
