@@ -28,6 +28,8 @@ const Posts = () => {
 
     return (
         <div id='posts'>
+            <div id='posts-title'>Posts</div>
+
             {displayPosts()}
 
             {postsError && (

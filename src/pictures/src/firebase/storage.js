@@ -1,9 +1,10 @@
 const firebaseApp = require("./app");
 require("firebase/compat/storage");
-const { getStorage, ref, uploadBytes, getDownloadURL } = require("firebase/storage");
+const { getStorage, ref, uploadBytes, getDownloadURL, deleteObject } = require("firebase/storage");
 const fs = require("fs");
+const {handleError} = require("../utils/errorHandler");
 
-const addUserPicture = async (uid, file) => {
+const addUserPicture = async (userId, file) => {
     const storage = getStorage(firebaseApp);
 
     const {mimetype} = file;
@@ -13,44 +14,56 @@ const addUserPicture = async (uid, file) => {
     };
 
     try {
-        const userPictureRef = ref(storage, `${uid}`);
+        const userPictureRef = ref(storage, `${userId}`);
 
-        const uploadResponse = await uploadBytes(userPictureRef, fs.readFileSync(file.path), metadata);
-        const {error: uploadError} = uploadResponse;
-
-        if (uploadError) return {error: uploadError};
+        const {error: uploadError} = await uploadBytes(userPictureRef, fs.readFileSync(file.path), metadata);
+        if (uploadError) return handleError(uploadError);
 
     } catch (error) {
-        return {error}
+        return handleError(error);
     }
 
     try {
-        const urlResponse = await getUserPicture(uid);
-        const {url, error: urlError} = urlResponse;
-
-        if (urlError) return {error: urlError};
+        const {url, error: urlError} = await getUserPicture(userId);
+        if (urlError) return handleError(urlError);
 
         return {url};
+
     } catch (error) {
-        return {error};
+        return handleError(error);
     }
 }
 
-const getUserPicture = async uid => {
+const getUserPicture = async userId => {
     const storage = getStorage(firebaseApp);
 
-    const userPictureRef = ref(storage, `${uid}`);
+    const userPictureRef = ref(storage, `${userId}`);
 
     try {
         const url = await getDownloadURL(userPictureRef);
-
         return {url};
+
     } catch (error) {
-        return {error}
+        return handleError(error);
     }
+}
+
+const deleteUserPicture = async userId => {
+    const storage = getStorage(firebaseApp);
+
+    const userPictureRef = ref(storage, `${userId}`);
+
+    try {
+        await deleteObject(userPictureRef);
+
+    } catch (error) {
+        return handleError(error);
+    }
+    return {};
 }
 
 module.exports = {
     addUserPicture,
-    getUserPicture
+    getUserPicture,
+    deleteUserPicture
 };

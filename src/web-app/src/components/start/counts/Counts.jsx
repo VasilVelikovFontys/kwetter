@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect} from 'react';
 import '../../../styles/components/profile/counts/counts.css';
 import {getUserPosts} from "../../../store/actions/postActions";
 import {useDispatch, useSelector} from "react-redux";
@@ -13,12 +13,10 @@ const Counts = () => {
     const dispatch = useDispatch();
     const {jwt} = useSelector(state => state.auth);
 
-    const {user, loading: userLoading} = useSelector(state => state.user)
+    const {user, loading: userLoading} = useSelector(state => state.currentUser)
     const {posts, loading: postsLoading} = useSelector(state => state.posts);
     const {following, loading: followingLoading} = useSelector(state => state.following);
     const {followers, loading: followersLoading} = useSelector(state => state.followers);
-
-    const [error, setError] = useState('');
 
     const redirectToProfile = () => {
         navigate('/profile');
@@ -29,28 +27,16 @@ const Counts = () => {
             dispatch(getUserPosts())
                 .then(() => {
                     //No need for action
-                })
-                .catch((postsError) => {
-                    if (postsError.message) return setError(postsError.message)
-                    setError(postsError);
                 });
 
             dispatch(getFollowing())
                 .then(() => {
                     //No need for action
-                })
-                .catch((followingError) => {
-                    if (followingError.message) return setError(followingError.message)
-                    setError(followingError);
                 });
 
             dispatch(getFollowers())
                 .then(() => {
                     //No need for action
-                })
-                .catch((followersError) => {
-                    if (followersError.message) return setError(followersError.message)
-                    setError(followersError);
                 });
         }
     }, [dispatch, jwt]);
@@ -60,7 +46,7 @@ const Counts = () => {
         if (!jwt || !user) return <div>No current user</div>
 
         return (
-            <Picture picture={user.picture}/>
+            <Picture picture={user.picture} own/>
         )
     }
 
@@ -114,12 +100,6 @@ const Counts = () => {
                         {displayFollowers()}
                     </div>
                 </>
-            )}
-
-            {error && (
-                <div className='count-error'>
-                    {error}
-                </div>
             )}
 
             {!jwt && (

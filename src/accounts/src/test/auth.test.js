@@ -45,7 +45,7 @@ describe('POST /auth/register', () => {
                 email: "email",
                 password: "password"
             });
-            expect(response.body.uid).toBe(1);
+            expect(response.body.userId).toBe(1);
         });
     });
 
@@ -102,7 +102,7 @@ describe('POST /auth/authenticate', () => {
                 email: "email",
                 password: "password"
             });
-            expect(response.body.uid).toBe(1);
+            expect(response.body.userId).toBe(1);
         });
     });
 

@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect} from 'react';
 import '../../../styles/components/profile/counts/counts.css';
 import {getUserPosts} from "../../../store/actions/postActions";
 import {useDispatch, useSelector} from "react-redux";
@@ -16,8 +16,6 @@ const Counts = props => {
     const {following, loading: followingLoading} = useSelector(state => state.following);
     const {followers, loading: followersLoading} = useSelector(state => state.followers);
 
-    const [error, setError] = useState('');
-
     const showPosts = () => {
         setSelectedList(POSTS_LIST);
     }
@@ -31,28 +29,16 @@ const Counts = props => {
             dispatch(getUserPosts())
                 .then(() => {
                     //No need for action
-                })
-                .catch((postsError) => {
-                    if (postsError.message) return setError(postsError.message)
-                    setError(postsError);
                 });
 
             dispatch(getFollowing())
                 .then(() => {
                     //No need for action
-                })
-                .catch((followingError) => {
-                    if (followingError.message) return setError(followingError.message)
-                    setError(followingError);
                 });
 
             dispatch(getFollowers())
                 .then(() => {
                     //No need for action
-                })
-                .catch((followersError) => {
-                    if (followersError.message) return setError(followersError.message)
-                    setError(followersError);
                 });
         }
     }, [dispatch, jwt]);
@@ -96,12 +82,6 @@ const Counts = props => {
                         {displayPosts()}
                     </div>
                 </>
-            )}
-
-            {error && (
-                <div className='count-error'>
-                    {error}
-                </div>
             )}
 
             {!jwt && (

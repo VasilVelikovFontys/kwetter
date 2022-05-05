@@ -1,48 +1,72 @@
-import React, {useEffect, useState} from 'react'
-import '../../styles/components/profile/list/posts/post.css';
+import React, {useEffect, useRef, useState} from 'react'
+import '../../styles/components/common/post.css';
 import {getPostDate} from "../../utils/dates";
 import {useDispatch, useSelector} from "react-redux";
 import {likePost} from "../../store/actions/likeActions";
+import {SET_LIKE_ERROR} from "../../constants";
+import Error from "./Error";
 
 const Post = props => {
     const dispatch = useDispatch();
 
-    const {post, own} = props;
+    const usernameSpan = useRef();
+    const textSpan = useRef();
 
-    const {user} = useSelector(state => state.user);
+    const {post, own, setSelectedUsername} = props;
+
+    const {user} = useSelector(state => state.currentUser);
     const {postId, loading, error: likeError} = useSelector(state => state.likes);
 
     const [error, setError] = useState('');
 
     const handleLike = () => {
-        if (post.userId === user.id) return setError('Users cannot like their own post!');
-
         dispatch(likePost(post.id))
             .then(() => {
                 //No action needed
-            })
-            .catch(postLikeError => {
-                if (postLikeError.message) return setError(postLikeError.message)
-                setError(postLikeError)
             });
     }
 
     const handleOk = () => {
+        dispatch({type: SET_LIKE_ERROR, error: null, postId: null});
         setError('');
+    }
+
+    const handleUsernameClick = () => {
+        setSelectedUsername(post.username);
     }
 
     useEffect(() => {
         if (likeError && postId === post.id) return setError(likeError);
     }, [likeError]);
 
-    const displayLikes = () => {
-        if (error) return (
-            <div className='post-message'>
-                <span className='post-error'>{error}</span>
-                <span className='post-ok' onClick={handleOk}>OK</span>
-            </div>
-        );
+    useEffect(() => {
+        if (postId !== post.id) return setError('');
+    }, [postId]);
 
+    useEffect(() => {
+        if (post._highlightResult) {
+            usernameSpan.current.innerHTML = post._highlightResult.username.value;
+            textSpan.current.innerHTML = post._highlightResult.text.value;
+        }
+    }, [post]);
+
+    const displayUsername = () => {
+        if (post._highlightResult) {
+            return <span contentEditable ref={usernameSpan} />;
+        } else {
+            return post.username;
+        }
+    }
+
+    const displayText = () => {
+        if (post._highlightResult) {
+            return <span contentEditable ref={textSpan} />;
+        } else {
+            return post.text;
+        }
+    }
+
+    const displayLikes = () => {
         if (loading && postId === post.id) return <span>Loading...</span>;
 
         if (!user) return <span>Loading...</span>;
@@ -57,17 +81,24 @@ const Post = props => {
     return (
         <div className='post'>
             {!own && (
-                <div className='post-username'>
-                    {post.username} posted:
+                <div className='post-title' onClick={handleUsernameClick}>
+                    <span className='post-username'>
+                        {displayUsername()}
+                    </span>
+                    <span> posted:</span>
                 </div>
             )}
             <div className='post-text'>
-                {post.text}
+                {displayText()}
             </div>
             <div className='post-info'>
                 <span>{getPostDate(post.date)}</span>
                 {displayLikes()}
             </div>
+
+            {error && (
+                <Error message={error} handleOk={handleOk}/>
+            )}
         </div>
     )
 }

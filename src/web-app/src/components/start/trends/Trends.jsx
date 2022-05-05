@@ -22,11 +22,7 @@ const Trends = props => {
         dispatch(getPostsByTrend(trendId))
             .then(() => {
                 //No action needed
-            })
-            .catch(postsByTrendError => {
-                if (postsByTrendError.message) return setError(postsByTrendError.message)
-                setError(postsByTrendError)
-            })
+            });
     }
 
     useEffect(() => {
@@ -34,10 +30,6 @@ const Trends = props => {
             dispatch(getTrends())
                 .then(() => {
                     //No action needed
-                })
-                .catch(trendsListError => {
-                    if (trendsListError.message) return setError(trendsListError.message)
-                    setError(trendsListError)
                 });
         }
     }, [dispatch, jwt]);
@@ -61,12 +53,14 @@ const Trends = props => {
         if (styledTrends.length === 0) return <div>No existing trends</div>
         return <div>{styledTrends}</div>
     }
+
     return (
         <>
-            <div id='trends-title'>
-                Trends
-            </div>
             <div id='trends'>
+                <div id='trends-title'>
+                    Trends
+                </div>
+
                 {displayTrends()}
 
                 {error && (

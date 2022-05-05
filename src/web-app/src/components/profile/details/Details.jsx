@@ -8,7 +8,7 @@ const Details = () => {
     const dispatch = useDispatch();
 
     const {jwt} = useSelector(state => state.auth);
-    const {user} = useSelector(state => state.user);
+    const {user} = useSelector(state => state.currentUser);
     const {loading: detailsLoading, error: detailsError} = useSelector(state => state.details);
 
     const [updating, setUpdating] = useState(false);
@@ -47,6 +47,8 @@ const Details = () => {
         if (!websiteIsValid(newWebsite)) return setError('Website is invalid!');
         if (!bioIsValid(newBio)) return setError('Bio is invalid!');
 
+        setError('');
+
         dispatch(setDetails({
             firstName: newFirstName,
             lastName: newLastName,
@@ -56,10 +58,6 @@ const Details = () => {
         }))
             .then(() => {
                 //No action needed
-            })
-            .catch(detailsUpdateError => {
-                if (detailsUpdateError.message) return setError(detailsUpdateError.message)
-                setError(detailsUpdateError);
             });
 
         setUpdating(false);

@@ -3,14 +3,17 @@ const express = require("express");
 const createTimelinePostsRouter = database => {
     const router = express.Router();
 
-    router.get('/timeline-posts/:userId', async (req, res) => {
+    router.get('/posts/user/:userId', async (req, res) => {
         const {userId} = req.params;
 
-        if (!userId) return res.status(202).send({error: 'User id is required!'});
+        if (!userId) return res.status(400).send({error: 'User id is required!'});
 
-        const posts = await database.getTimelinePosts(userId);
+        if (!database) return res.sendStatus(500);
 
-        res.status(200).send({posts});
+        const {data, error} = await database.getTimelinePosts(userId);
+        if (error) return res.sendStatus(500);
+
+        res.status(200).send({posts: data});
     });
 
     return router;

@@ -23,10 +23,6 @@ const PostBar = () => {
             .then(() => {
                 setText('');
                 setError('')
-            })
-            .catch(postError => {
-                if (postError.message) return setError(postError.message);
-                setError(postError)
             });
     }
 

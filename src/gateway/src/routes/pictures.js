@@ -3,6 +3,7 @@ const axios = require("axios");
 const multer = require("multer");
 const FormData = require("form-data");
 const fs = require("fs");
+const {handleError} = require("../utils");
 
 const upload = multer({
     dest: "uploads/",
@@ -16,7 +17,7 @@ const createPicturesRouter = (picturesUrl, jwtUtils) => {
     router.use(jwtUtils.authenticateToken);
 
     router.post('/pictures', upload.single('file'), async (req, res) => {
-        const {uid} = req.user;
+        const {userId} = req.user;
         const file = req.file;
 
         const {mimetype} = file;
@@ -24,7 +25,7 @@ const createPicturesRouter = (picturesUrl, jwtUtils) => {
 
         try {
             const formData = new FormData();
-            formData.append("userId", uid);
+            formData.append("userId", userId);
             formData.append("file", fs.createReadStream(file.path), `file.${fileExtension}`);
 
             const pictureResponse = await axios.post(`${picturesUrl}/pictures`, formData, {
@@ -41,25 +42,7 @@ const createPicturesRouter = (picturesUrl, jwtUtils) => {
 
             res.status(201).send({url});
         } catch (error) {
-            if (error.code === "ECONNREFUSED") return res.sendStatus(503);
-            res.status(202).send({error});
-        }
-    });
-
-    router.get('/user-picture', async (req, res) => {
-        const {uid} = req.user;
-
-        try {
-            const pictureResponse = await axios.get(`${picturesUrl}/pictures/user/${uid}`);
-            const {picture} = pictureResponse.data;
-            const pictureError = pictureResponse.data.error;
-
-            if (pictureError) return res.status(202).send({error: pictureError});
-
-            res.status(201).send({picture});
-        } catch (error) {
-            if (error.code === "ECONNREFUSED") return res.sendStatus(503);
-            res.status(202).send({error});
+            handleError(res, error);
         }
     });
 

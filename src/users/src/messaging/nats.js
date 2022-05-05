@@ -7,17 +7,19 @@ dotenv.config();
 const {
     NATS_CLUSTER_ID,
     NATS_CLIENT_ID,
-    NATS_HOST,
-    NATS_PORT,
+    NATS_URL,
+    NATS_DURABLE_NAME,
+    NATS_QUEUE_GROUP,
     NATS_ACCOUNT_CREATED_CHANNEL,
     NATS_PICTURE_ADDED_CHANNEL,
     NATS_DETAILS_ADDED_CHANNEL,
-    NATS_DURABLE_NAME,
-    NATS_QUEUE_GROUP
+    NATS_ACCOUNT_PROMOTED_CHANNEL,
+    NATS_ACCOUNT_DEMOTED_CHANNEL,
+    NATS_ACCOUNT_DELETED_CHANNEL
 } = process.env;
 
 const stan = nats.connect(NATS_CLUSTER_ID, NATS_CLIENT_ID, {
-    url: `${NATS_HOST}:${NATS_PORT}`
+    url: NATS_URL
 });
 
 stan.on('connect', () => {
@@ -39,12 +41,14 @@ stan.on('connect', () => {
         const data = msg.getData();
         const account = JSON.parse(data);
 
-        const {uid, username} = account
+        const {userId, username, roles} = account
 
-        if (!uid) return console.log('Cannot destructure account id!');
+        if (!userId) return console.log('Cannot destructure account id!');
         if (!username) return console.log('Cannot destructure account username!');
+        if (!roles) return console.log('Cannot destructure account roles!');
 
-        await db.createUser(uid, username);
+        const {error} = await db.createUser(userId, username, roles);
+        if (error) return;
 
         msg.ack();
     });
@@ -60,28 +64,78 @@ stan.on('connect', () => {
         if (!userId) return console.log('Cannot destructure account id!');
         if (!url) return console.log('Cannot destructure picture url!');
 
-        await db.addPicture(userId, url);
+        const {error} = await db.addPicture(userId, url);
+        if (error) return;
 
         msg.ack();
     });
 
-    //On Picture Added
+    //On Details Added
     const detailsAddedSubscription = stan.subscribe(NATS_DETAILS_ADDED_CHANNEL, NATS_QUEUE_GROUP, options);
     detailsAddedSubscription.on('message', async msg => {
         const data = msg.getData();
         const userDetails = JSON.parse(data);
 
-        const {uid, details} = userDetails
+        const {userId, details} = userDetails
         const {firstName, lastName, location, website, bio} = details;
 
-        if (!uid) return console.log('Cannot destructure user id!');
+        if (!userId) return console.log('Cannot destructure user id!');
         if (!firstName) return console.log('Cannot destructure first name!');
         if (!lastName) return console.log('Cannot destructure last name!');
         if (!location) return console.log('Cannot destructure location!');
         if (!website) return console.log('Cannot destructure website!');
         if (!bio) return console.log('Cannot destructure bio!');
 
-        await db.addDetails(uid, details);
+        const {error} = await db.addDetails(userId, details);
+        if (error) return;
+
+        msg.ack();
+    });
+
+    //On Account Promoted
+    const accountPromotedSubscription = stan.subscribe(NATS_ACCOUNT_PROMOTED_CHANNEL, NATS_QUEUE_GROUP, options);
+    accountPromotedSubscription.on('message', async msg => {
+        const data = msg.getData();
+        const account = JSON.parse(data);
+
+        const {userId} = account
+
+        if (!userId) return console.log('Cannot destructure account id!');
+
+        const {error} = await db.promoteUser(userId);
+        if (error) return;
+
+        msg.ack();
+    });
+
+    //On Account Demoted
+    const accountDemotedSubscription = stan.subscribe(NATS_ACCOUNT_DEMOTED_CHANNEL, NATS_QUEUE_GROUP, options);
+    accountDemotedSubscription.on('message', async msg => {
+        const data = msg.getData();
+        const account = JSON.parse(data);
+
+        const {userId} = account
+
+        if (!userId) return console.log('Cannot destructure account id!');
+
+        const {error} = await db.demoteUser(userId);
+        if (error) return;
+
+        msg.ack();
+    });
+
+    //On Account Deleted
+    const accountDeletedSubscription = stan.subscribe(NATS_ACCOUNT_DELETED_CHANNEL, NATS_QUEUE_GROUP, options);
+    accountDeletedSubscription.on('message', async msg => {
+        const data = msg.getData();
+        const account = JSON.parse(data);
+
+        const {userId} = account
+
+        if (!userId) return console.log('Cannot destructure account id!');
+
+        const {error} = await db.deleteUser(userId);
+        if (error) return;
 
         msg.ack();
     });

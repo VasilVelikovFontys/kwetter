@@ -2,6 +2,7 @@ const createApp = require('./app');
 const auth = require("./firebase/auth");
 const db = require("./firebase/db");
 const nats = require("./messaging/nats");
+const algolia = require("./algolia/algolia");
 
 const dotenv = require("dotenv");
 dotenv.config();
@@ -15,7 +16,7 @@ const handleShutdown = async () => {
     nats.closeStan()
 }
 
-const app = createApp(db, nats);
+const app = createApp(db, nats, algolia);
 
 app.listen(PORT || 4000, async () => {
     console.log(`Listening on port ${PORT || 4000}`);

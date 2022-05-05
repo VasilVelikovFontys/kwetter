@@ -7,23 +7,24 @@ const createLikesRouter = (database, messaging) => {
         const {userId} = req.body;
         const {postId} = req.params;
 
-        if (!postId) return res.status(202).send({error: 'Post id is required!'});
-        if (!userId) return res.status(202).send({error: 'User id is required!'});
+        if (!postId) return res.status(400).send({error: 'Post id is required!'});
+        if (!userId) return res.status(400).send({error: 'User id is required!'});
 
-        try {
-            const likeResponse = await database.likePost(postId, userId);
-            const {like} = likeResponse;
-            const likeError = likeResponse.error;
+        if (!database || !messaging) return res.sendStatus(500);
 
-            if (likeError) return res.status(202).send({error: likeError});
+        const {post, error: postError} = await database.getPostById(postId);
+        if (postError) return res.sendStatus(500);
 
-            const data = JSON.stringify(like);
-            messaging.publishPostLiked(data);
+        if (post.userId === userId) return res.status(400).send({error: 'Users cannot like their own post!'});
+        if (post.likes.indexOf(userId) >= 0) return res.status(400).send({error: 'User already liked this post!'});
 
-            res.status(201).send({like});
-        } catch (error) {
-            res.status(202).send({error});
-        }
+        const {like, error: likeError} = await database.likePost(postId, userId);
+        if (likeError) return res.sendStatus(500);
+
+        const data = JSON.stringify(like);
+        messaging.publishPostLiked(data);
+
+        res.status(201).send({like});
     });
 
     return router;

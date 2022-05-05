@@ -5,7 +5,24 @@
     border-radius: 5px;
     padding: 10px;
     display: flex;
-    justify-content: flex-end;
+    justify-content: space-between;
+}
+
+.search {
+    font-size: 16px;
+    border-radius: 5px;
+    padding: 5px;
+    border: 2px solid black;
+    width: 300px;
+    margin-right: 10px;
+}
+
+.search:focus-visible {
+    outline: none;
+}
+
+.fa-magnifying-glass {
+    cursor: pointer;
 }
 
 select {

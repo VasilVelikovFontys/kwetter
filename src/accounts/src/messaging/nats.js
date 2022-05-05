@@ -5,13 +5,15 @@ dotenv.config();
 const {
     NATS_CLUSTER_ID,
     NATS_CLIENT_ID,
-    NATS_HOST,
-    NATS_PORT,
-    NATS_ACCOUNT_CREATED_CHANNEL
+    NATS_URL,
+    NATS_ACCOUNT_CREATED_CHANNEL,
+    NATS_ACCOUNT_PROMOTED_CHANNEL,
+    NATS_ACCOUNT_DEMOTED_CHANNEL,
+    NATS_ACCOUNT_DELETED_CHANNEL
 } = process.env;
 
 const stan = nats.connect(NATS_CLUSTER_ID, NATS_CLIENT_ID, {
-    url: `${NATS_HOST}:${NATS_PORT}`
+    url: NATS_URL
 });
 
 stan.on('connect', () => {
@@ -26,11 +28,26 @@ const publishAccountCreated = data => {
     stan.publish(NATS_ACCOUNT_CREATED_CHANNEL, data);
 }
 
+const publishAccountPromoted = data => {
+    stan.publish(NATS_ACCOUNT_PROMOTED_CHANNEL, data);
+}
+
+const publishAccountDemoted = data => {
+    stan.publish(NATS_ACCOUNT_DEMOTED_CHANNEL, data);
+}
+
+const publishAccountDeleted = data => {
+    stan.publish(NATS_ACCOUNT_DELETED_CHANNEL, data);
+}
+
 const closeStan = () => {
     stan.close();
 }
 
 module.exports = {
     publishAccountCreated,
+    publishAccountPromoted,
+    publishAccountDemoted,
+    publishAccountDeleted,
     closeStan
 }

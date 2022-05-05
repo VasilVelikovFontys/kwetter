@@ -3,7 +3,9 @@ import '../../../styles/components/profile/list/followers/followers.css';
 import {useSelector} from "react-redux";
 import Follower from "./Follower";
 
-const Followers = () => {
+const Followers = props => {
+    const {setSelectedUsername} = props;
+
     const {jwt} = useSelector(state => state.auth);
     const {followers, loading: followersLoading, error: followersError} = useSelector(state => state.followers);
 
@@ -11,7 +13,7 @@ const Followers = () => {
 
     useEffect(() => {
         if (!followers) return;
-        const newFollowers = followers.map(username => <Follower key={username} username={username}/>);
+        const newFollowers = followers.map(username => <Follower key={username} username={username} setSelectedUsername={setSelectedUsername}/>);
 
         setStyledFollowers(newFollowers);
     }, [followers]);
@@ -28,6 +30,8 @@ const Followers = () => {
 
     return (
         <div id='followers'>
+            <div id='followers-title'>Followers</div>
+
             {displayFollowers()}
 
             {followersError && (

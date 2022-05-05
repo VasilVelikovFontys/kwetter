@@ -4,9 +4,12 @@ const createTrendsRouter = database => {
     const router = express.Router();
 
     router.get('/trends', async (_req, res) => {
-        const trends = await database.getTrends();
+        if (!database) return res.sendStatus(500);
 
-        res.status(200).send({trends});
+        const {data, error} = await database.getTrends();
+        if (error) return res.sendStatus(500);
+
+        res.status(200).send({trends: data});
     });
 
     return router;

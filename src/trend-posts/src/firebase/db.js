@@ -2,14 +2,26 @@ const firebase = require("firebase/compat/app");
 const firebaseApp = require("./app");
 require("firebase/compat/firestore");
 const db = firebaseApp.firestore();
+const {handleError, handleLog} = require("../utils/handler");
 
-const createTimestampFromDate = (date) => {
-    return new firebase.firestore.Timestamp(date.seconds, date.nanoseconds);
+const createTimestampFromDate = date => {
+    try {
+        return {timestamp: new firebase.firestore.Timestamp(date.seconds, date.nanoseconds)};
+    } catch (error) {
+        return handleError(error);
+    }
 }
 
 const createPost = async (id, username, text, date) => {
-    const postTimestamp = createTimestampFromDate(date);
-    await db.collection('posts').doc(id).set({username, text, date: postTimestamp, trends: [], likes: []});
+    try {
+        const {timestamp, error} = createTimestampFromDate(date);
+        if (error) return handleError('Could not create timestamp from date!');
+
+        await db.collection('posts').doc(id).set({username, text, date: timestamp, trends: [], likes: []});
+    } catch (error) {
+        return handleError(error);
+    }
+    return {};
 }
 
 const likePost = async (postId, userId) => {
@@ -25,35 +37,77 @@ const likePost = async (postId, userId) => {
     } catch (error) {
         return {error};
     }
+    return {};
 }
 
 const updatePostTrends = async (postId, trends) => {
-    const postDocument = await db.collection('posts').doc(postId).get();
+    try {
+        const postDocument = await db.collection('posts').doc(postId).get();
+        const post = postDocument.data();
 
-    if (!postDocument) return {error: "Post does not exist!"};
-    const post = postDocument.data();
+        if (!post) return handleError(`Post with id ${postId} not found!`);
 
-    await db.collection('posts').doc(postId).set({
-        ...post,
-        trends: [...post.trends, ...trends.map(trend => trend.id)]
-    });
+        await db.collection('posts').doc(postId).set({
+            ...post,
+            trends: [...post.trends, ...trends.map(trend => trend.id)]
+        });
+    } catch (error) {
+        return handleError(error);
+    }
+    return {};
 }
 
 const getPostsByTrend = async trendId => {
-    const snapshot = await db.collection('posts')
-        .where('trends','array-contains', trendId).get();
+    try {
+        const snapshot = await db.collection('posts')
+            .where('trends','array-contains', trendId).get();
 
-    return snapshot.docs.map(doc => {
-        const data = doc.data();
-        const date = data.date.toDate();
+        const posts = snapshot.docs.map(doc => {
+            const data = doc.data();
+            const date = data.date.toDate();
 
-        return {...data, date, id: doc.id}
-    });
+            return {...data, date, id: doc.id}
+        })
+
+        return {data: posts};
+    } catch (error) {
+        return handleError(error);
+    }
+}
+
+const deletePost = async postId => {
+    try {
+        const postDocument = await db.collection('posts').doc(postId).get();
+        if (!postDocument) return handleError(`Post with id ${postId} not found!`);
+
+        await postDocument.ref.delete();
+    } catch (error) {
+        return handleError(error);
+    }
+    return {};
+}
+
+const deleteLike = async (postId, userId) => {
+    try {
+        const postDocument = await db.collection('posts').doc(postId).get();
+        const post = postDocument.data();
+
+        if (!post) return handleLog(`Post with id ${postId} not found!`);
+
+        const newLikes = post.likes.filter(postLike => postLike !== userId);
+        await postDocument.ref.update({likes: newLikes});
+
+    } catch (error) {
+        return handleError(error);
+    }
+    return {};
 }
 
 module.exports = {
     createPost,
     likePost,
     updatePostTrends,
-    getPostsByTrend
+    getPostsByTrend,
+    deletePost,
+    deleteLike
 };

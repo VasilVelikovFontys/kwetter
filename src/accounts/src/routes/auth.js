@@ -1,62 +1,75 @@
 const express = require("express");
 
-const createAuthRouter = auth => {
+const createAuthRouter = (auth, admin) => {
     const router = express.Router();
 
     router.post('/auth/register', async (req, res) => {
         const {email, password} = req.body;
 
-        if (!email) return res.status(202).send({error: "Email is required!"});
-        if (!password) return res.status(202).send({error: "Password is required!"});
+        if (!email) return res.status(400).send({error: "Email is required!"});
+        if (!password) return res.status(400).send({error: "Password is required!"});
 
-        try {
-            const uid = await auth.registerUser(email, password);
+        if (!auth) return res.sendStatus(500);
 
-            res.status(201).send({uid});
-        } catch (error) {
+        const {userId, error} = await auth.registerUser(email, password);
+
+        if (error) {
             switch (error.code) {
                 case "auth/email-already-in-use":
-                    res.status(202).send({error: "Email already taken!"});
-                    break;
+                    return res.status(400).send({error: "Email already taken!"});
+
                 case "auth/weak-password":
-                    res.status(202).send({error: "Password must be at least 6 characters!"});
-                    break;
+                    return res.status(400).send({error: "Password must be at least 6 characters!"});
+
                 case "auth/invalid-email":
-                    res.status(202).send({error: "Invalid email!"});
-                    break;
+                    return res.status(400).send({error: "Invalid email!"});
+
                 default:
-                    res.status(202).send({error});
-                    break;
+                    return res.status(400).send({error});
             }
         }
+
+        res.status(201).send({userId});
     });
 
     router.post('/auth/authenticate', async (req, res) => {
         const {email, password} = req.body;
 
-        if (!email) return res.status(202).send({error: "Email is required!"});
-        if (!password) return res.status(202).send({error: "Password is required!"});
+        if (!email) return res.status(400).send({error: "Email is required!"});
+        if (!password) return res.status(400).send({error: "Password is required!"});
 
-        try {
-            const uid = await auth.authenticateUser(email, password);
+        if (!auth) return res.sendStatus(500);
 
-            res.status(200).send({uid});
-        } catch (error) {
+        const {userId, error} = await auth.authenticateUser(email, password);
+
+        if (error) {
             switch (error.code) {
                 case "auth/invalid-email":
-                    res.status(202).send({error: "Invalid email!"});
-                    break;
+                    return res.status(400).send({error: "Invalid email!"});
+
                 case "auth/user-not-found":
-                    res.status(202).send({error: "User not found!"});
-                    break;
+                    return res.status(404).send({error: "User not found!"});
+
                 case "auth/wrong-password":
-                    res.status(202).send({error: "Wrong password!"});
-                    break;
+                    return res.status(400).send({error: "Wrong password!"});
+
                 default:
-                    res.status(202).send({error});
-                    break;
+                    return res.status(400).send({error});
             }
         }
+
+        res.status(200).send({userId});
+    });
+
+    router.delete('/auth/:userId', async (req, res) => {
+        const {userId} = req.params;
+
+        if (!admin) return res.sendStatus(500);
+
+        const {error} = await admin.deleteAccount(userId);
+        if (error) return res.sendStatus(500);
+
+        res.sendStatus(200);
     });
 
     return router;

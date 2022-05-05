@@ -5,7 +5,7 @@ import Picture from "./Picture";
 
 const NameAndPicture = () => {
     const {jwt} = useSelector(state => state.auth);
-    const {user} = useSelector(state => state.user);
+    const {user} = useSelector(state => state.currentUser);
     const {loading: pictureLoading, error: pictureError} = useSelector(state => state.picture);
 
     const displayUser = () => {
@@ -15,7 +15,7 @@ const NameAndPicture = () => {
         const {username, picture} = user;
         return (
             <div id="name-and-picture-container">
-                <Picture picture={picture}/>
+                <Picture picture={picture} own/>
                 <span>{username}</span>
             </div>
         )

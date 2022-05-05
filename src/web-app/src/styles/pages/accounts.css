@@ -1,0 +1,56 @@
+#accounts-page {
+    padding: 10px;
+}
+
+#accounts-table {
+    margin-top: 10px;
+    border-spacing: 0;
+    border-collapse: collapse;
+}
+
+#accounts-table td {
+    border: 1px solid black;
+    padding: 5px;
+}
+
+#accounts-nav {
+    display: flex;
+    justify-content: space-between;
+}
+
+#accounts-nav-buttons {
+    display: flex;
+    align-items: center;
+}
+
+#start-button {
+    cursor: pointer;
+    margin-right: 10px;
+}
+
+#start-button:hover {
+    text-decoration: underline;
+}
+
+#logout-button {
+    padding: 5px 10px 8px 5px;
+    border: 2px solid black;
+    border-radius: 5px 45% 45% 5px;
+    cursor: pointer;
+    transition: all 0.3s;
+    height: 20px;
+    width: 60px;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#logout-button:hover {
+    background-color: black;
+    color: white;
+}
+
+.accounts-error {
+    margin-top: 10px;
+    color: darkred;
+}

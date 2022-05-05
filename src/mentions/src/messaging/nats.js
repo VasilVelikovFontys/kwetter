@@ -7,16 +7,18 @@ dotenv.config();
 const {
     NATS_CLIENT_ID,
     NATS_CLUSTER_ID,
-    NATS_HOST,
-    NATS_PORT,
+    NATS_URL,
+    NATS_DURABLE_NAME,
+    NATS_QUEUE_GROUP,
     NATS_POST_CREATED_CHANNEL,
     NATS_USER_MENTIONED_CHANNEL,
-    NATS_DURABLE_NAME,
-    NATS_QUEUE_GROUP
+    NATS_ACCOUNT_DELETED_CHANNEL,
+    NATS_POST_DELETED_CHANNEL,
+    NATS_MENTION_DELETED_CHANNEL
 } = process.env;
 
 const stan = nats.connect(NATS_CLUSTER_ID, NATS_CLIENT_ID, {
-    url: `${NATS_HOST}:${NATS_PORT}`
+    url: NATS_URL
 });
 
 stan.on('connect', () => {
@@ -48,7 +50,7 @@ stan.on('connect', () => {
                 }
 
                 usernames.forEach(async mentionedUsername => {
-                    if (username === mentionedUsername) return;
+                    if (username === mentionedUsername) return console.log("Mentioned username matches user's username");
                     await db.createMention(post.id, mentionedUsername);
                 });
 
@@ -59,7 +61,49 @@ stan.on('connect', () => {
 
                 msg.ack();
             });
-    })
+    });
+
+    //On Account Deleted
+    const accountDeletedSubscription = stan.subscribe(NATS_ACCOUNT_DELETED_CHANNEL, NATS_QUEUE_GROUP, options);
+    accountDeletedSubscription.on('message', async msg => {
+        const data = msg.getData();
+        const account = JSON.parse(data);
+
+        const {username} = account;
+
+        if (!username) return console.log('Cannot destructure account username!');
+
+        const {mentions, error} = await db.deleteUsernameMentions(username);
+        if (error) return;
+
+        mentions.forEach(mention => {
+           const data = JSON.stringify(mention);
+           publishMentionDeleted(data);
+        });
+
+        msg.ack();
+    });
+
+    //On Post Deleted
+    const postDeletedSubscription = stan.subscribe(NATS_POST_DELETED_CHANNEL, NATS_QUEUE_GROUP, options);
+    postDeletedSubscription.on('message', async msg => {
+        const data = msg.getData();
+        const post = JSON.parse(data);
+
+        const {postId} = post;
+
+        if (!postId) return console.log('Cannot destructure post id!');
+
+        const {mentions, error} = await db.deletePostMentions(postId);
+        if (error) return;
+
+        mentions.forEach(mention => {
+            const data = JSON.stringify(mention);
+            publishMentionDeleted(data);
+        });
+
+        msg.ack();
+    });
 });
 
 const getUsernamesFromText = async text => {
@@ -90,6 +134,10 @@ const getUsernamesFromText = async text => {
 
 const closeStan = () => {
     stan.close();
+}
+
+const publishMentionDeleted = data => {
+    stan.publish(NATS_MENTION_DELETED_CHANNEL, data);
 }
 
 module.exports = {

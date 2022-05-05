@@ -4,56 +4,49 @@ const createFollowingRouter = (database, messaging) => {
     const router = express.Router();
 
     router.post('/follow/:followedUsername', async (req, res) => {
-        const {uid, username} = req.body;
+        const {userId, username} = req.body;
         const {followedUsername} = req.params;
 
-        if (!uid) return res.status(202).send({error: "User id is required!"});
-        if (!username) return res.status(202).send({error: "Username is required!"});
-        if (!followedUsername) return res.status(202).send({error: "Followed username is required!"});
-        if (username === followedUsername) return res.status(202).send({error: "Users cannot follow themselves!"});
+        if (!userId) return res.status(400).send({error: "User id is required!"});
+        if (!username) return res.status(400).send({error: "Username is required!"});
+        if (!followedUsername) return res.status(400).send({error: "Followed username is required!"});
+        if (username === followedUsername) return res.status(400).send({error: "Users cannot follow themselves!"});
 
-        try {
-            const followResponse = await database.followUser(uid, username, followedUsername)
-            const {follow} = followResponse;
-            const followError = followResponse.error;
+        if (!database || !messaging) return res.sendStatus(500);
 
-            if (followError) res.status(202).send({error: followError});
+        const {follow, error} = await database.followUser(userId, username, followedUsername)
+        if (error) return res.sendStatus(500);
 
-            const data = JSON.stringify(follow);
-            messaging.publishUserFollowed(data);
+        const data = JSON.stringify(follow);
+        messaging.publishUserFollowed(data);
 
-            res.status(201).send({follow});
-        } catch (error) {
-            res.status(202).send({error});
-        }
+        res.status(201).send({follow});
     });
 
-    router.get('/following/:uid', async (req, res) => {
-        const {uid} = req.params;
+    router.get('/following/:userId', async (req, res) => {
+        const {userId} = req.params;
 
-        if (!uid) return res.status(202).send({error: "User id is required!"});
+        if (!userId) return res.status(400).send({error: "User id is required!"});
 
-        try {
-            const following = await database.getFollowing(uid);
+        if (!database) return res.sendStatus(500);
 
-            res.status(201).send({following});
-        } catch (error) {
-            res.status(202).send({error});
-        }
+        const {data, error} = await database.getFollowing(userId);
+        if (error) return res.sendStatus(500);
+
+        res.status(200).send({following: data});
     });
 
-    router.get('/followers/:uid', async (req, res) => {
-        const {uid} = req.params;
+    router.get('/followers/:userId', async (req, res) => {
+        const {userId} = req.params;
 
-        if (!uid) return res.status(202).send({error: "User id is required!"});
+        if (!userId) return res.status(400).send({error: "User id is required!"});
 
-        try {
-            const followers = await database.getFollowers(uid);
+        if (!database) return res.sendStatus(500);
 
-            res.status(201).send({followers});
-        } catch (error) {
-            res.status(202).send({error});
-        }
+        const {data, error} = await database.getFollowers(userId);
+        if (error) return res.sendStatus(500);
+
+        res.status(200).send({followers: data});
     });
 
     return router;

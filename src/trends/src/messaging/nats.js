@@ -7,8 +7,7 @@ dotenv.config();
 const {
     NATS_CLIENT_ID,
     NATS_CLUSTER_ID,
-    NATS_HOST,
-    NATS_PORT,
+    NATS_URL,
     NATS_POST_CREATED_CHANNEL,
     NATS_POST_TRENDED_CHANNEL,
     NATS_DURABLE_NAME,
@@ -16,7 +15,7 @@ const {
 } = process.env;
 
 const stan = nats.connect(NATS_CLUSTER_ID, NATS_CLIENT_ID, {
-    url: `${NATS_HOST}:${NATS_PORT}`
+    url: NATS_URL
 });
 
 stan.on('connect', () => {

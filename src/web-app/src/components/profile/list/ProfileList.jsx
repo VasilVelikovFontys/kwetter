@@ -4,7 +4,7 @@ import Followers from "./Followers";
 import {FOLLOWERS_LIST, POSTS_LIST} from "../../../constants";
 
 const ProfileList = props => {
-    const {selectedList} = props;
+    const {selectedList, setSelectedUsername} = props;
 
     return (
         <div id='profile-list'>
@@ -12,7 +12,7 @@ const ProfileList = props => {
                 <Posts/>
             )}
             {selectedList === FOLLOWERS_LIST && (
-                <Followers/>
+                <Followers setSelectedUsername={setSelectedUsername}/>
             )}
         </div>
     )

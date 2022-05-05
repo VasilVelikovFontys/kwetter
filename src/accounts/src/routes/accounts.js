@@ -3,64 +3,115 @@ const express = require("express");
 const createAccountsRouter = (auth, database, messaging) => {
     const router = express.Router();
 
+    router.get('/accounts', async (req, res) => {
+        if (!database) return res.sendStatus(500);
+
+        const {data, error} = await database.getAccounts();
+        if (error) return res.status(500).send({error});
+
+        res.status(200).send(data);
+    });
+
     router.post('/accounts', async (req, res) => {
-        const {uid, email, username} = req.body;
+        const {userId, email, username} = req.body;
 
-        if (!uid) return res.status(202).send({error: "User id is required!"});
-        if (!email) return res.status(202).send({error: "Email is required!"});
-        if (!username) return res.status(202).send({error: "Username is required!"});
+        if (!userId) return res.status(400).send({error: "User id is required!"});
+        if (!email) return res.status(400).send({error: "Email is required!"});
+        if (!username) return res.status(400).send({error: "Username is required!"});
 
-        if (auth) await auth.authenticateService();
+        if (!auth || !database || !messaging) return res.sendStatus(500);
 
-        try {
-            const roles = ['USER'];
+        await auth.authenticateService();
 
-            await database.createAccount(uid, email, username, roles);
+        const roles = ['USER'];
 
-            const account = {uid, username};
+        const {error} = await database.createAccount(userId, email, username, roles);
+        if (error) return res.status(500).send({error});
 
-            if (messaging) {
-                const data = JSON.stringify(account);
-                messaging.publishAccountCreated(data);
-            }
+        const account = {userId, username, roles};
 
-            res.status(201).send({account});
-        } catch (error) {
-            res.status(202).send({error});
-        }
+        const data = JSON.stringify(account);
+        messaging.publishAccountCreated(data);
+
+        res.status(201).send({account});
     });
 
-    router.get('/accounts/:uid', async (req, res) => {
-        const {uid} = req.params;
+    router.get('/accounts/:userId', async (req, res) => {
+        const {userId} = req.params;
 
-        if (!uid) return res.status(202).send({error: "User id is required!"});
+        if (!userId) return res.status(400).send({error: "User id is required!"});
 
-        if (auth) await auth.authenticateService();
+        if (!auth || !database) return res.sendStatus(500);
 
-        try {
-            const account = await database.getAccountByUid(uid);
+        await auth.authenticateService();
 
-            res.status(200).send({account: {...account, id: uid}});
-        } catch (error) {
-            res.status(202).send({error});
-        }
+        const {data, error} = await database.getAccountById(userId);
+        if (error) return res.status(500).send({error});
+
+        res.status(200).send({account: {...data, id: userId}});
     });
 
-    router.post('/accounts/check-username', async (req, res) => {
-        const {username} = req.body;
+    router.get('/accounts/:username/check', async (req, res) => {
+        const {username} = req.params;
 
-        if (!username) return res.status(202).send({error: "Username is required!"});
+        if (!username) return res.status(400).send({error: "Username is required!"});
 
-        try {
-            const usernameAvailable = await database.checkUsernameAvailable(username);
+        if (!database) return res.sendStatus(500);
 
-            if (!usernameAvailable) return res.status(202).send({error: "Username already taken!"});
+        const {available, error} = await database.checkUsernameAvailable(username);
+        if (error) return res.status(500).send({error});
+        if (!available) return res.status(400).send({error: "Username already taken!"});
 
-            res.sendStatus(200);
-        } catch (error) {
-            res.status(202).send({error});
-        }
-    })
+        res.sendStatus(200);
+    });
+
+    router.patch('/accounts/:userId/promote', async (req, res) => {
+        const {userId} = req.params;
+
+        if (!userId) return res.status(400).send({error: "Account id is required!"});
+
+        if (!database || !messaging) return res.sendStatus(500);
+
+        const {error} = await database.promoteAccount(userId);
+        if (error) return res.status(500).send({error});
+
+        const data = JSON.stringify({userId});
+        messaging.publishAccountPromoted(data);
+
+        res.sendStatus(200);
+    });
+
+    router.patch('/accounts/:userId/demote', async (req, res) => {
+        const {userId} = req.params;
+
+        if (!userId) return res.status(400).send({error: "Account id is required!"});
+
+        if (!database || !messaging) return res.sendStatus(500);
+
+        const {error} = await database.demoteAccount(userId);
+        if (error) return res.status(500).send({error});
+
+        const data = JSON.stringify({userId});
+        messaging.publishAccountDemoted(data);
+
+        res.sendStatus(200);
+    });
+
+    router.delete('/accounts/:userId', async (req, res) => {
+        const {userId} = req.params;
+
+        if (!userId) return res.status(400).send({error: "Account id is required!"});
+
+        if (!database || !messaging) return res.sendStatus(500);
+
+        const {account, error} = await database.deleteAccount(userId);
+        if (error) return res.status(500).send({error});
+
+        const data = JSON.stringify({userId, username: account.username});
+        messaging.publishAccountDeleted(data);
+
+        res.sendStatus(200);
+    });
 
     return router;
 }

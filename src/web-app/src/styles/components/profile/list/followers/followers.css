@@ -4,6 +4,10 @@
     padding: 5px;
 }
 
+#followers-title {
+    margin-bottom: 5px;
+}
+
 .followers-error {
     color: darkred;
 }

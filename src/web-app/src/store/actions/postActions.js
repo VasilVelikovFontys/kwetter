@@ -9,8 +9,9 @@ import {
     SET_TIMELINE_POSTS_LOADING
 } from "../../constants";
 import {store} from "../../index";
+import {handleRequestError} from "../../utils/requests";
 
-const SERVER_URL = `${envGet('SERVER_HOST')}:${envGet('SERVER_PORT')}`;
+const SERVER_URL = envGet('SERVER_URL');
 
 export const createPost = text => {
     return async dispatch => {
@@ -20,22 +21,26 @@ export const createPost = text => {
         dispatch({type: SET_USER_POSTS_LOADING});
         dispatch({type: SET_TIMELINE_POSTS_LOADING});
 
-        const {data} = await axios.post(`${SERVER_URL}/posts`, {text}, {headers: getAuthHeader()});
+        try {
+            const {data} = await axios.post(`${SERVER_URL}/posts`, {text}, {headers: getAuthHeader()});
 
-        const {post, error} = data
-        if (error) return dispatch({type: SET_USER_POSTS_ERROR, error});
+            const post = data
 
-        let newUserPosts = userPosts;
-        if (newUserPosts.length === 10) {
-            newUserPosts = newUserPosts.pop();
+            let newUserPosts = userPosts;
+            if (newUserPosts.length === 10) {
+                newUserPosts = newUserPosts.pop();
+            }
+            newUserPosts.unshift(post);
+
+            let newTimelinePosts = timelinePosts;
+            timelinePosts.unshift(post);
+
+            dispatch({type: SET_USER_POSTS, posts: newUserPosts});
+            dispatch({type: SET_TIMELINE_POSTS, posts: newTimelinePosts});
+
+        } catch (error) {
+            handleRequestError(error, dispatch, SET_USER_POSTS_ERROR);
         }
-        newUserPosts.unshift(post);
-
-        let newTimelinePosts = timelinePosts;
-        timelinePosts.unshift(post);
-
-        dispatch({type: SET_USER_POSTS, posts: newUserPosts});
-        dispatch({type: SET_TIMELINE_POSTS, posts: newTimelinePosts});
     }
 }
 
@@ -43,11 +48,14 @@ export const getUserPosts = () => {
     return async dispatch => {
         dispatch({type: SET_USER_POSTS_LOADING});
 
-        const {data} = await axios.get(`${SERVER_URL}/posts`, {headers: getAuthHeader()});
+        try {
+            const {data} = await axios.get(`${SERVER_URL}/posts`, {headers: getAuthHeader()});
 
-        const {posts, error} = data
-        if (error) return dispatch({type: SET_USER_POSTS_ERROR, error});
+            const {posts} = data
 
-        dispatch({type: SET_USER_POSTS, posts});
+            dispatch({type: SET_USER_POSTS, posts});
+        } catch (error) {
+            handleRequestError(error, dispatch, SET_USER_POSTS_ERROR);
+        }
     }
 }

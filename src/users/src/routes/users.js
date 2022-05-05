@@ -1,20 +1,32 @@
 const express = require("express");
 
-const createUsersRouter = db => {
+const createUsersRouter = database => {
     const router = express.Router();
 
-    router.get('/users/:uid', async (req, res) => {
-        const {uid} = req.params;
+    router.get('/users/:userId', async (req, res) => {
+        const {userId} = req.params;
 
-        if (!uid) return res.status(202).send({error: 'User id is required!'});
+        if (!userId) return res.status(400).send({error: 'User id is required!'});
 
-        try {
-            const user = await db.getUser(uid);
+        if (!database) return res.sendStatus(500);
 
-            return res.status(200).send({user});
-        } catch (error) {
-            return res.status(204).send({error});
-        }
+        const {user, error} = await database.getUserById(userId);
+        if (error) return res.sendStatus(500);
+
+        return res.status(200).send({user});
+    });
+
+    router.get('/users/username/:username', async (req, res) => {
+        const {username} = req.params;
+
+        if (!username) return res.status(400).send({error: 'Username is required!'});
+
+        if (!database) return res.sendStatus(500);
+
+        const {user, error} = await database.getUserByUsername(username);
+        if (error) return res.sendStatus(500);
+
+        return res.status(200).send({user});
     });
 
     return router;

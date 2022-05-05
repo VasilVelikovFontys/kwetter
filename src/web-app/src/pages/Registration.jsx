@@ -3,6 +3,7 @@ import {useNavigate} from "react-router-dom";
 import {emailIsValid, passwordIsValid, passwordsMatch, usernameIsValid} from "../utils/validator";
 import {register} from "../store/actions/authActions";
 import {useDispatch, useSelector} from "react-redux";
+import {SET_AUTH, SET_CURRENT_USER} from "../constants";
 
 const Registration = () => {
     const navigate = useNavigate();
@@ -40,13 +41,12 @@ const Registration = () => {
 
         setError(null);
 
+        dispatch({type: SET_AUTH, jwt: null});
+        dispatch({type: SET_CURRENT_USER, user: null});
+
         dispatch(register({username, email, password}))
             .then(() => {
                 //No action needed
-            })
-            .catch((registerError) => {
-                if (registerError.message) return setError(registerError.message)
-                setError(registerError);
             });
     };
 

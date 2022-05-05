@@ -7,17 +7,18 @@ dotenv.config();
 const {
     NATS_CLIENT_ID,
     NATS_CLUSTER_ID,
-    NATS_HOST,
-    NATS_PORT,
+    NATS_URL,
+    NATS_DURABLE_NAME,
+    NATS_QUEUE_GROUP,
     NATS_POST_CREATED_CHANNEL,
     NATS_POST_TRENDED_CHANNEL,
     NATS_POST_LIKED_CHANNEL,
-    NATS_DURABLE_NAME,
-    NATS_QUEUE_GROUP
+    NATS_POST_DELETED_CHANNEL,
+    NATS_LIKE_DELETED_CHANNEL
 } = process.env;
 
 const stan = nats.connect(NATS_CLUSTER_ID, NATS_CLIENT_ID, {
-    url: `${NATS_HOST}:${NATS_PORT}`
+    url: NATS_URL
 });
 
 stan.on('connect', () => {
@@ -46,12 +47,10 @@ stan.on('connect', () => {
         if (!text) return console.log('Cannot destructure post text!');
         if (!date) return console.log('Cannot destructure post date!');
 
-        try {
-            await db.createPost(id, username, text, date)
-            msg.ack();
-        } catch (error) {
-            console.log(error)
-        }
+        const {error} = await db.createPost(id, username, text, date);
+        if (error) return;
+
+        msg.ack();
     });
 
     //On Post Trended
@@ -65,12 +64,10 @@ stan.on('connect', () => {
         if (!postId) return console.log('Cannot destructure post id!');
         if (!trends) return console.log('Cannot destructure post trends!');
 
-        try {
-            await db.updatePostTrends(postId, trends);
-            msg.ack();
-        } catch (error) {
-            console.log(error)
-        }
+        const {error} = await db.updatePostTrends(postId, trends);
+        if (error) return;
+
+        msg.ack();
     });
 
     //On Post Liked
@@ -84,12 +81,43 @@ stan.on('connect', () => {
         if (!postId) return console.log('Cannot destructure post id!');
         if (!userId) return console.log('Cannot destructure user id!');
 
-        try {
-            await db.likePost(postId, userId);
-            msg.ack();
-        } catch (error) {
-            console.log(error)
-        }
+        const {error} = await db.likePost(postId, userId);
+        if (error) return;
+
+        msg.ack();
+    });
+
+    //On Post Deleted
+    const postDeletedSubscription = stan.subscribe(NATS_POST_DELETED_CHANNEL, NATS_QUEUE_GROUP, options);
+    postDeletedSubscription.on('message', async msg => {
+        const data = msg.getData();
+        const post = JSON.parse(data);
+
+        const {postId} = post;
+
+        if (!postId) return console.log('Cannot destructure post id!');
+
+        const {error} = await db.deletePost(postId);
+        if (error) return;
+
+        msg.ack();
+    });
+
+    //On Like Deleted
+    const likeDeletedSubscription = stan.subscribe(NATS_LIKE_DELETED_CHANNEL, NATS_QUEUE_GROUP, options);
+    likeDeletedSubscription.on('message', async msg => {
+        const data = msg.getData();
+        const like = JSON.parse(data);
+
+        const {postId, userId} = like;
+
+        if (!userId) return console.log('Cannot destructure like user id!');
+        if (!postId) return console.log('Cannot destructure like post id!');
+
+        const {error: likeDeletionError} = await db.deleteLike(postId, userId);
+        if (likeDeletionError) return;
+
+        msg.ack();
     });
 });
 

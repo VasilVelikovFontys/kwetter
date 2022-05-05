@@ -1,4 +1,6 @@
-import {SET_USER, SET_USER_LOADING, SET_USER_ERROR} from '../../constants';
+import {
+    SET_USER_LOADING, SET_USER_ERROR, SET_USER
+} from '../../constants';
 
 const initState = {
     user: null,

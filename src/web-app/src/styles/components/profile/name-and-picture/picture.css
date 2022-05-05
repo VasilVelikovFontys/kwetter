@@ -1,10 +1,23 @@
 .picture {
-    cursor: pointer;
     margin-right: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: auto;
+    margin-bottom: auto;
+}
+
+.picture-own {
+    cursor: pointer;
 }
 
 .picture img {
     width: 80px;
     height: 80px;
     border-radius: 50%;
+}
+
+.picture i {
+    margin-left: 5px;
+    font-size: 40px;
 }

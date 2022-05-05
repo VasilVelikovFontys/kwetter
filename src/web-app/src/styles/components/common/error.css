@@ -1,0 +1,24 @@
+.error-container {
+    margin-top: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.error-message {
+    color: darkred;
+}
+
+.error-ok-button {
+    margin-left: auto;
+    border-radius: 5px;
+    border: 2px solid black;
+    padding: 5px;
+    transition: all 0.3s;
+    cursor: pointer;
+}
+
+.error-ok-button:hover {
+    background-color: black;
+    color: white;
+}

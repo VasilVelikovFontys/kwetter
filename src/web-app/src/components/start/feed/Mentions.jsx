@@ -4,8 +4,11 @@ import {useDispatch, useSelector} from "react-redux";
 import {getMentions} from "../../../store/actions/mentionActions";
 import Post from "../../common/Post";
 
-const Mentions = () => {
+const Mentions = props => {
     const dispatch = useDispatch();
+
+    const {setSelectedUsername} = props;
+
     const {jwt} = useSelector(state => state.auth);
     const {mentions, loading: mentionsLoading, error: mentionsError} = useSelector(state => state.mentions);
 
@@ -18,10 +21,6 @@ const Mentions = () => {
             dispatch(getMentions())
                 .then(() => {
                     //No action needed
-                })
-                .catch(userMentionsError => {
-                    if (userMentionsError.message) return setError(userMentionsError.message)
-                    setError(userMentionsError)
                 });
         }
     }, [dispatch, jwt]);
@@ -31,7 +30,7 @@ const Mentions = () => {
     }, [mentionsError]);
 
     useEffect(() => {
-        const newMentions = mentions.map(post => <Post key={post.id} post={post}/>);
+        const newMentions = mentions.map(post => <Post key={post.id} post={post} setSelectedUsername={setSelectedUsername}/>);
 
         setStyledMentions(newMentions)
     }, [mentions]);

@@ -1,9 +1,20 @@
 .followed-user {
     display: inline-block;
-    border: 1px solid black;
-    border-radius: 5px;
-    padding: 5px;
     margin-right: 10px;
+    padding: 5px;
+    border: 1px solid black;
+}
+
+.followed-user span {
+    cursor: pointer;
+}
+
+.followed-user span:hover {
+    text-decoration: underline;
+}
+
+.followed-user:last-child {
+    margin-right: 0;
 }
 
 .followed-user:nth-child(even) {

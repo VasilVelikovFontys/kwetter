@@ -7,16 +7,18 @@ dotenv.config();
 const {
     NATS_CLIENT_ID,
     NATS_CLUSTER_ID,
-    NATS_HOST,
-    NATS_PORT,
+    NATS_URL,
+    NATS_DURABLE_NAME,
+    NATS_QUEUE_GROUP,
     NATS_POST_CREATED_CHANNEL,
     NATS_POST_LIKED_CHANNEL,
-    NATS_DURABLE_NAME,
-    NATS_QUEUE_GROUP
+    NATS_ACCOUNT_DELETED_CHANNEL,
+    NATS_POST_DELETED_CHANNEL,
+    NATS_LIKE_DELETED_CHANNEL
 } = process.env;
 
 const stan = nats.connect(NATS_CLUSTER_ID, NATS_CLIENT_ID, {
-    url: `${NATS_HOST}:${NATS_PORT}`
+    url: NATS_URL
 });
 
 stan.on('connect', () => {
@@ -40,17 +42,64 @@ stan.on('connect', () => {
         const post = JSON.parse(receivedData);
         const {id, userId} = post;
 
-        try {
-            await db.createPost(id, userId);
-            msg.ack();
-        } catch (error) {
-            console.log(error);
+        const {error} = await db.createPost(id, userId);
+        if (error) return;
+
+        msg.ack();
+    });
+
+    //On Account Deleted
+    const accountDeletedSubscription = stan.subscribe(NATS_ACCOUNT_DELETED_CHANNEL, NATS_QUEUE_GROUP, options);
+    accountDeletedSubscription.on('message', async msg => {
+        const data = msg.getData();
+        const account = JSON.parse(data);
+
+        const {userId} = account;
+
+        if (!userId) return console.log('Cannot destructure account id!');
+
+        const {postIds, error: userLikesDeletionError} = await db.deleteUserLikes(userId);
+        if (userLikesDeletionError) return;
+
+        if (postIds) {
+            postIds.forEach(postId => {
+                const data = JSON.stringify({postId, userId});
+                publishLikeDeleted(data);
+            });
         }
-    })
+
+        const {error} = await db.deleteUser(userId);
+        if (error) return;
+
+        msg.ack();
+    });
+
+    //On Post Deleted
+    const postDeletedSubscription = stan.subscribe(NATS_POST_DELETED_CHANNEL, NATS_QUEUE_GROUP, options);
+    postDeletedSubscription.on('message', async msg => {
+        const data = msg.getData();
+        const post = JSON.parse(data);
+
+        const {postId} = post;
+
+        if (!postId) return console.log('Cannot destructure post id!');
+
+        const {error: postLikesDeletionError} = await db.deletePostLikes(postId);
+        if (postLikesDeletionError) return;
+
+        const {error: postDeletionError} = await db.deletePost(postId);
+        if (postDeletionError) return;
+
+        msg.ack();
+    });
 });
 
 const publishPostLiked = data => {
     stan.publish(NATS_POST_LIKED_CHANNEL, data);
+}
+
+const publishLikeDeleted = data => {
+    stan.publish(NATS_LIKE_DELETED_CHANNEL, data);
 }
 
 const closeStan = () => {

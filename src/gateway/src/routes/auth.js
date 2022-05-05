@@ -1,5 +1,6 @@
 const express = require("express");
 const axios = require("axios");
+const {handleError} = require("../utils");
 
 const createAuthRouter = (accountsUrl, jwtUtils) => {
     const router = express.Router();
@@ -7,31 +8,23 @@ const createAuthRouter = (accountsUrl, jwtUtils) => {
     router.post('/auth/register', async (req, res) => {
         const {email, username, password} = req.body;
 
-        try {
-            const usernameResponse = await axios.post(`${accountsUrl}/accounts/check-username`, {username});
-            const usernameError = usernameResponse.data.error;
+        if (!accountsUrl || !jwtUtils) return res.sendStatus(500);
 
-            if (usernameError) return res.status(202).send({error: usernameError});
+        try {
+            await axios.get(`${accountsUrl}/accounts/${username}/check`);
 
             const registerResponse = await axios.post(`${accountsUrl}/auth/register`, {email, password});
-            const {uid} = registerResponse.data;
-            const registerError = registerResponse.data.error;
+            const {userId} = registerResponse.data;
 
-            if (registerError) return res.status(202).send({error: registerError});
-
-            const accountResponse = await axios.post(`${accountsUrl}/accounts`, {uid, email, username});
+            const accountResponse = await axios.post(`${accountsUrl}/accounts`, {userId, email, username});
             const {account} = accountResponse.data;
-            const accountError = accountResponse.data.error;
 
-            if (accountError) return res.status(202).send({error: accountError});
-
-            const user = {uid, ...account}
+            const user = {userId, ...account}
             const jwt = jwtUtils.generateToken(user);
 
             res.status(201).send({jwt});
         } catch (error) {
-            if (error.code === "ECONNREFUSED") return res.sendStatus(503);
-            res.status(202).send({error});
+            handleError(res, error);
         }
     });
 
@@ -40,30 +33,23 @@ const createAuthRouter = (accountsUrl, jwtUtils) => {
 
         try {
             const loginResponse = await axios.post(`${accountsUrl}/auth/authenticate`, {email, password});
-            const {uid} = loginResponse.data;
-            const loginError = loginResponse.data.error;
+            const {userId} = loginResponse.data;
 
-            if (loginError) return res.status(202).send({error: loginError});
-
-            const accountResponse = await axios.get(`${accountsUrl}/accounts/${uid}`);
+            const accountResponse = await axios.get(`${accountsUrl}/accounts/${userId}`);
             const {account} = accountResponse.data;
-            const accountError = accountResponse.data.error;
 
-            if (accountError) return res.status(202).send({error: accountError});
-
-            const user = {uid, ...account}
+            const user = {userId, ...account}
             const jwt = jwtUtils.generateToken(user);
 
-            if (!jwt) return res.status(202).send({error: 'Cannot create JWT!'});
+            if (!jwt) return res.sendStatus(500);
 
             res.status(200).send({jwt});
         } catch (error) {
-            if (error.code === "ECONNREFUSED") return res.sendStatus(503);
-            res.status(202).send({error});
+            handleError(res, error);
         }
     });
 
-    router.post('/auth/verify-token', async (req, res) => {
+    router.post('/auth/token/verify', async (req, res) => {
         const {jwt} = req.body;
 
         const {error} = jwtUtils.verifyToken(jwt);

@@ -3,7 +3,9 @@ import '../../../styles/components/profile/following/following.css';
 import {useSelector} from "react-redux";
 import FollowedUser from "./FollowedUser";
 
-const Following = () => {
+const Following = props => {
+    const {setSelectedUsername} = props;
+
     const {jwt} = useSelector(state => state.auth);
     const {following, loading: followingLoading, error: followingError} = useSelector(state => state.following);
 
@@ -11,7 +13,7 @@ const Following = () => {
 
     useEffect(() => {
         if (!following) return;
-        const newFollowing = following.map(username => <FollowedUser key={username} username={username} />);
+        const newFollowing = following.map(username => <FollowedUser key={username} username={username} setSelectedUsername={setSelectedUsername}/>);
 
         setStyledFollowing(newFollowing);
     }, [following]);
@@ -28,6 +30,8 @@ const Following = () => {
 
     return (
         <div id='following'>
+            <div id='following-title'>Following</div>
+
             {displayFollowing()}
 
             {followingError && (

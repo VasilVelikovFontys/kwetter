@@ -2,6 +2,7 @@
     border: 1px solid black;
     border-top: 0;
     padding: 5px;
+    width: calc(100% - 12px);
 }
 
 .post:first-child {
@@ -16,8 +17,16 @@
     margin-bottom: 5px;
 }
 
-.post-username {
+.post-title {
     margin-bottom: 5px;
+}
+
+.post-username {
+    cursor: pointer;
+}
+
+.post-username:hover {
+    text-decoration: underline;
 }
 
 .post-info {
@@ -42,6 +51,11 @@
 }
 
 .post-ok:hover {
+    background-color: black;
+    color: white;
+}
+
+.post em {
     background-color: black;
     color: white;
 }

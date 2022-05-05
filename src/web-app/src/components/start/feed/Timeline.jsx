@@ -4,40 +4,50 @@ import {useDispatch, useSelector} from "react-redux";
 import Post from "../../common/Post";
 import {getTimelinePosts} from "../../../store/actions/timelineActions";
 
-const Timeline = () => {
+const Timeline = props => {
     const dispatch = useDispatch();
+
+    const {setSelectedUsername} = props;
+
     const {jwt} = useSelector(state => state.auth);
-    const {posts, loading: postsLoading, error: postsError} = useSelector(state => state.timeline);
+    const {posts: timelinePosts, loading: timelinePostsLoading, error: timelinePostsError} = useSelector(state => state.timeline);
+    const {posts: searchPosts, loading: searchPostsLoading, error: searchPostsError} = useSelector(state => state.searchPosts);
 
     const [styledPosts, setStyledPosts] = useState([]);
 
     const [error, setError] = useState('');
 
     useEffect(() => {
-        if (jwt) {
+        if (jwt && searchPosts.length === 0) {
             dispatch(getTimelinePosts())
                 .then(() => {
                     //No action needed
-                })
-                .catch(timelinePostsError => {
-                    if (timelinePostsError.message) return setError(timelinePostsError.message)
-                    setError(timelinePostsError)
                 });
         }
     }, [dispatch, jwt]);
 
     useEffect(() => {
-        if (postsError) return setError(postsError);
-    }, [postsError]);
+        if (timelinePostsError) return setError(timelinePostsError);
+    }, [timelinePostsError]);
 
     useEffect(() => {
-        const newPosts = posts.map(post => <Post key={post.id} post={post}/>);
+        if (searchPostsError) return setError(searchPostsError);
+    }, [searchPostsError]);
+
+    useEffect(() => {
+        const newPosts = timelinePosts.map(post => <Post key={post.id} post={post} setSelectedUsername={setSelectedUsername}/>);
 
         setStyledPosts(newPosts)
-    }, [posts]);
+    }, [timelinePosts]);
+
+    useEffect(() => {
+        const newPosts = searchPosts.map(post => <Post key={post.objectID} post={post} setSelectedUsername={setSelectedUsername}/>);
+
+        setStyledPosts(newPosts)
+    }, [searchPosts]);
 
     const displayPosts = () => {
-        if (postsLoading) return <div>Loading...</div>
+        if (timelinePostsLoading || searchPostsLoading) return <div>Loading...</div>
         if (styledPosts.length === 0) return <div>No timeline posts</div>
         return <div>{styledPosts}</div>
     }

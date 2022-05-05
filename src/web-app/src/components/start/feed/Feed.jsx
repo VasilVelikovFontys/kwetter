@@ -6,7 +6,7 @@ import PostsByTrend from "./PostsByTrend";
 import {MENTIONS_TAB, POSTS_BY_TREND_LIST, TIMELINE_LIST, TIMELINE_TAB} from "../../../constants";
 
 const Feed = props => {
-    const {timelineList, setTimelineList} = props;
+    const {timelineList, setTimelineList, setSelectedUsername} = props;
     const [selectedTab, setSelectedTab] = useState(TIMELINE_TAB);
 
     const handleTabChange = tab => {
@@ -31,15 +31,15 @@ const Feed = props => {
 
             <div id='feed'>
                 {selectedTab === TIMELINE_TAB && timelineList === TIMELINE_LIST && (
-                    <Timeline />
+                    <Timeline setSelectedUsername={setSelectedUsername}/>
                 )}
 
                 {selectedTab === TIMELINE_TAB && timelineList === POSTS_BY_TREND_LIST && (
-                    <PostsByTrend />
+                    <PostsByTrend setSelectedUsername={setSelectedUsername}/>
                 )}
 
                 {selectedTab === MENTIONS_TAB && (
-                    <Mentions />
+                    <Mentions setSelectedUsername={setSelectedUsername}/>
                 )}
             </div>
         </>

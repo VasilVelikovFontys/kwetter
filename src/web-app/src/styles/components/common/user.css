@@ -1,0 +1,33 @@
+#user-container {
+    border-radius: 5px;
+    border: 2px solid black;
+    padding: 5px;
+}
+
+#user-title {
+    margin-bottom: 5px;
+}
+
+.user {
+    display: flex;
+    align-items: flex-start;
+}
+
+.user-details div {
+    margin-bottom: 5px;
+}
+
+.follow-button {
+    margin-left: auto;
+    border-radius: 5px;
+    border: 2px solid black;
+    padding: 5px;
+    transition: all 0.3s;
+    cursor: pointer;
+    margin-top: auto;
+}
+
+.follow-button:hover {
+    background-color: black;
+    color: white;
+}

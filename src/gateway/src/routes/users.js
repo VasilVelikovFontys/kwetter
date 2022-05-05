@@ -1,42 +1,27 @@
 const express = require("express");
-const axios = require("axios");
+const {getData, postData} = require("../utils");
 
 const createUsersRouter = (usersUrl, detailsUrl, jwtUtils) => {
     const router = express.Router();
     router.use(jwtUtils.authenticateToken);
 
-    router.get('/users/current-user', async (req, res) => {
-        const {uid} = req.user;
+    router.get('/users/current', async (req, res) => {
+        const {userId} = req.user;
 
-        try {
-            const userResponse = await axios.get(`${usersUrl}/users/${uid}`);
-            const {user} = userResponse.data;
-            const userError = userResponse.data.error;
-
-            if (userError) return res.status(202).send({error: userError});
-
-            res.status(201).send({user});
-        } catch (error) {
-            if (error.code === "ECONNREFUSED") return res.sendStatus(503);
-            res.status(202).send({error});
-        }
+        await getData(res, `${usersUrl}/users/${userId}`);
     });
 
-    router.post('/details', async (req, res) => {
-        const {uid} = req.user;
-        const details = req.body;
+    router.post('/users/details', async (req, res) => {
+        const {userId} = req.user;
+        const details = {userId: userId, ...req.body};
 
-        try {
-            const detailsResponse = await axios.post(`${detailsUrl}/details/${uid}`, {...details});
-            const detailsError = detailsResponse.data.error;
+        await postData(res, `${detailsUrl}/details`, details);
+    });
 
-            if (detailsError) return res.status(202).send({error: detailsError});
+    router.get('/users/:username', async (req, res) => {
+        const {username} = req.params;
 
-            res.status(201).send({details});
-        } catch (error) {
-            if (error.code === "ECONNREFUSED") return res.sendStatus(503);
-            res.status(202).send({error});
-        }
+        await getData(res, `${usersUrl}/users/username/${username}`);
     });
 
     return router;
