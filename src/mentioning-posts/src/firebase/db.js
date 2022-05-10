@@ -28,12 +28,12 @@ const createUser = async (userId, username) => {
     return {};
 }
 
-const createPost = async (id, username, text, date) => {
+const createPost = async (postId, username, text, date) => {
     try {
         const {timestamp, error} = createTimestampFromDate(date);
         if (error) return handleError('Could not create timestamp from date!');
 
-        await db.collection('posts').doc(id).set({username, text, date: timestamp, mentions: [], likes: []});
+        await db.collection('posts').doc(postId).set({username, text, date: timestamp, mentions: [], likes: []});
     } catch (error) {
         return handleError(error);
     }

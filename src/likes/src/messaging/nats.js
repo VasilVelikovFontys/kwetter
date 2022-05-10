@@ -40,9 +40,9 @@ stan.on('connect', () => {
     subscription.on('message', async (msg) => {
         const receivedData = msg.getData();
         const post = JSON.parse(receivedData);
-        const {id, userId} = post;
+        const {postId, userId} = post;
 
-        const {error} = await db.createPost(id, userId);
+        const {error} = await db.createPost(postId, userId);
         if (error) return;
 
         msg.ack();

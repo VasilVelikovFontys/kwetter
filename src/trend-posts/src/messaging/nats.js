@@ -40,14 +40,15 @@ stan.on('connect', () => {
         const data = msg.getData();
         const post = JSON.parse(data);
 
-        const {id, username, text, date} = post;
+        const {postId, userId, username, text, date} = post;
 
-        if (!id) return console.log('Cannot destructure post id!');
+        if (!postId) return console.log('Cannot destructure post id!');
+        if (!userId) return console.log('Cannot destructure user id!');
         if (!username) return console.log('Cannot destructure post username!');
         if (!text) return console.log('Cannot destructure post text!');
         if (!date) return console.log('Cannot destructure post date!');
 
-        const {error} = await db.createPost(id, username, text, date);
+        const {error} = await db.createPost(postId, userId, username, text, date);
         if (error) return;
 
         msg.ack();

@@ -19,9 +19,9 @@ const savePost = (postId, data) => {
     }
 }
 
-const deletePost = postId => {
+const deletePost = async postId => {
     try {
-        index.getObject(postId);
+        await index.deleteObject(postId);
     } catch (error) {
         console.log(error);
     }

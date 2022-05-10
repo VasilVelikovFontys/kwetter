@@ -51,7 +51,7 @@ stan.on('connect', () => {
         const trendedPost = {postId: post.id, trends};
 
         const sentData = JSON.stringify(trendedPost);
-        stan.publish(NATS_POST_TRENDED_CHANNEL, sentData);
+        publishPostTrended(sentData);
 
         msg.ack();
     })
@@ -102,6 +102,10 @@ const assureTrendsExist = async postTrends => {
 
 const closeStan = () => {
     stan.close();
+}
+
+const publishPostTrended = data => {
+    stan.publish(NATS_POST_TRENDED_CHANNEL, data);
 }
 
 module.exports = {

@@ -64,15 +64,15 @@ stan.on('connect', () => {
 
         if (!userId) return console.log('Cannot destructure account id!');
 
-        const {data: posts, error: postsError} = await db.getPostsByUserId(userId);
+        const {data: postIds, error: postsError} = await db.getPostIdsByUserId(userId);
         if (postsError) return;
 
-        posts.forEach(post => {
-            algolia.deletePost(post.id);
+        for (const postId of postIds) {
+            await algolia.deletePost(postId);
 
-            const sentData = JSON.stringify({postId: post.id});
+            const sentData = JSON.stringify({postId});
             publishPostDeleted(sentData);
-        });
+        }
 
         const {error: postsDeletionError} = await db.deleteUserPosts(userId);
         if (postsDeletionError) return;

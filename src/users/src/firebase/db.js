@@ -40,9 +40,11 @@ const addDetails = async (userId, details) => {
 const getUserById = async userId => {
     try {
         const userDocument = await db.collection('users').doc(userId).get();
-        if (!userDocument) return handleError(`User with id ${userId} not found!`);
+        const user = userDocument.data();
 
-        return {user: userDocument.data()};
+        if (!user) return handleError(`User with id ${userId} not found!`);
+
+        return {user: {...user, id: userDocument.id}};
     } catch (error) {
         return handleError(error);
     }

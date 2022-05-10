@@ -11,7 +11,7 @@ const {
     NATS_DURABLE_NAME,
     NATS_QUEUE_GROUP,
     NATS_POST_CREATED_CHANNEL,
-    NATS_USER_MENTIONED_CHANNEL,
+    NATS_POST_MENTIONED_CHANNEL,
     NATS_ACCOUNT_DELETED_CHANNEL,
     NATS_POST_DELETED_CHANNEL,
     NATS_MENTION_DELETED_CHANNEL
@@ -57,7 +57,7 @@ stan.on('connect', () => {
                 const mention = {postId: post.id, usernames};
 
                 const sentData = JSON.stringify(mention);
-                stan.publish(NATS_USER_MENTIONED_CHANNEL, sentData);
+                publishPostMentioned(sentData);
 
                 msg.ack();
             });
@@ -134,6 +134,10 @@ const getUsernamesFromText = async text => {
 
 const closeStan = () => {
     stan.close();
+}
+
+const publishPostMentioned = data => {
+    stan.publish(NATS_POST_MENTIONED_CHANNEL, data);
 }
 
 const publishMentionDeleted = data => {

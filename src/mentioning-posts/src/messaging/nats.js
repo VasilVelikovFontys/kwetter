@@ -12,7 +12,7 @@ const {
     NATS_QUEUE_GROUP,
     NATS_POST_CREATED_CHANNEL,
     NATS_ACCOUNT_CREATED_CHANNEL,
-    NATS_USER_MENTIONED_CHANNEL,
+    NATS_POST_MENTIONED_CHANNEL,
     NATS_POST_LIKED_CHANNEL,
     NATS_ACCOUNT_DELETED_CHANNEL,
     NATS_POST_DELETED_CHANNEL,
@@ -60,14 +60,14 @@ stan.on('connect', () => {
         const data = msg.getData();
         const post = JSON.parse(data);
 
-        const {id, username, text, date} = post;
+        const {postId, username, text, date} = post;
 
-        if (!id) return console.log('Cannot destructure post id!');
+        if (!postId) return console.log('Cannot destructure post id!');
         if (!username) return console.log('Cannot destructure post username!');
         if (!text) return console.log('Cannot destructure post text!');
         if (!date) return console.log('Cannot destructure post date!');
 
-        const {error} = await db.createPost(id, username, text, date);
+        const {error} = await db.createPost(postId, username, text, date);
         if (error) return;
 
         msg.ack();
@@ -90,8 +90,8 @@ stan.on('connect', () => {
         msg.ack();
     });
 
-    //On User Mentioned
-    const userMentionedSubscription = stan.subscribe(NATS_USER_MENTIONED_CHANNEL, NATS_QUEUE_GROUP, options);
+    //On Post Mentioned
+    const userMentionedSubscription = stan.subscribe(NATS_POST_MENTIONED_CHANNEL, NATS_QUEUE_GROUP, options);
     userMentionedSubscription.on('message', async msg => {
         const data = msg.getData();
         const mention = JSON.parse(data);

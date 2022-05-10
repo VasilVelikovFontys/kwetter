@@ -15,9 +15,11 @@ const createPost = async (postId, userId) => {
 const getPostById = async postId => {
     try {
         const postDocument = await db.collection('posts').doc(postId).get();
-        if (!postDocument) return handleError(`Post with id ${postId} not found!`);
+        const post = postDocument.data();
 
-        return {post: postDocument.data()}
+        if (!post) return handleError(`Post with id ${postId} not found!`);
+
+        return {post}
     } catch (error) {
         return handleError(error);
     }
@@ -118,7 +120,7 @@ const deletePostLikes = async postId => {
                     const userDocument = await db.collection('users').doc(userId).get();
 
                     const user = userDocument.data();
-                    const newLikes = user.likes.filter(userLike => userLike !== userId);
+                    const newLikes = user.likes.filter(userLike => userLike !== postId);
 
                     await userDocument.ref.update({likes: newLikes});
                 } catch (error) {

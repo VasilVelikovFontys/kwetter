@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testExecutions version="1">
+    <file path="/Users/vjv/Fontys/sm6/Individual/kwetter/src/accounts/src/test/accounts.test.js">
+        <testCase name="POST /accounts given a userId, email, username should save userId, email and username to the database" duration="28">
+            <failure message="Error: expect(received).toBe(expected) // Object.is equality"><![CDATA[Error: expect(received).toBe(expected) // Object.is equality
+
+Expected: 1
+Received: 0
+    at Object.<anonymous> (/Users/vjv/Fontys/sm6/Individual/kwetter/src/accounts/src/test/accounts.test.js:26:59)
+    at processTicksAndRejections (internal/process/task_queues.js:95:5)]]></failure>
+        </testCase>
+    </file>
+    <file path="/Users/vjv/Fontys/sm6/Individual/kwetter/src/accounts/src/test/auth.test.js">
+        <testCase name="POST /auth/register given an email and password should save the email and password to the auth provider" duration="5003">
+            <failure message="TypeError: Cannot destructure property &apos;userId&apos; of &apos;(intermediate value)&apos; as it is undefined."><![CDATA[TypeError: Cannot destructure property 'userId' of '(intermediate value)' as it is undefined.
+    at /Users/vjv/Fontys/sm6/Individual/kwetter/src/accounts/src/routes/auth.js:14:16
+    at processTicksAndRejections (internal/process/task_queues.js:95:5)]]></failure>
+            <failure message="Error: thrown: &quot;Exceeded timeout of 5000 ms for a test."><![CDATA[Error: thrown: "Exceeded timeout of 5000 ms for a test.
+Use jest.setTimeout(newTimeout) to increase the timeout value, if this is a long-running test."
+    at /Users/vjv/Fontys/sm6/Individual/kwetter/src/accounts/src/test/auth.test.js:16:9
+    at _dispatchDescribe (/Users/vjv/Fontys/sm6/Individual/kwetter/src/accounts/node_modules/jest-circus/build/index.js:98:26)
+    at describe (/Users/vjv/Fontys/sm6/Individual/kwetter/src/accounts/node_modules/jest-circus/build/index.js:60:5)
+    at /Users/vjv/Fontys/sm6/Individual/kwetter/src/accounts/src/test/auth.test.js:15:5
+    at _dispatchDescribe (/Users/vjv/Fontys/sm6/Individual/kwetter/src/accounts/node_modules/jest-circus/build/index.js:98:26)
+    at describe (/Users/vjv/Fontys/sm6/Individual/kwetter/src/accounts/node_modules/jest-circus/build/index.js:60:5)
+    at Object.<anonymous> (/Users/vjv/Fontys/sm6/Individual/kwetter/src/accounts/src/test/auth.test.js:10:1)
+    at Runtime._execModule (/Users/vjv/Fontys/sm6/Individual/kwetter/src/accounts/node_modules/jest-runtime/build/index.js:1646:24)
+    at Runtime._loadModule (/Users/vjv/Fontys/sm6/Individual/kwetter/src/accounts/node_modules/jest-runtime/build/index.js:1185:12)
+    at Runtime.requireModule (/Users/vjv/Fontys/sm6/Individual/kwetter/src/accounts/node_modules/jest-runtime/build/index.js:1009:12)]]></failure>
+        </testCase>
+        <testCase name="POST /auth/register given an email and password should respond with a 201 status code" duration="5001">
+            <failure message="TypeError: Cannot destructure property &apos;userId&apos; of &apos;(intermediate value)&apos; as it is undefined."><![CDATA[TypeError: Cannot destructure property 'userId' of '(intermediate value)' as it is undefined.
+    at /Users/vjv/Fontys/sm6/Individual/kwetter/src/accounts/src/routes/auth.js:14:16
+    at processTicksAndRejections (internal/process/task_queues.js:95:5)]]></failure>
+            <failure message="Error: thrown: &quot;Exceeded timeout of 5000 ms for a test."><![CDATA[Error: thrown: "Exceeded timeout of 5000 ms for a test.
+Use jest.setTimeout(newTimeout) to increase the timeout value, if this is a long-running test."
+    at /Users/vjv/Fontys/sm6/Individual/kwetter/src/accounts/src/test/auth.test.js:26:9
+    at _dispatchDescribe (/Users/vjv/Fontys/sm6/Individual/kwetter/src/accounts/node_modules/jest-circus/build/index.js:98:26)
+    at describe (/Users/vjv/Fontys/sm6/Individual/kwetter/src/accounts/node_modules/jest-circus/build/index.js:60:5)
+    at /Users/vjv/Fontys/sm6/Individual/kwetter/src/accounts/src/test/auth.test.js:15:5
+    at _dispatchDescribe (/Users/vjv/Fontys/sm6/Individual/kwetter/src/accounts/node_modules/jest-circus/build/index.js:98:26)
+    at describe (/Users/vjv/Fontys/sm6/Individual/kwetter/src/accounts/node_modules/jest-circus/build/index.js:60:5)
+    at Object.<anonymous> (/Users/vjv/Fontys/sm6/Individual/kwetter/src/accounts/src/test/auth.test.js:10:1)
+    at Runtime._execModule (/Users/vjv/Fontys/sm6/Individual/kwetter/src/accounts/node_modules/jest-runtime/build/index.js:1646:24)
+    at Runtime._loadModule (/Users/vjv/Fontys/sm6/Individual/kwetter/src/accounts/node_modules/jest-runtime/build/index.js:1185:12)
+    at Runtime.requireModule (/Users/vjv/Fontys/sm6/Individual/kwetter/src/accounts/node_modules/jest-runtime/build/index.js:1009:12)]]></failure>
+        </testCase>
+        <testCase name="POST /auth/register given an email and password should specify json in the content type header" duration="5002">
+            <failure message="TypeError: Cannot destructure property &apos;userId&apos; of &apos;(intermediate value)&apos; as it is undefined."><![CDATA[TypeError: Cannot destructure property 'userId' of '(intermediate value)' as it is undefined.
+    at /Users/vjv/Fontys/sm6/Individual/kwetter/src/accounts/src/routes/auth.js:14:16
+    at processTicksAndRejections (internal/process/task_queues.js:95:5)]]></failure>
+            <failure message="Error: thrown: &quot;Exceeded timeout of 5000 ms for a test."><![CDATA[Error: thrown: "Exceeded timeout of 5000 ms for a test.
+Use jest.setTimeout(newTimeout) to increase the timeout value, if this is a long-running test."
+    at /Users/vjv/Fontys/sm6/Individual/kwetter/src/accounts/src/test/auth.test.js:34:9
+    at _dispatchDescribe (/Users/vjv/Fontys/sm6/Individual/kwetter/src/accounts/node_modules/jest-circus/build/index.js:98:26)
+    at describe (/Users/vjv/Fontys/sm6/Individual/kwetter/src/accounts/node_modules/jest-circus/build/index.js:60:5)
+    at /Users/vjv/Fontys/sm6/Individual/kwetter/src/accounts/src/test/auth.test.js:15:5
+    at _dispatchDescribe (/Users/vjv/Fontys/sm6/Individual/kwetter/src/accounts/node_modules/jest-circus/build/index.js:98:26)
+    at describe (/Users/vjv/Fontys/sm6/Individual/kwetter/src/accounts/node_modules/jest-circus/build/index.js:60:5)
+    at Object.<anonymous> (/Users/vjv/Fontys/sm6/Individual/kwetter/src/accounts/src/test/auth.test.js:10:1)
+    at Runtime._execModule (/Users/vjv/Fontys/sm6/Individual/kwetter/src/accounts/node_modules/jest-runtime/build/index.js:1646:24)
+    at Runtime._loadModule (/Users/vjv/Fontys/sm6/Individual/kwetter/src/accounts/node_modules/jest-runtime/build/index.js:1185:12)
+    at Runtime.requireModule (/Users/vjv/Fontys/sm6/Individual/kwetter/src/accounts/node_modules/jest-runtime/build/index.js:1009:12)]]></failure>
+        </testCase>
+        <testCase name="POST /auth/register given an email and password should respond with a json object containing a unique user id" duration="12">
+            <failure message="Error: expect(received).toBe(expected) // Object.is equality"><![CDATA[Error: expect(received).toBe(expected) // Object.is equality
+
+Expected: 1
+Received: undefined
+    at Object.<anonymous> (/Users/vjv/Fontys/sm6/Individual/kwetter/src/accounts/src/test/auth.test.js:48:42)
+    at processTicksAndRejections (internal/process/task_queues.js:95:5)]]></failure>
+        </testCase>
+        <testCase name="POST /auth/register when the email or password is missing should respond with a 202 status code" duration="4">
+            <failure message="Error: expect(received).toBe(expected) // Object.is equality"><![CDATA[Error: expect(received).toBe(expected) // Object.is equality
+
+Expected: 202
+Received: 400
+    at Object.<anonymous> (/Users/vjv/Fontys/sm6/Individual/kwetter/src/accounts/src/test/auth.test.js:61:45)
+    at processTicksAndRejections (internal/process/task_queues.js:95:5)]]></failure>
+        </testCase>
+        <testCase name="POST /auth/authenticate given an email and password should retrieve account from auth provider" duration="5000">
+            <failure message="TypeError: Cannot destructure property &apos;userId&apos; of &apos;(intermediate value)&apos; as it is undefined."><![CDATA[TypeError: Cannot destructure property 'userId' of '(intermediate value)' as it is undefined.
+    at /Users/vjv/Fontys/sm6/Individual/kwetter/src/accounts/src/routes/auth.js:43:16
+    at processTicksAndRejections (internal/process/task_queues.js:95:5)]]></failure>
+            <failure message="Error: thrown: &quot;Exceeded timeout of 5000 ms for a test."><![CDATA[Error: thrown: "Exceeded timeout of 5000 ms for a test.
+Use jest.setTimeout(newTimeout) to increase the timeout value, if this is a long-running test."
+    at /Users/vjv/Fontys/sm6/Individual/kwetter/src/accounts/src/test/auth.test.js:73:9
+    at _dispatchDescribe (/Users/vjv/Fontys/sm6/Individual/kwetter/src/accounts/node_modules/jest-circus/build/index.js:98:26)
+    at describe (/Users/vjv/Fontys/sm6/Individual/kwetter/src/accounts/node_modules/jest-circus/build/index.js:60:5)
+    at /Users/vjv/Fontys/sm6/Individual/kwetter/src/accounts/src/test/auth.test.js:72:5
+    at _dispatchDescribe (/Users/vjv/Fontys/sm6/Individual/kwetter/src/accounts/node_modules/jest-circus/build/index.js:98:26)
+    at describe (/Users/vjv/Fontys/sm6/Individual/kwetter/src/accounts/node_modules/jest-circus/build/index.js:60:5)
+    at Object.<anonymous> (/Users/vjv/Fontys/sm6/Individual/kwetter/src/accounts/src/test/auth.test.js:67:1)
+    at Runtime._execModule (/Users/vjv/Fontys/sm6/Individual/kwetter/src/accounts/node_modules/jest-runtime/build/index.js:1646:24)
+    at Runtime._loadModule (/Users/vjv/Fontys/sm6/Individual/kwetter/src/accounts/node_modules/jest-runtime/build/index.js:1185:12)
+    at Runtime.requireModule (/Users/vjv/Fontys/sm6/Individual/kwetter/src/accounts/node_modules/jest-runtime/build/index.js:1009:12)]]></failure>
+        </testCase>
+        <testCase name="POST /auth/authenticate given an email and password should respond with a 200 status code" duration="5001">
+            <failure message="TypeError: Cannot destructure property &apos;userId&apos; of &apos;(intermediate value)&apos; as it is undefined."><![CDATA[TypeError: Cannot destructure property 'userId' of '(intermediate value)' as it is undefined.
+    at /Users/vjv/Fontys/sm6/Individual/kwetter/src/accounts/src/routes/auth.js:43:16
+    at processTicksAndRejections (internal/process/task_queues.js:95:5)]]></failure>
+            <failure message="Error: thrown: &quot;Exceeded timeout of 5000 ms for a test."><![CDATA[Error: thrown: "Exceeded timeout of 5000 ms for a test.
+Use jest.setTimeout(newTimeout) to increase the timeout value, if this is a long-running test."
+    at /Users/vjv/Fontys/sm6/Individual/kwetter/src/accounts/src/test/auth.test.js:83:9
+    at _dispatchDescribe (/Users/vjv/Fontys/sm6/Individual/kwetter/src/accounts/node_modules/jest-circus/build/index.js:98:26)
+    at describe (/Users/vjv/Fontys/sm6/Individual/kwetter/src/accounts/node_modules/jest-circus/build/index.js:60:5)
+    at /Users/vjv/Fontys/sm6/Individual/kwetter/src/accounts/src/test/auth.test.js:72:5
+    at _dispatchDescribe (/Users/vjv/Fontys/sm6/Individual/kwetter/src/accounts/node_modules/jest-circus/build/index.js:98:26)
+    at describe (/Users/vjv/Fontys/sm6/Individual/kwetter/src/accounts/node_modules/jest-circus/build/index.js:60:5)
+    at Object.<anonymous> (/Users/vjv/Fontys/sm6/Individual/kwetter/src/accounts/src/test/auth.test.js:67:1)
+    at Runtime._execModule (/Users/vjv/Fontys/sm6/Individual/kwetter/src/accounts/node_modules/jest-runtime/build/index.js:1646:24)
+    at Runtime._loadModule (/Users/vjv/Fontys/sm6/Individual/kwetter/src/accounts/node_modules/jest-runtime/build/index.js:1185:12)
+    at Runtime.requireModule (/Users/vjv/Fontys/sm6/Individual/kwetter/src/accounts/node_modules/jest-runtime/build/index.js:1009:12)]]></failure>
+        </testCase>
+        <testCase name="POST /auth/authenticate given an email and password should specify json in the content type header" duration="5000">
+            <failure message="TypeError: Cannot destructure property &apos;userId&apos; of &apos;(intermediate value)&apos; as it is undefined."><![CDATA[TypeError: Cannot destructure property 'userId' of '(intermediate value)' as it is undefined.
+    at /Users/vjv/Fontys/sm6/Individual/kwetter/src/accounts/src/routes/auth.js:43:16
+    at processTicksAndRejections (internal/process/task_queues.js:95:5)]]></failure>
+            <failure message="Error: thrown: &quot;Exceeded timeout of 5000 ms for a test."><![CDATA[Error: thrown: "Exceeded timeout of 5000 ms for a test.
+Use jest.setTimeout(newTimeout) to increase the timeout value, if this is a long-running test."
+    at /Users/vjv/Fontys/sm6/Individual/kwetter/src/accounts/src/test/auth.test.js:91:9
+    at _dispatchDescribe (/Users/vjv/Fontys/sm6/Individual/kwetter/src/accounts/node_modules/jest-circus/build/index.js:98:26)
+    at describe (/Users/vjv/Fontys/sm6/Individual/kwetter/src/accounts/node_modules/jest-circus/build/index.js:60:5)
+    at /Users/vjv/Fontys/sm6/Individual/kwetter/src/accounts/src/test/auth.test.js:72:5
+    at _dispatchDescribe (/Users/vjv/Fontys/sm6/Individual/kwetter/src/accounts/node_modules/jest-circus/build/index.js:98:26)
+    at describe (/Users/vjv/Fontys/sm6/Individual/kwetter/src/accounts/node_modules/jest-circus/build/index.js:60:5)
+    at Object.<anonymous> (/Users/vjv/Fontys/sm6/Individual/kwetter/src/accounts/src/test/auth.test.js:67:1)
+    at Runtime._execModule (/Users/vjv/Fontys/sm6/Individual/kwetter/src/accounts/node_modules/jest-runtime/build/index.js:1646:24)
+    at Runtime._loadModule (/Users/vjv/Fontys/sm6/Individual/kwetter/src/accounts/node_modules/jest-runtime/build/index.js:1185:12)
+    at Runtime.requireModule (/Users/vjv/Fontys/sm6/Individual/kwetter/src/accounts/node_modules/jest-runtime/build/index.js:1009:12)]]></failure>
+        </testCase>
+        <testCase name="POST /auth/authenticate given an email and password should respond with a json object containing a unique user id" duration="5">
+            <failure message="Error: expect(received).toBe(expected) // Object.is equality"><![CDATA[Error: expect(received).toBe(expected) // Object.is equality
+
+Expected: 1
+Received: undefined
+    at Object.<anonymous> (/Users/vjv/Fontys/sm6/Individual/kwetter/src/accounts/src/test/auth.test.js:105:42)
+    at processTicksAndRejections (internal/process/task_queues.js:95:5)]]></failure>
+        </testCase>
+        <testCase name="POST /auth/authenticate when the email or password is missing should respond with a 202 status code" duration="3">
+            <failure message="Error: expect(received).toBe(expected) // Object.is equality"><![CDATA[Error: expect(received).toBe(expected) // Object.is equality
+
+Expected: 202
+Received: 400
+    at Object.<anonymous> (/Users/vjv/Fontys/sm6/Individual/kwetter/src/accounts/src/test/auth.test.js:118:45)
+    at processTicksAndRejections (internal/process/task_queues.js:95:5)]]></failure>
+        </testCase>
+    </file>
+</testExecutions>

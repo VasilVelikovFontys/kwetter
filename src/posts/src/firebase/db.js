@@ -43,6 +43,20 @@ const getPostsByUserId = async userId => {
     }
 };
 
+const getPostIdsByUserId = async userId => {
+    try {
+        const postsSnapshot = await db.collection('posts').where('userId', '==', userId).get()
+
+        if (!postsSnapshot) return {data: []};
+
+        const postIds = postsSnapshot.docs.map(doc => doc.ref.id);
+
+        return {data: postIds};
+    } catch (error) {
+        return handleError(error);
+    }
+}
+
 const likePost = async (postId, userId) => {
     try {
         const postDocument = await db.collection('posts').doc(postId).get();
@@ -106,6 +120,7 @@ module.exports = {
     createTimestampFromDate,
     createPost,
     getPostsByUserId,
+    getPostIdsByUserId,
     likePost,
     deleteUserPosts,
     deleteLike

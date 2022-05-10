@@ -27,15 +27,17 @@ const createPostsRouter = (database, messaging, search) => {
 
         if (!database || !messaging || !search) return res.sendStatus(500);
 
-        const {timestamp, error: timestampError} = await database.createTimestampFromDate(new Date());
+        const postDate = new Date();
+
+        const {timestamp, error: timestampError} = await database.createTimestampFromDate(postDate);
         if (timestampError) return res.sendStatus(500);
 
         const {postId, error: postError} = await database.createPost(userId, username, text, timestamp);
         if (postError) return res.sendStatus(500);
 
-        const post = {id: postId, userId, username, text, date: timestamp, likes: []};
+        const post = {postId, userId, username, text, date: timestamp};
 
-        search.savePost(postId, {text, username, date: new Date(), likes: []});
+        search.savePost(postId, {text, username, date: postDate, likes: []});
 
         const data = JSON.stringify(post);
         messaging.publishPostCreated(data);

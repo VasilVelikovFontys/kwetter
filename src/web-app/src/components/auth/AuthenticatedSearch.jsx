@@ -38,7 +38,19 @@ const AuthenticatedSearch = () => {
 
         try {
             const result = await postsIndex.search(query);
-            const hits = result.hits;
+            const hits = result.hits.map(hit => ({...hit, id: hit.objectID}));
+            hits.sort((a, b) => {
+                const aDate = new Date(a.date);
+                const bDate = new Date(b.date);
+
+                if (aDate < bDate) {
+                    return 1;
+                } else if (aDate > bDate) {
+                    return -1
+                } else {
+                    return 0;
+                }
+            })
 
             dispatch({type: SET_SEARCH_POSTS, posts: hits});
         } catch (error) {
