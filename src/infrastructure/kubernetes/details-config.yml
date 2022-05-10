@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: details-config
+  namespace: kwetter
+data:
+  URL: "http://details-service:4012"
+
+  FIRESTORE_API_KEY: AIzaSyDF2wzSLlR5jRuvbfZo12X23mj_mhYoJVo
+  FIRESTORE_AUTH_DOMAIN: kwetter-details.firebaseapp.com
+  FIRESTORE_PROJECT_ID: kwetter-details
+  FIRESTORE_STORAGE_BUCKET: kwetter-details.appspot.com
+  FIRESTORE_MESSAGING_SENDER_ID: 527694567891
+  FIRESTORE_APP_ID: 1:527694567891:web:3944e60bc99ff02796b726
+
+  FIRESTORE_SERVICE_EMAIL: details-service@kwetter.com
+
+  NATS_DURABLE_NAME: details
+  NATS_QUEUE_GROUP: details-queue-group

@@ -3,7 +3,7 @@ const express = require("express");
 const createAccountsRouter = (auth, database, messaging) => {
     const router = express.Router();
 
-    router.get('/accounts', async (req, res) => {
+    router.get('/accounts', async (_req, res) => {
         if (!database) return res.sendStatus(500);
 
         const {data, error} = await database.getAccounts();

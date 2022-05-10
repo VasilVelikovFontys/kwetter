@@ -1,109 +1,73 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: accounts-deployment
+  name: details-deployment
   namespace: kwetter
   labels:
-    app: accounts
+    app: details
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: accounts
+      app: details
   template:
     metadata:
       namespace: kwetter
       labels:
-        app: accounts
+        app: details
     spec:
       containers:
-        - name: accounts
-          image: kwetteracr.azurecr.io/accounts
+        - name: details
+          image: kwetteracr.azurecr.io/details
           ports:
             - containerPort: 4000
           env:
             - name: FIRESTORE_API_KEY
               valueFrom:
                 configMapKeyRef:
-                  name: accounts-config
+                  name: details-config
                   key: FIRESTORE_API_KEY
 
             - name: FIRESTORE_AUTH_DOMAIN
               valueFrom:
                 configMapKeyRef:
-                  name: accounts-config
+                  name: details-config
                   key: FIRESTORE_AUTH_DOMAIN
 
             - name: FIRESTORE_PROJECT_ID
               valueFrom:
                 configMapKeyRef:
-                  name: accounts-config
+                  name: details-config
                   key: FIRESTORE_PROJECT_ID
 
             - name: FIRESTORE_STORAGE_BUCKET
               valueFrom:
                 configMapKeyRef:
-                  name: accounts-config
+                  name: details-config
                   key: FIRESTORE_STORAGE_BUCKET
 
             - name: FIRESTORE_MESSAGING_SENDER_ID
               valueFrom:
                 configMapKeyRef:
-                  name: accounts-config
+                  name: details-config
                   key: FIRESTORE_MESSAGING_SENDER_ID
 
             - name: FIRESTORE_APP_ID
               valueFrom:
                 configMapKeyRef:
-                  name: accounts-config
+                  name: details-config
                   key: FIRESTORE_APP_ID
-
-            - name: ADMIN_PROJECT_ID
-              valueFrom:
-                configMapKeyRef:
-                  name: accounts-config
-                  key: ADMIN_PROJECT_ID
-
-            - name: ADMIN_PRIVATE_KEY_ID
-              valueFrom:
-                configMapKeyRef:
-                  name: accounts-config
-                  key: ADMIN_PRIVATE_KEY_ID
-
-            - name: ADMIN_PRIVATE_KEY
-              valueFrom:
-                secretKeyRef:
-                  name: accounts-secret
-                  key: ADMIN_PRIVATE_KEY
-
-            - name: ADMIN_CLIENT_EMAIL
-              valueFrom:
-                configMapKeyRef:
-                  name: accounts-config
-                  key: ADMIN_CLIENT_EMAIL
-
-            - name: ADMIN_CLIENT_ID
-              valueFrom:
-                configMapKeyRef:
-                  name: accounts-config
-                  key: ADMIN_CLIENT_ID
-
-            - name: ADMIN_CLIENT_x509_CERT_URL
-              valueFrom:
-                configMapKeyRef:
-                  name: accounts-config
-                  key: ADMIN_CLIENT_x509_CERT_URL
 
             - name: FIRESTORE_SERVICE_EMAIL
               valueFrom:
                 configMapKeyRef:
-                  name: accounts-config
+                  name: details-config
                   key: FIRESTORE_SERVICE_EMAIL
 
             - name: FIRESTORE_SERVICE_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: accounts-secret
+                  name: details-secret
                   key: FIRESTORE_SERVICE_PASSWORD
 
             - name: NATS_CLUSTER_ID
@@ -123,23 +87,23 @@ spec:
                 fieldRef:
                   fieldPath: metadata.name
 
-            - name: NATS_ACCOUNT_CREATED_CHANNEL
+            - name: NATS_DURABLE_NAME
               valueFrom:
                 configMapKeyRef:
-                  name: nats-config
-                  key: ACCOUNT_CREATED_CHANNEL
+                  name: details-config
+                  key: NATS_DURABLE_NAME
 
-            - name: NATS_ACCOUNT_PROMOTED_CHANNEL
+            - name: NATS_QUEUE_GROUP
               valueFrom:
                 configMapKeyRef:
-                  name: nats-config
-                  key: ACCOUNT_PROMOTED_CHANNEL
+                  name: details-config
+                  key: NATS_QUEUE_GROUP
 
-            - name: NATS_ACCOUNT_DEMOTED_CHANNEL
+            - name: NATS_DETAILS_ADDED_CHANNEL
               valueFrom:
                 configMapKeyRef:
                   name: nats-config
-                  key: ACCOUNT_DEMOTED_CHANNEL
+                  key: DETAILS_ADDED_CHANNEL
 
             - name: NATS_ACCOUNT_DELETED_CHANNEL
               valueFrom:
@@ -150,12 +114,12 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: accounts-service
+  name: details-service
   namespace: kwetter
 spec:
   selector:
-    app: accounts
+    app: details
   ports:
     - protocol: TCP
-      port: 4001
+      port: 4012
       targetPort: 4000

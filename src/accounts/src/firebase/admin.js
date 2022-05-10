@@ -1,5 +1,5 @@
 const admin = require("firebase-admin");
-const {certificate} = require("../../admin-certificate.js");
+const {certificate} = require("../admin-certificate.js");
 
 const adminApp = admin.initializeApp({
     credential: admin.credential.cert(certificate)

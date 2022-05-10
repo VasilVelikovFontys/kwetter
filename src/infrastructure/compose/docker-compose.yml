@@ -22,33 +22,13 @@ services:
     networks:
       - network-name
 
-  #Posts Service
-  posts:
-    image: vjv2143/kwetter.posts
-    container_name: posts
+  #Details Service
+  details:
+    image: vjv2143/kwetter.details
+    container_name: details
     depends_on:
       - nats-streaming
-    env_file: .posts.env
-    networks:
-      - network-name
-
-  #Mentions Service
-  mentions:
-    image: vjv2143/kwetter.mentions
-    container_name: mentions
-    depends_on:
-      - nats-streaming
-    env_file: .mentions.env
-    networks:
-      - network-name
-
-  #Trends Service
-  trends:
-    image: vjv2143/kwetter.trends
-    container_name: trends
-    depends_on:
-      - nats-streaming
-    env_file: .trends.env
+    env_file: .details.env
     networks:
       - network-name
 
@@ -82,13 +62,33 @@ services:
     networks:
       - network-name
 
-  #Trend Posts Service
-  trend-posts:
-    image: vjv2143/kwetter.trend-posts
-    container_name: trend-posts
+  #Mentions Service
+  mentions:
+    image: vjv2143/kwetter.mentions
+    container_name: mentions
     depends_on:
       - nats-streaming
-    env_file: .trend-posts.env
+    env_file: .mentions.env
+    networks:
+      - network-name
+
+  #Pictures Service
+  pictures:
+    image: vjv2143/kwetter.pictures
+    container_name: pictures
+    depends_on:
+      - nats-streaming
+    env_file: .pictures.env
+    networks:
+      - network-name
+
+  #Posts Service
+  posts:
+    image: vjv2143/kwetter.posts
+    container_name: posts
+    depends_on:
+      - nats-streaming
+    env_file: .posts.env
     networks:
       - network-name
 
@@ -99,6 +99,36 @@ services:
     depends_on:
       - nats-streaming
     env_file: .timeline.env
+    networks:
+      - network-name
+
+  #Trend Posts Service
+  trend-posts:
+    image: vjv2143/kwetter.trend-posts
+    container_name: trend-posts
+    depends_on:
+      - nats-streaming
+    env_file: .trend-posts.env
+    networks:
+      - network-name
+
+  #Trends Service
+  trends:
+    image: vjv2143/kwetter.trends
+    container_name: trends
+    depends_on:
+      - nats-streaming
+    env_file: .trends.env
+    networks:
+      - network-name
+
+  #Users Service
+  users:
+    image: vjv2143/kwetter.users
+    container_name: users
+    depends_on:
+      - nats-streaming
+    env_file: .users.env
     networks:
       - network-name
 
