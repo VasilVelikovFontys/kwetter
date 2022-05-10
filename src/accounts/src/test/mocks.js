@@ -6,7 +6,7 @@ const registerUser = requiredJest.fn();
 const authenticateUser = requiredJest.fn();
 
 const createAccount = requiredJest.fn();
-const getAccountByuserId = requiredJest.fn();
+const getAccountByUserId = requiredJest.fn();
 const checkUsernameAvailable = requiredJest.fn();
 
 const publishAccountCreated = requiredJest.fn();
@@ -21,7 +21,7 @@ const auth = {
 
 const database = {
     createAccount,
-    getAccountByuserId,
+    getAccountByUserId,
     checkUsernameAvailable
 };
 
