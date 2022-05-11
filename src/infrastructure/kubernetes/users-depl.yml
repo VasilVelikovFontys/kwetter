@@ -109,6 +109,12 @@ spec:
                   name: nats-config
                   key: PICTURE_ADDED_CHANNEL
 
+            - name: NATS_DETAILS_ADDED_CHANNEL
+              valueFrom:
+                configMapKeyRef:
+                  name: nats-config
+                  key: DETAILS_ADDED_CHANNEL
+
             - name: NATS_ACCOUNT_PROMOTED_CHANNEL
               valueFrom:
                 configMapKeyRef:
