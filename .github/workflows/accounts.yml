@@ -97,13 +97,10 @@ jobs:
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
 
       - name: Print Files In Directory
-        run: ls
-
-      - name: Enter Scannerwork
-        run: cd src
-
-      - name: Print Files In Directory
-        run: ls
+        run: |
+          ls
+          cd src
+          ls
 
       - name: Check Sonarqube quality gate
         if: ${{ github.ref == 'refs/heads/master' }}
