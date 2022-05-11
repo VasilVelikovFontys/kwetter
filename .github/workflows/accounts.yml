@@ -96,6 +96,12 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_ACCOUNTS }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
 
+      - name: Print Files In Directory
+        run: pwd \
+             ls \
+             cd .scannerwork \
+             cat report-task.txt
+
       - name: Check Sonarqube quality gate
         if: ${{ github.ref == 'refs/heads/master' }}
         uses: sonarsource/sonarqube-quality-gate-action@master
@@ -172,14 +178,14 @@ jobs:
       - name: Login to Azure Container Registry
         uses: azure/docker-login@v1
         with:
-          login-server: vasilvelikovkwetter.azurecr.io
+          login-server: kwetteracr.azurecr.io
           username: ${{ secrets.ACR_USERNAME }}
           password: ${{ secrets.ACR_PASSWORD }}
 
       - name: Build and Push Image
         run: |
-          docker build ./src/accounts -t vasilvelikovkwetter.azurecr.io/accounts:latest
-          docker push vasilvelikovkwetter.azurecr.io/accounts:latest
+          docker build ./src/accounts -t kwetteracr.azurecr.io/accounts:latest
+          docker push kwetteracr.azurecr.io/accounts:latest
 
       - name: Image digest
         run: echo ${{ steps.docker_build.outputs.digest }}

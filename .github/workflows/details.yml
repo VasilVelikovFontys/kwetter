@@ -172,14 +172,14 @@ jobs:
       - name: Login to Azure Container Registry
         uses: azure/docker-login@v1
         with:
-          login-server: vasilvelikovkwetter.azurecr.io
+          login-server: kwetteracr.azurecr.io
           username: ${{ secrets.ACR_USERNAME }}
           password: ${{ secrets.ACR_PASSWORD }}
 
       - name: Build and Push Image
         run: |
-          docker build ./src/details -t vasilvelikovkwetter.azurecr.io/details:latest
-          docker push vasilvelikovkwetter.azurecr.io/details:latest
+          docker build ./src/details -t kwetteracr.azurecr.io/details:latest
+          docker push kwetteracr.azurecr.io/details:latest
 
       - name: Image digest
         run: echo ${{ steps.docker_build.outputs.digest }}
