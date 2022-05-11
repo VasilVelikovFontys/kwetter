@@ -2,7 +2,6 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: nats-deployment
-  namespace: kwetter
 spec:
   replicas: 1
   selector:
@@ -17,28 +16,28 @@ spec:
         - name: nats
           image: nats-streaming
           env:
-            - name: NATS_CLUSTER_ID
+            - name: CLUSTER_ID
               valueFrom:
                 configMapKeyRef:
                   name: nats-config
-                  key: cluster-id
+                  key: CLUSTER_ID
 
-            - name: NATS_PORT
+            - name: PORT
               valueFrom:
                 configMapKeyRef:
                   name: nats-config
-                  key: port
+                  key: PORT
 
-            - name: NATS_MONITORING_PORT
+            - name: MONITORING_PORT
               valueFrom:
                 configMapKeyRef:
                   name: nats-config
-                  key: monitoring-port
+                  key: MONITORING_PORT
           args: [
             '-p',
-            '$(NATS_PORT)',
+            '$(PORT)',
             '-m',
-            '$(NATS_MONITORING_PORT)',
+            '$(MONITORING_PORT)',
             '-hbi',
             '5s',
             '-hbt',
@@ -47,14 +46,13 @@ spec:
             '2',
             '-SD',
             '-cid',
-            '$(NATS_CLUSTER_ID)'
+            '$(CLUSTER_ID)'
           ]
 ---
 apiVersion: v1
 kind: Service
 metadata:
   name: nats-service
-  namespace: kwetter
 spec:
   selector:
     app: nats

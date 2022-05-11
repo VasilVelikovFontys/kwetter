@@ -2,7 +2,6 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: mentioning-posts-deployment
-  namespace: kwetter
   labels:
     app: mentioning-posts
 spec:
@@ -12,81 +11,74 @@ spec:
       app: mentioning-posts
   template:
     metadata:
-      namespace: kwetter
       labels:
         app: mentioning-posts
     spec:
       containers:
         - name: mentioning-posts
-          image: vasilvelikovkwetter.azurecr.io/mentioning-posts
+          image: kwetteracr.azurecr.io/mentioning-posts
           ports:
             - containerPort: 4000
           env:
             - name: FIRESTORE_API_KEY
               valueFrom:
-                secretKeyRef:
-                  name: mentioning-posts-secret
-                  key: firestore-api-key
+                configMapKeyRef:
+                  name: mentioning-posts-config
+                  key: FIRESTORE_API_KEY
 
             - name: FIRESTORE_AUTH_DOMAIN
               valueFrom:
-                secretKeyRef:
-                  name: mentioning-posts-secret
-                  key: firestore-auth-domain
+                configMapKeyRef:
+                  name: mentioning-posts-config
+                  key: FIRESTORE_AUTH_DOMAIN
 
             - name: FIRESTORE_PROJECT_ID
               valueFrom:
-                secretKeyRef:
-                  name: mentioning-posts-secret
-                  key: firestore-project-id
+                configMapKeyRef:
+                  name: mentioning-posts-config
+                  key: FIRESTORE_PROJECT_ID
 
             - name: FIRESTORE_STORAGE_BUCKET
               valueFrom:
-                secretKeyRef:
-                  name: mentioning-posts-secret
-                  key: firestore-storage-bucket
+                configMapKeyRef:
+                  name: mentioning-posts-config
+                  key: FIRESTORE_STORAGE_BUCKET
 
-            - name: FIRESTORE_MESSAGIN_SENDER_ID
+            - name: FIRESTORE_MESSAGING_SENDER_ID
               valueFrom:
-                secretKeyRef:
-                  name: mentioning-posts-secret
-                  key: firestore-messaging-sender-id
+                configMapKeyRef:
+                  name: mentioning-posts-config
+                  key: FIRESTORE_MESSAGING_SENDER_ID
 
             - name: FIRESTORE_APP_ID
               valueFrom:
-                secretKeyRef:
-                  name: mentioning-posts-secret
-                  key: firestore-app-id
+                configMapKeyRef:
+                  name: mentioning-posts-config
+                  key: FIRESTORE_APP_ID
 
             - name: FIRESTORE_SERVICE_EMAIL
               valueFrom:
-                secretKeyRef:
-                  name: mentioning-posts-secret
-                  key: firestore-service-email
+                configMapKeyRef:
+                  name: mentioning-posts-config
+                  key: FIRESTORE_SERVICE_EMAIL
 
             - name: FIRESTORE_SERVICE_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: mentioning-posts-secret
-                  key: firestore-service-password
+                  key: FIRESTORE_SERVICE_PASSWORD
 
             - name: NATS_CLUSTER_ID
               valueFrom:
                 configMapKeyRef:
                   name: nats-config
-                  key: cluster-id
+                  key: CLUSTER_ID
 
-            - name: NATS_HOST
+            - name: NATS_URL
               valueFrom:
                 configMapKeyRef:
                   name: nats-config
-                  key: host
-
-            - name: NATS_PORT
-              valueFrom:
-                configMapKeyRef:
-                  name: nats-config
-                  key: port
+                  key: URL
 
             - name: NATS_CLIENT_ID
               valueFrom:
@@ -97,37 +89,66 @@ spec:
               valueFrom:
                 configMapKeyRef:
                   name: mentioning-posts-config
-                  key: nats-durable-name
+                  key: NATS_DURABLE_NAME
 
             - name: NATS_QUEUE_GROUP
               valueFrom:
                 configMapKeyRef:
                   name: mentioning-posts-config
-                  key: nats-queue-group
+                  key: NATS_QUEUE_GROUP
 
             - name: NATS_ACCOUNT_CREATED_CHANNEL
               valueFrom:
                 configMapKeyRef:
                   name: nats-config
-                  key: account-created-channel
+                  key: ACCOUNT_CREATED_CHANNEL
 
             - name: NATS_POST_CREATED_CHANNEL
               valueFrom:
                 configMapKeyRef:
                   name: nats-config
-                  key: post-created-channel
+                  key: POST_CREATED_CHANNEL
 
-            - name: NATS_USER_MENTIONED_CHANNEL
+            - name: NATS_POST_MENTIONED_CHANNEL
               valueFrom:
                 configMapKeyRef:
                   name: nats-config
-                  key: user-mentioned-channel
+                  key: POST_MENTIONED_CHANNEL
+
+            - name: NATS_POST_LIKED_CHANNEL
+              valueFrom:
+                configMapKeyRef:
+                  name: nats-config
+                  key: POST_LIKED_CHANNEL
+
+            - name: NATS_ACCOUNT_DELETED_CHANNEL
+              valueFrom:
+                configMapKeyRef:
+                  name: nats-config
+                  key: ACCOUNT_DELETED_CHANNEL
+
+            - name: NATS_POST_DELETED_CHANNEL
+              valueFrom:
+                configMapKeyRef:
+                  name: nats-config
+                  key: POST_DELETED_CHANNEL
+
+            - name: NATS_MENTION_DELETED_CHANNEL
+              valueFrom:
+                configMapKeyRef:
+                  name: nats-config
+                  key: MENTION_DELETED_CHANNEL
+
+            - name: NATS_LIKE_DELETED_CHANNEL
+              valueFrom:
+                configMapKeyRef:
+                  name: nats-config
+                  key: LIKE_DELETED_CHANNEL
 ---
 apiVersion: v1
 kind: Service
 metadata:
   name: mentioning-posts-service
-  namespace: kwetter
 spec:
   selector:
     app: mentioning-posts

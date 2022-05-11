@@ -2,7 +2,6 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: gateway-deployment
-  namespace: kwetter
   labels:
     app: gateway
 spec:
@@ -12,7 +11,6 @@ spec:
       app: gateway
   template:
     metadata:
-      namespace: kwetter
       labels:
         app: gateway
     spec:
@@ -22,47 +20,88 @@ spec:
           ports:
             - containerPort: 4000
           env:
-            - name: ACCOUNTS_SERVICE_HOST
+            - name: ACCOUNTS_SERVICE_URL
               valueFrom:
                 configMapKeyRef:
                   name: accounts-config
-                  key: host
+                  key: URL
 
-            - name: ACCOUNTS_SERVICE_PORT
+            - name: DETAILS_SERVICE_URL
               valueFrom:
                 configMapKeyRef:
-                  name: accounts-config
-                  key: port
+                  name: details-config
+                  key: URL
 
-            - name: POSTS_SERVICE_HOST
+            - name: FOLLOWING_SERVICE_URL
               valueFrom:
                 configMapKeyRef:
-                  name: posts-config
-                  key: host
+                  name: following-config
+                  key: URL
 
-            - name: POSTS_SERVICE_PORT
+            - name: LIKES_SERVICE_URL
               valueFrom:
                 configMapKeyRef:
-                  name: posts-config
-                  key: port
+                  name: likes-config
+                  key: URL
 
-            - name: MENTIONING_POSTS_SERVICE_HOST
-              valueFrom:
-                configMapKeyRef:
-                  name: mentioning-posts-config
-                  key: host
-
-            - name: MENTIONING_POSTS_SERVICE_PORT
+            - name: MENTIONING_POSTS_SERVICE_URL
               valueFrom:
                 configMapKeyRef:
                   name: mentioning-posts-config
-                  key: port
+                  key: URL
+
+            - name: MENTIONS_SERVICE_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: mentions-config
+                  key: URL
+
+            - name: PICTURES_SERVICE_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: pictures-config
+                  key: URL
+
+            - name: POSTS_SERVICE_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: posts-config
+                  key: URL
+
+            - name: TIMELINE_SERVICE_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: timeline-config
+                  key: URL
+
+            - name: TREND_POSTS_SERVICE_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: trend-posts-config
+                  key: URL
+
+            - name: TRENDS_SERVICE_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: trends-config
+                  key: URL
+
+            - name: USERS_SERVICE_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: users-config
+                  key: URL
+
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: gateway-secret
+                  key: JWT_SECRET
 ---
 apiVersion: v1
 kind: Service
 metadata:
   name: gateway-service
-  namespace: kwetter
 spec:
   selector:
     app: gateway
