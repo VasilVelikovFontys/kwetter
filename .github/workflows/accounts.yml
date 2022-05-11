@@ -96,11 +96,17 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_ACCOUNTS }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
 
+      - name: Print Working Directory
+        run: pwd
+
       - name: Print Files In Directory
-        run: pwd \
-             ls \
-             cd .scannerwork \
-             cat report-task.txt
+        run: ls
+
+      - name: Enter Scannerwork
+        run: cd. scannerwork
+
+      - name: View report-task.txt
+        run: cat report-task.txt
 
       - name: Check Sonarqube quality gate
         if: ${{ github.ref == 'refs/heads/master' }}
