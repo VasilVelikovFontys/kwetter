@@ -106,6 +106,8 @@ jobs:
         if: ${{ github.ref == 'refs/heads/master' }}
         uses: sonarsource/sonarqube-quality-gate-action@master
         timeout-minutes: 5
+        with:
+          scanMetadataReportFile: ${{ github.workspace }}/src/accounts/.scannerwork/report-task.txt
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_ACCOUNTS }}
 
