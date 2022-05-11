@@ -96,12 +96,6 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_ACCOUNTS }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
 
-      - name: Print Files In Directory
-        run: |
-          ls
-          cd src
-          ls
-
       - name: Check Sonarqube quality gate
         if: ${{ github.ref == 'refs/heads/master' }}
         uses: sonarsource/sonarqube-quality-gate-action@master
