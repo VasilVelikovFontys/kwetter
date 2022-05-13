@@ -81,7 +81,7 @@ const User = props => {
     return (
         <div id='user-container'>
             <div id='user-title'>
-                User
+                User {username}
             </div>
 
             {displayUser()}
