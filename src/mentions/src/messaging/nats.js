@@ -40,7 +40,7 @@ stan.on('connect', () => {
     subscription.on('message', async (msg) => {
         const receivedData = msg.getData();
         const post = JSON.parse(receivedData);
-        const {username, text} = post;
+        const {postId, username, text} = post;
 
         getUsernamesFromText(text)
             .then(usernames => {
@@ -51,10 +51,10 @@ stan.on('connect', () => {
 
                 usernames.forEach(async mentionedUsername => {
                     if (username === mentionedUsername) return console.log("Mentioned username matches user's username");
-                    await db.createMention(post.id, mentionedUsername);
+                    await db.createMention(postId, mentionedUsername);
                 });
 
-                const mention = {postId: post.id, usernames};
+                const mention = {postId, usernames};
 
                 const sentData = JSON.stringify(mention);
                 publishPostMentioned(sentData);
