@@ -70,7 +70,6 @@ const Post = props => {
         if (loading && postId === post.id) return <span>Loading...</span>;
 
         if (!user) return <span>Loading...</span>;
-        console.log(post)
 
         let icon = <i className="fa-regular fa-heart post-heart" onClick={handleLike}/>;
 
