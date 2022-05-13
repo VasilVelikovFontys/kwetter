@@ -137,7 +137,7 @@ const deletePost = async postId => {
         const postDocument = await db.collection('posts').doc(postId).get();
         const post = postDocument.data();
 
-        if (!post) return handleError(`Post with id ${postId} not found!`);
+        if (!post) return handleLog(`Post with id ${postId} not found!`);
 
         await postDocument.ref.delete();
     } catch (error) {
@@ -154,7 +154,7 @@ const deleteMention = async (postId, username) => {
         const postDocument = await db.collection('posts').doc(postId).get();
         const post = postDocument.data();
 
-        if (!post) return handleError(`Post with id ${postId} not found!`);
+        if (!post) return handleLog(`Post with id ${postId} not found!`);
 
         const newMentions = post.mentions.filter(mentionUserId => mentionUserId !== userId);
 

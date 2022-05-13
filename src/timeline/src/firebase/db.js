@@ -74,7 +74,7 @@ const getTimelinePosts = async userId => {
                 const data = doc.data();
                 const date = data.date.toDate();
 
-                timelinePosts.push({...data, date, id: doc.id});
+                timelinePosts.push({...data, date, postId: doc.id});
             });
         }
 
