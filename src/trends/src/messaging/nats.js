@@ -37,7 +37,7 @@ stan.on('connect', () => {
     subscription.on('message', async (msg) => {
         const receivedData = msg.getData();
         const post = JSON.parse(receivedData);
-        const {text} = post;
+        const {postId, text} = post;
 
         const postTrends = await getTrendsFromText(text);
 
@@ -48,7 +48,7 @@ stan.on('connect', () => {
 
         const trends = await assureTrendsExist(postTrends);
 
-        const trendedPost = {postId: post.id, trends};
+        const trendedPost = {postId, trends};
 
         const sentData = JSON.stringify(trendedPost);
         publishPostTrended(sentData);
