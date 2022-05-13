@@ -35,7 +35,7 @@ const createPostsRouter = (database, messaging, search) => {
         const {postId, error: postError} = await database.createPost(userId, username, text, timestamp);
         if (postError) return res.sendStatus(500);
 
-        const post = {postId, userId, username, text, date: timestamp};
+        const post = {postId, userId, username, text, date: timestamp, likes: []};
 
         search.savePost(postId, {text, username, date: postDate, likes: []});
 
