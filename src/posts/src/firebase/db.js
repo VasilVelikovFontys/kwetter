@@ -34,7 +34,7 @@ const getPostsByUserId = async userId => {
             const data = doc.data();
             const date = data.date.toDate();
 
-            return {...data, date, id: doc.id}
+            return {...data, date, postId: doc.id}
         });
 
         return {data: posts};

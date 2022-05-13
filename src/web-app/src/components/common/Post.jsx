@@ -20,7 +20,7 @@ const Post = props => {
     const [error, setError] = useState('');
 
     const handleLike = () => {
-        dispatch(likePost(post.id))
+        dispatch(likePost(post.postId))
             .then(() => {
                 //No action needed
             });
@@ -36,11 +36,11 @@ const Post = props => {
     }
 
     useEffect(() => {
-        if (likeError && postId === post.id) return setError(likeError);
+        if (likeError && postId === post.postId) return setError(likeError);
     }, [likeError]);
 
     useEffect(() => {
-        if (postId !== post.id) return setError('');
+        if (postId !== post.postId) return setError('');
     }, [postId]);
 
     useEffect(() => {
@@ -67,7 +67,7 @@ const Post = props => {
     }
 
     const displayLikes = () => {
-        if (loading && postId === post.id) return <span>Loading...</span>;
+        if (loading && postId === post.postId) return <span>Loading...</span>;
 
         if (!user) return <span>Loading...</span>;
 

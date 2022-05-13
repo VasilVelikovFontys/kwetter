@@ -35,7 +35,7 @@ const Timeline = props => {
     }, [searchPostsError]);
 
     useEffect(() => {
-        const newPosts = timelinePosts.map(post => <Post key={post.id} post={post} setSelectedUsername={setSelectedUsername}/>);
+        const newPosts = timelinePosts.map(post => <Post key={post.postId} post={post} setSelectedUsername={setSelectedUsername}/>);
 
         setStyledPosts(newPosts)
     }, [timelinePosts]);
