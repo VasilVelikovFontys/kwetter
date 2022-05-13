@@ -4,10 +4,12 @@ import {useDispatch, useSelector} from "react-redux";
 import {logOut} from "../../store/actions/authActions";
 import algoliasearch from "algoliasearch/lite";
 import {envGet} from "../../utils/envHelper";
-import {SET_SEARCH_POSTS, SET_SEARCH_POSTS_ERROR, SET_SEARCH_POSTS_LOADING} from "../../constants";
+import {SET_SEARCH_POSTS, SET_SEARCH_POSTS_ERROR, SET_SEARCH_POSTS_LOADING, TIMELINE_TAB} from "../../constants";
 import {useNavigate} from "react-router-dom";
 
-const AuthenticatedSearch = () => {
+const AuthenticatedSearch = props => {
+    const {setSelectedTab} = props;
+
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
@@ -32,6 +34,7 @@ const AuthenticatedSearch = () => {
     }
 
     const handleSearch = async () => {
+        setSelectedTab(TIMELINE_TAB);
         navigate('/start');
 
         dispatch({type: SET_SEARCH_POSTS_LOADING});

@@ -18,7 +18,7 @@ const Timeline = props => {
     const [error, setError] = useState('');
 
     useEffect(() => {
-        if (jwt && searchPosts.length === 0) {
+        if (jwt && searchPosts.length === 0 && searchPostsLoading !== true) {
             dispatch(getTimelinePosts())
                 .then(() => {
                     //No action needed

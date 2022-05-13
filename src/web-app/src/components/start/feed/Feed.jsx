@@ -1,15 +1,18 @@
-import React, {useState} from 'react'
+import React from 'react'
 import '../../../styles/components/start/feed/feed.css';
 import Mentions from "./Mentions";
 import Timeline from "./Timeline";
 import PostsByTrend from "./PostsByTrend";
-import {MENTIONS_TAB, POSTS_BY_TREND_LIST, TIMELINE_LIST, TIMELINE_TAB} from "../../../constants";
+import {MENTIONS_TAB, POSTS_BY_TREND_LIST, SET_SEARCH_POSTS, TIMELINE_LIST, TIMELINE_TAB} from "../../../constants";
+import {useDispatch} from "react-redux";
 
 const Feed = props => {
-    const {timelineList, setTimelineList, setSelectedUsername} = props;
-    const [selectedTab, setSelectedTab] = useState(TIMELINE_TAB);
+    const {timelineList, setTimelineList, setSelectedUsername, selectedTab, setSelectedTab} = props;
+
+    const dispatch = useDispatch();
 
     const handleTabChange = tab => {
+        dispatch({type: SET_SEARCH_POSTS, posts: []});
         setTimelineList(TIMELINE_LIST);
         setSelectedTab(tab);
     }

@@ -17,7 +17,7 @@ const PostsByTrend = props => {
     }, [postsError]);
 
     useEffect(() => {
-        const newPosts = posts.map(post => <Post key={post.id} post={post} setSelectedUsername={setSelectedUsername}/>);
+        const newPosts = posts.map(post => <Post key={post.postId} post={post} setSelectedUsername={setSelectedUsername}/>);
 
         setStyledPosts(newPosts)
     }, [posts]);

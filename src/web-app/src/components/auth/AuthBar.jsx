@@ -4,13 +4,14 @@ import {useSelector} from "react-redux";
 import LoginButton from "./LoginButton";
 import AuthenticatedSearch from "./AuthenticatedSearch";
 
-const AuthBar = () => {
+const AuthBar = props => {
     const {jwt} = useSelector(state => state.auth);
+    const {setSelectedTab} = props;
 
     return (
         <div id='auth-bar'>
             {jwt && (
-                <AuthenticatedSearch/>
+                <AuthenticatedSearch setSelectedTab={setSelectedTab}/>
             )}
 
             {!jwt && (
