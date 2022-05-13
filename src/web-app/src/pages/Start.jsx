@@ -15,7 +15,7 @@ const Start = () => {
 
     return (
         <div id='start-page'>
-            <AuthBar setSelectedTab={setSelectedTab}/>
+            <AuthBar setSelectedTab={setSelectedTab} setTimelineList={setTimelineList}/>
 
             <div id='start-contents'>
                 <div className='start-column'>
@@ -29,7 +29,7 @@ const Start = () => {
                 </div>
                 <div className='start-column'>
                     <Counts />
-                    <Trends setTimelineList={setTimelineList}/>
+                    <Trends setTimelineList={setTimelineList} setSelectedTab={setSelectedTab}/>
                     <User username={selectedUsername}/>
                 </div>
             </div>

@@ -41,9 +41,9 @@ const Timeline = props => {
     }, [timelinePosts]);
 
     useEffect(() => {
-        const newPosts = searchPosts.map(post => <Post key={post.objectID} post={post} setSelectedUsername={setSelectedUsername}/>);
+        const newPosts = searchPosts.map(post => <Post key={post.postId} post={post} setSelectedUsername={setSelectedUsername}/>);
 
-        setStyledPosts(newPosts)
+        setStyledPosts(newPosts);
     }, [searchPosts]);
 
     const displayPosts = () => {

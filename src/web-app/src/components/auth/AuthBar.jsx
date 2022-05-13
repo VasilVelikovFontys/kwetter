@@ -6,12 +6,12 @@ import AuthenticatedSearch from "./AuthenticatedSearch";
 
 const AuthBar = props => {
     const {jwt} = useSelector(state => state.auth);
-    const {setSelectedTab} = props;
+    const {setSelectedTab, setTimelineList} = props;
 
     return (
         <div id='auth-bar'>
             {jwt && (
-                <AuthenticatedSearch setSelectedTab={setSelectedTab}/>
+                <AuthenticatedSearch setSelectedTab={setSelectedTab} setTimelineList={setTimelineList}/>
             )}
 
             {!jwt && (

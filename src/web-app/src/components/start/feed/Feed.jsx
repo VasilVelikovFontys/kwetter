@@ -12,7 +12,9 @@ const Feed = props => {
     const dispatch = useDispatch();
 
     const handleTabChange = tab => {
-        dispatch({type: SET_SEARCH_POSTS, posts: []});
+        if (tab !== selectedTab) {
+            dispatch({type: SET_SEARCH_POSTS, posts: []});
+        }
         setTimelineList(TIMELINE_LIST);
         setSelectedTab(tab);
     }

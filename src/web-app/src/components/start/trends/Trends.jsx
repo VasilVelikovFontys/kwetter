@@ -3,10 +3,10 @@ import '../../../styles/components/start/trends/trends.css';
 import {useDispatch, useSelector} from "react-redux";
 import {getTrends} from "../../../store/actions/trendActions";
 import {getPostsByTrend} from "../../../store/actions/trendPostActions";
-import {POSTS_BY_TREND_LIST} from "../../../constants";
+import {POSTS_BY_TREND_LIST, TIMELINE_TAB} from "../../../constants";
 
 const Trends = props => {
-    const {setTimelineList} = props;
+    const {setTimelineList, setSelectedTab} = props;
 
     const dispatch = useDispatch();
     const {jwt} = useSelector(state => state.auth);
@@ -18,6 +18,7 @@ const Trends = props => {
 
     const filterByTrend = trendId => {
         setTimelineList(POSTS_BY_TREND_LIST)
+        setSelectedTab(TIMELINE_TAB);
 
         dispatch(getPostsByTrend(trendId))
             .then(() => {
