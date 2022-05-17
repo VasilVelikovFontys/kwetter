@@ -16,12 +16,10 @@ jobs:
 #          echo '::set-output name=value::[\"a\", \"b\", \"c\"]'
 
       - run: |
-          echo $(git diff-tree --no-commit-id --name-only -r ${{ github.sha }})
           arr=()
           for i in "$(git diff-tree --no-commit-id --name-only -r ${{ github.sha }})"
           do
             arr+=($i)
-            echo $i
           done
           echo ${arr[@]}
           echo ::set-output name=paths::${arr[@]}
