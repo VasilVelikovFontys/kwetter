@@ -11,7 +11,7 @@ jobs:
     steps:
       - uses: actions/checkout@v1
 
-      - id: matrix
+      - id: generated-matrix
         run: |
           pathArray=()
           for updatedFile in "$(git diff-tree --no-commit-id --name-only -r ${{ github.sha }})"
@@ -30,7 +30,8 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        paths: ${{fromJson(needs.setup.outputs.matrix)}}
+        value: ${{fromJson(needs.setup.outputs.generated-matrix)}}
     steps:
       - run: |
-          echo "${{ matrix.paths }}"
+          echo ${{fromJson(needs.setup.outputs.generated-matrix)}}
+          echo "${{ matrix.value }}"
