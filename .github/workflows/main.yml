@@ -25,13 +25,13 @@ jobs:
               pathArray+=($path)
             fi
           done
-          echo ::set-output name=paths::${pathArray[@]}
+          echo ::set-output name=paths::{\"paths\":${pathArray[@]}}
 
   build:
     needs: setup
     runs-on: ubuntu-latest
     strategy:
-      matrix: ${{ needs.setup.outputs.generated-matrix }}
+      matrix: ${{ fromJson(needs.setup.outputs.generated-matrix) }}
     steps:
       - run: |
           echo ${{ needs.setup.outputs.generated-matrix }}
