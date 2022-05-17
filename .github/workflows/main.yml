@@ -23,7 +23,7 @@ jobs:
               then
               temporaryString=${updatedFile#*/}
               path=${temporaryString%/*}
-              pathsArray+=("$path")
+              pathsArray+=(\"$path\")
             fi
           done
 
