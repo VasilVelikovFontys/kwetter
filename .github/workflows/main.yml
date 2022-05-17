@@ -19,7 +19,6 @@ jobs:
           pathArray=()
           for updatedFile in "$(git diff-tree --no-commit-id --name-only -r ${{ github.sha }})"
           do
-            echo $updatedFile
             if [[ $updatedFile == src\/* ]]
               then
               temporaryString=${updatedFile#*/}
@@ -27,7 +26,6 @@ jobs:
               pathArray+=($path)
             fi
           done
-          echo ${pathArray[@]}
           echo ::set-output name=paths::${pathArray[@]}
 
   build:
@@ -35,7 +33,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        value: ${{fromJson(needs.setup.outputs.matrix)}}
+        paths: ${{fromJson(needs.setup.outputs.matrix)}}
     steps:
       - run: |
           echo "${{ matrix.paths }}"
