@@ -7,7 +7,7 @@ jobs:
     name: Get Updated Paths
     runs-on: ubuntu-latest
     outputs:
-      matrix: ${{ steps.matrix.outputs.value }}
+      matrix: ${{ steps.matrix.outputs.paths }}
     steps:
 #      - id: matrix
 #        run: |
@@ -20,7 +20,7 @@ jobs:
           arr+=($i)
         done
         echo arr
-        echo ::set-output name=arr::${arr[@]}
+        echo ::set-output name=paths::${arr[@]}
 
   build:
     needs: setup
