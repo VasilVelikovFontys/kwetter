@@ -113,7 +113,7 @@ jobs:
           path: ${{ github.workspace }}/src/${{ matrix.path }}/coverage
 
       - name: Get Sonar Token Name
-        id: string
+        id: token
         uses: ASzc/change-string-case-action@v2
         with:
           string: SONAR_TOKEN_${{ matrix.path }}
@@ -130,7 +130,7 @@ jobs:
             -Dsonar.testExecutionReportPaths=coverage/test-reporter.xml
             -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
         env:
-          SONAR_TOKEN: ${{ secrets.${{ steps.string.outputs.uppercase }} }}
+          SONAR_TOKEN: ${{ secrets[format('SONAR_TOKEN_{0}', steps.token.outputs.uppercase }}) }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
 
       - name: Check Sonarqube quality gate
@@ -140,7 +140,7 @@ jobs:
         with:
           scanMetadataReportFile: ${{ github.workspace }}/src/${{ matrix.path }}/.scannerwork/report-task.txt
         env:
-          SONAR_TOKEN: ${{ secrets.${{ steps.string.outputs.uppercase }} }}
+          SONAR_TOKEN: ${{ secrets[format('SONAR_TOKEN_{0}', steps.token.outputs.uppercase }}) }}
 
       - name: Quality Gate ✅
         if: ${{ github.ref == 'refs/heads/master' && success() }}
