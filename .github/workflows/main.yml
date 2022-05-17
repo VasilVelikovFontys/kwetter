@@ -7,11 +7,11 @@ jobs:
     name: Get Updated Paths
     runs-on: ubuntu-latest
     outputs:
-      matrix: ${{ steps.matrix.outputs.paths }}
+      generated-matrix: ${{ steps.generate-matrix.outputs.paths }}
     steps:
       - uses: actions/checkout@v1
 
-      - id: generated-matrix
+      - id: generate-matrix
         run: |
           pathArray=()
           for updatedFile in "$(git diff-tree --no-commit-id --name-only -r ${{ github.sha }})"
@@ -29,9 +29,7 @@ jobs:
     needs: setup
     runs-on: ubuntu-latest
     strategy:
-      matrix:
-        value: ${{fromJson(needs.setup.outputs.generated-matrix)}}
+      matrix: ${{fromJson(needs.setup.outputs.generated-matrix)}}
     steps:
       - run: |
-          echo ${{fromJson(needs.setup.outputs.generated-matrix)}}
-          echo "${{ matrix.value }}"
+          echo "${{ matrix }}"
