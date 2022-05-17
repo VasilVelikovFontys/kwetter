@@ -2,7 +2,7 @@ name: Accounts
 
 on:
   push:
-    paths: 'src/accounts/**'
+    paths: 'src/account/**'
 
 jobs:
   test:
