@@ -16,7 +16,7 @@ jobs:
 #          echo '::set-output name=value::[\"a\", \"b\", \"c\"]'
 
       - run: |
-          echo $(git diff-tree --no-commit-id --name-only -r ${{ github.sha }})
+          echo $(git diff-tree -r ${{ github.sha }})
           arr=()
           for i in "$(git diff-tree --no-commit-id --name-only -r ${{ github.sha }})"
           do
