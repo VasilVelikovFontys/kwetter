@@ -121,6 +121,8 @@ jobs:
         with:
           string: SONAR_TOKEN_${{ matrix.path }}
 
+      - run: echo ${{ format('SONAR_TOKEN_{0}', steps.token.outputs.uppercase) }}
+
       - name: Run Sonarqube scan
         uses: sonarsource/sonarqube-scan-action@master
         with:
