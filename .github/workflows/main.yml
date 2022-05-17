@@ -9,9 +9,11 @@ jobs:
     outputs:
       generated-matrix: ${{ steps.generate-matrix.outputs.paths }}
     steps:
-      - uses: actions/checkout@v1
+      - name: Checkout Code
+        uses: actions/checkout@v1
 
-      - id: generate-matrix
+      - name: Generate Matrix
+        id: generate-matrix
         run: |
           pathArray=()
           for updatedFile in "$(git diff-tree --no-commit-id --name-only -r ${{ github.sha }})"
@@ -32,5 +34,6 @@ jobs:
 #      matrix: ${{fromJson(needs.setup.outputs.generated-matrix)}}
     steps:
       - run: |
-          echo needs.setup.outputs.generated-matrix
+          echo ${{ needs.setup.outputs.generated-matrix }}
+          echo "${{ needs.setup.outputs.generated-matrix }}"
           echo "${{ matrix }}"
