@@ -16,13 +16,18 @@ jobs:
 #          echo '::set-output name=value::[\"a\", \"b\", \"c\"]'
 
       - run: |
-          arr=()
-          for i in "$(git diff-tree --no-commit-id --name-only -r ${{ github.sha }})"
+          pathArray=()
+          for updatedFile in "$(git diff-tree --no-commit-id --name-only -r ${{ github.sha }})"
           do
-            arr+=($i)
+            if [[ $updatedFile == src/* ]]
+              then
+              temporaryString=${updatedFile#*/}
+              path=${temporaryString%/*}
+              pathArray+=($i)
+            fi
           done
-          echo ${arr[@]}
-          echo ::set-output name=paths::${arr[@]}
+          echo ${pathArray[@]}
+          echo ::set-output name=paths::${pathArray[@]}
 
   build:
     needs: setup
