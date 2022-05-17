@@ -36,7 +36,8 @@ jobs:
     needs: setup
     runs-on: ubuntu-latest
     strategy:
-      matrix: ${{ fromJson(needs.setup.outputs.generated-matrix) }}
+      matrix:
+        value: ${{ fromJson(needs.setup.outputs.generated-matrix) }}
     steps:
       - run: |
           echo ${{ needs.setup.outputs.generated-matrix }}
