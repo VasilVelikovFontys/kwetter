@@ -25,7 +25,7 @@ jobs:
               pathArray+=($path)
             fi
           done
-          echo ::set-output name=paths::${pathArray[@]}
+          echo "::set-output name=paths::${pathArray[@]}"
 
   build:
     needs: setup
@@ -34,7 +34,6 @@ jobs:
 #      matrix: ${{fromJson(needs.setup.outputs.generated-matrix)}}
     steps:
       - run: |
-          echo "${{ needs.setup.outputs }}"
           echo ${{ needs.setup.outputs.generated-matrix }}
           echo "${{ needs.setup.outputs.generated-matrix }}"
           echo "${{ matrix }}"
