@@ -20,8 +20,7 @@ jobs:
           for updatedFile in "$(git diff-tree --no-commit-id --name-only -r ${{ github.sha }})"
           do
             echo $updatedFile
-            echo [ $updatedFile == src/* ]
-            if [[ $updatedFile == src/* ]]
+            if [[ $updatedFile == src\/* ]]
               then
               temporaryString=${updatedFile#*/}
               path=${temporaryString%/*}
