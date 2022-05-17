@@ -99,7 +99,10 @@ jobs:
   sonar:
     name: Scan With Sonarqube
     runs-on: ubuntu-latest
-    needs: test
+    needs: [ setup, test]
+    strategy:
+      matrix:
+        path: ${{ fromJson(needs.setup.outputs.updated-paths) }}
     steps:
       - name: Check out code
         uses: actions/checkout@v2
