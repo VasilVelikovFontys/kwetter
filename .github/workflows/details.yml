@@ -2,7 +2,7 @@ name: Details
 
 on:
   push:
-    paths: 'src/details/**'
+    paths: 'src/detail/**'
 
 jobs:
   test:
