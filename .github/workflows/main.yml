@@ -25,6 +25,7 @@ jobs:
               pathArray+=($path)
             fi
           done
+          echo ${pathArray[@]}
           echo "::set-output name=paths::${pathArray[@]}"
 
   build:
