@@ -9,6 +9,8 @@ jobs:
     outputs:
       matrix: ${{ steps.matrix.outputs.paths }}
     steps:
+      - uses: actions/checkout@v1
+
 #      - id: matrix
 #        run: |
 #          echo '::set-output name=value::[\"a\", \"b\", \"c\"]'
