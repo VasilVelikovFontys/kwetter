@@ -18,6 +18,7 @@ jobs:
           pathArray=()
           for updatedFile in "$(git diff-tree --no-commit-id --name-only -r ${{ github.sha }})"
           do
+            echo $updatedFile
             if [[ $updatedFile == src\/* ]]
               then
               echo $updatedFile
