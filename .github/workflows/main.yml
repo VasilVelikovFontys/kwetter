@@ -9,20 +9,19 @@ jobs:
     outputs:
       matrix: ${{ steps.matrix.outputs.paths }}
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v2
 
 #      - id: matrix
 #        run: |
 #          echo '::set-output name=value::[\"a\", \"b\", \"c\"]'
 
       - run: |
-          echo $(git diff-tree --no-commit-id --name-only -r ${{ github.sha }})
           arr=()
           for i in "$(git diff-tree --no-commit-id --name-only -r ${{ github.sha }})"
           do
             arr+=($i)
           done
-          echo arr
+          echo arr()
           echo ::set-output name=paths::${arr[@]}
 
   build:
