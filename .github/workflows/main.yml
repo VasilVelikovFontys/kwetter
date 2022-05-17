@@ -15,18 +15,22 @@ jobs:
       - name: Generate Matrix
         id: generate-matrix
         run: |
-          pathArray=()
+          pathsArray=()
+
           for updatedFile in $(git diff-tree --no-commit-id --name-only -r ${{ github.sha }})
           do
             if [[ $updatedFile == src\/* ]]
               then
               temporaryString=${updatedFile#*/}
               path=${temporaryString%/*}
-              pathArray+=($path)
+              pathsArray+=($path)
             fi
           done
-          echo {\"paths\":[${pathArray[@]}]}
-          echo ::set-output name=paths::{\"paths\":[${pathArray[@]}]}
+
+          separatedPaths=$(IFS=', '; echo "${pathsArray[*]}")
+
+          echo {\"paths\":[$separatedPaths]}
+          echo ::set-output name=paths::{\"paths\":[$separatedPaths}]}
 
   build:
     needs: setup
