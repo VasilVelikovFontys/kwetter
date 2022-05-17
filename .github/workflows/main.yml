@@ -34,6 +34,7 @@ jobs:
 #      matrix: ${{fromJson(needs.setup.outputs.generated-matrix)}}
     steps:
       - run: |
+          echo ${{ needs.setup.outputs }}
           echo ${{ needs.setup.outputs.generated-matrix }}
           echo "${{ needs.setup.outputs.generated-matrix }}"
           echo "${{ matrix }}"
