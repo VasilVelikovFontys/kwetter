@@ -21,7 +21,7 @@ spec:
             - containerPort: 4000
           env:
             - name: CLIENT_URL
-              value: "http://localhost:3000"
+              value: "*"
 
             - name: ACCOUNTS_SERVICE_URL
               valueFrom:
