@@ -177,7 +177,10 @@ jobs:
     name: Build Docker image and push to DockerHub
     if: ${{ github.ref == 'refs/heads/dev' }}
     runs-on: ubuntu-latest
-    needs: test
+    needs: [ setup, test ]
+    strategy:
+      matrix:
+        path: ${{ fromJson(needs.setup.outputs.updated-paths) }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -206,7 +209,10 @@ jobs:
     name: Build Docker image and push to ACR
     if: ${{ github.ref == 'refs/heads/master' }}
     runs-on: ubuntu-latest
-    needs: [ test, sonar ]
+    needs: [ setup, test, sonar ]
+    strategy:
+      matrix:
+        path: ${{ fromJson(needs.setup.outputs.updated-paths) }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
