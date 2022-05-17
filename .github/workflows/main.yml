@@ -21,7 +21,7 @@ jobs:
           do
             arr+=($i)
           done
-          echo arr()
+          echo $arr()
           echo ::set-output name=paths::${arr[@]}
 
   build:
