@@ -20,8 +20,11 @@ jobs:
           do
             if [[ $updatedFile == src\/* ]]
               then
+              echo $updatedFile
               temporaryString=${updatedFile#*/}
+              echo $temporaryString
               path=${temporaryString%/*}
+              echo $path
               pathArray+=($path)
             fi
           done
