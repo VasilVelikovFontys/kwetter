@@ -30,7 +30,7 @@ jobs:
           separatedPaths=$(IFS=', '; echo "${pathsArray[*]}")
 
           echo {\"paths\":[$separatedPaths]}
-          echo ::set-output name=paths::{\"paths\":[$separatedPaths}]}
+          echo ::set-output name=paths::{\"paths\":[$separatedPaths]}
 
   build:
     needs: setup
