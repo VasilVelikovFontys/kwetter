@@ -121,8 +121,7 @@ jobs:
           PATH: ${{ matrix.path }}
         with:
           script: |
-            const { PATH } = process.env
-            const TEST_RESULT = PATH === 'accounts' ? 'success' : 'failure'
+            const { TEST_RESULT, PATH } = process.env
 
             if (TEST_RESULT === 'failure') {
               core.setFailed(`${PATH} tests have failed 🚨`)
@@ -165,8 +164,7 @@ jobs:
         uses: DamianReeves/write-file-action@v1.0
         with:
           path: ${{ github.workspace }}/src/${{ matrix.path }}/quality-gates-result.txt
-          contents: |
-            success
+          contents: success
           write-mode: append
 
       - name: Save failed quality gates result 🚨
@@ -174,8 +172,7 @@ jobs:
         uses: DamianReeves/write-file-action@v1.0
         with:
           path: ${{ github.workspace }}/src/${{ matrix.path }}/quality-gates-result.txt
-          contents: |
-            failure
+          contents: failure
           write-mode: append
 
       - name: Create quality gates result artifact
@@ -274,7 +271,7 @@ jobs:
         run: echo ${{ steps.docker_build.outputs.digest }}
 
   performance-test:
-    name: Build Docker image and push to DockerHub
+    name: Test Performance
     if: ${{ github.ref == 'refs/heads/dev' }}
     runs-on: ubuntu-latest
     needs: [ setup, test, build-docker-hub ]
