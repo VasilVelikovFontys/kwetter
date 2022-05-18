@@ -62,21 +62,42 @@ jobs:
       - name: Run tests and generate coverage
         run: npm run test:ci
 
-      - name: Save successful test result ✅
-        if: ${{ success() }}
-        uses: DamianReeves/write-file-action@v1.0
+      - name: Check and save test result
+        uses: actions/github-script@v6
+        env:
+          SUCCESS: ${{ success() }}
+          WORKSPACE: ${{ github.workspace }}
+          PATH: ${{ matrix.path }}
         with:
-          path: ${{ github.workspace }}/src/${{ matrix.path }}/test-result.txt
-          contents: success
-          write-mode: append
+          script: |
+            const fs = require('fs')
+            const { SUCCESS } = process.env
 
-      - name: Save failed test result 🚨
-        if: ${{ failure() }}
-        uses: DamianReeves/write-file-action@v1.0
-        with:
-          path: ${{ github.workspace }}/src/${{ matrix.path }}/test-result.txt
-          contents: failure
-          write-mode: append
+            try {
+              fs.writeFileSync(`${WORKSPACE}/src/${PATH}/test-result.txt`, SUCCESS);
+            } catch (error) {
+              console.error(error);
+            }
+
+            if (SUCCESS === false) {
+              core.setFailed(`${PATH} tests have failed 🚨`)
+            }
+
+#      - name: Save successful test result ✅
+#        if: ${{ success() }}
+#        uses: DamianReeves/write-file-action@v1.0
+#        with:
+#          path: ${{ github.workspace }}/src/${{ matrix.path }}/test-result.txt
+#          contents: success
+#          write-mode: append
+#
+#      - name: Save failed test result 🚨
+#        if: ${{ failure() }}
+#        uses: DamianReeves/write-file-action@v1.0
+#        with:
+#          path: ${{ github.workspace }}/src/${{ matrix.path }}/test-result.txt
+#          contents: failure
+#          write-mode: append
 
       - name: Create test result artifact
         if: ${{ success() }}
@@ -252,11 +273,6 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
-
-      - name: Start containers
-        run: |
-          cd src/infrastructure/compose
-          docker compose up
 
   build-azure:
     name: Build Docker image and push to ACR
