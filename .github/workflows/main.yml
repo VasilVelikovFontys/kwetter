@@ -62,38 +62,31 @@ jobs:
       - name: Run tests and generate coverage
         run: npm run test:ci
 
-      - name: Create coverage artifact
-        if: ${{ success() }}
-        uses: actions/upload-artifact@v2
-        with:
-          name: coverage
-          path: |
-            src/${{ matrix.path }}/coverage/lcov.info
-            src/${{ matrix.path }}/coverage/test-reporter.xml
-
       - name: Save successful test result ✅
         if: ${{ success() }}
         uses: DamianReeves/write-file-action@v1.0
         with:
-          path: ${{ github.workspace }}/src/test-results/results.txt
-          contents: |
-            ${{ matrix.path }}:true,
+          path: ${{ github.workspace }}/src/${{ matrix.path }}/tests/result.txt
+          contents: success
           write-mode: append
 
       - name: Save failed test result 🚨
         if: ${{ failure() }}
         uses: DamianReeves/write-file-action@v1.0
         with:
-          path: ${{ github.workspace }}/src/test-results/results.txt
-          contents: |
-            ${{ matrix.path }}:false,
+          path: ${{ github.workspace }}/src/${{ matrix.path }}/tests/result.txt
+          contents: failure
           write-mode: append
 
       - name: Create test results artifact
+        if: ${{ success() }}
         uses: actions/upload-artifact@v2
         with:
           name: test-results
-          path: src/test-results
+          path: |
+            src/${{ matrix.path }}/coverage/lcov.info
+            src/${{ matrix.path }}/coverage/test-reporter.xml
+            src/${{ matrix.path }}/tests/result.txt
 
   sonar:
     name: Scan With Sonarqube
@@ -109,23 +102,17 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Download coverage artifact
-        uses: actions/download-artifact@v2
-        with:
-          name: coverage
-          path: ${{ github.workspace }}/src/${{ matrix.path }}/coverage
-
       - name: Download test results artifact
         uses: actions/download-artifact@v2
         with:
           name: test-results
-          path: ${{ github.workspace }}/src/test-results
+          path: ${{ github.workspace }}/src/${{ matrix.path }}/tests
 
       - name: Read test results
         id: test-results
         uses: juliangruber/read-file-action@v1
         with:
-          path: ${{ github.workspace }}/src/test-results/results.txt
+          path: ${{ github.workspace }}/src/${{ matrix.path }}/tests/result.txt
 
       - name: Check test result
         uses: actions/github-script@v6
@@ -134,22 +121,10 @@ jobs:
           PATH: ${{ matrix.path }}
         with:
           script: |
-            const { TEST_RESULTS, PATH } = process.env
-            console.log(TEST_RESULTS)
+            const { TEST_RESULT, PATH } = process.env
+            console.log(TEST_RESULT)
 
-            const testResults = TEST_RESULTS.split(',')
-            console.log(testResults)
-
-            testResults.pop()
-            console.log(testResults)
-
-            const pathTest = testResults.find(result => result.substring(0, result.indexOf(':')) === PATH)
-
-            if (!pathTest) return
-
-            const pathTestValue = pathTest.substring(pathTest.indexOf(':') + 1, pathTest.length + 1)
-
-            if (pathTestValue === 'true') {
+            if (TEST_RESULT === 'success') {
               core.setFailed(`${PATH} tests have failed 🚨`)
             }
 
@@ -170,8 +145,8 @@ jobs:
             -Dsonar.sources=src
             -Dsonar.tests=src
             -Dsonar.test.inclusions=src/**/*.test.js
-            -Dsonar.testExecutionReportPaths=coverage/test-reporter.xml
-            -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
+            -Dsonar.testExecutionReportPaths=tests/coverage/test-reporter.xml
+            -Dsonar.javascript.lcov.reportPaths=tests/coverage/lcov.info
         env:
           SONAR_TOKEN: ${{ secrets[steps.token.outputs.uppercase] }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
