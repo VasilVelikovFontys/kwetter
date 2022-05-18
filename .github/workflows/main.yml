@@ -152,6 +152,7 @@ jobs:
           string: SONAR_TOKEN_${{ matrix.path }}
 
       - name: Run Sonarqube scan
+        if: ${{ success() }}
         uses: sonarsource/sonarqube-scan-action@master
         with:
           projectBaseDir: src/${{ matrix.path }}
@@ -167,7 +168,7 @@ jobs:
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
 
       - name: Check Sonarqube quality gate
-        if: ${{ github.ref == 'refs/heads/master' }}
+        if: ${{ github.ref == 'refs/heads/master' && success() }}
         uses: sonarsource/sonarqube-quality-gate-action@master
         timeout-minutes: 5
         with:
@@ -184,7 +185,7 @@ jobs:
             ${{ matrix.path }}:true,
           write-mode: append
 
-      - name: Save failed quality gate result result 🚨
+      - name: Save failed quality gate result 🚨
         if: ${{ github.ref == 'refs/heads/master' && failure() }}
         uses: DamianReeves/write-file-action@v1.0
         with:
@@ -193,7 +194,7 @@ jobs:
             ${{ matrix.path }}:false,
           write-mode: append
 
-      - name: Create test results artifact
+      - name: Create quality gate results artifact
         if: ${{ github.ref == 'refs/heads/master' }}
         uses: actions/upload-artifact@v2
         with:
