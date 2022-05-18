@@ -69,7 +69,7 @@ jobs:
             src/${{ matrix.path }}/coverage/test-reporter.xml
 
       - name: Save Test Result
-        uses: DamianReeves/write-file-action
+        uses: DamianReeves/write-file-action@v1.0
         with:
           path: ${{ github.workspace }}/src/test-results.txt
           contents: |
