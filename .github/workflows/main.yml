@@ -39,6 +39,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: setup
     strategy:
+      fail-fast: false
       matrix:
         path: ${{ fromJson(needs.setup.outputs.updated-paths) }}
     defaults:
@@ -99,6 +100,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: [ setup, test]
     strategy:
+      fail-fast: false
       matrix:
         path: ${{ fromJson(needs.setup.outputs.updated-paths) }}
     steps:
@@ -133,12 +135,17 @@ jobs:
         with:
           script: |
             const { TEST_RESULTS, PATH } = process.env
-            const testResults = TEST_RESULTS.split(',')
-            testResults.pop()
+            console.log(TEST_RESULTS)
 
+            const testResults = TEST_RESULTS.split(',')
+            console.log(testResults)
+
+            testResults.pop()
             console.log(testResults)
 
             const pathTest = testResults.find(result => result.substring(0, result.indexOf(':')) === PATH)
+
+            if (!pathTest) return
 
             const pathTestValue = pathTest.substring(pathTest.indexOf(':') + 1, pathTest.length + 1)
 
