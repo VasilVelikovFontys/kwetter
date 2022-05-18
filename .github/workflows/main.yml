@@ -130,7 +130,10 @@ jobs:
         with:
           script: |
             const { TEST_RESULTS } = process.env
-            const testResults = TEST_RESULTS.split(',').pop()
+            const testResults = TEST_RESULTS.split(',')
+            testResults.pop()
+
+            console.log(testResults)
 
             const pathTest = testResults.find(result => result.substring(0, result.indexOf(':')) == matrix.path)
 
@@ -139,7 +142,7 @@ jobs:
             console.log(pathTest, pathTestValue)
 
             if (pathTestValue === 'false') {
-              core.setFailed('envA and envB are not equivalent!')
+              core.setFailed(`${matrix.path} tests have failed 🚨`)
             }
 
       - name: Get Sonar Token Name
