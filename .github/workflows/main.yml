@@ -121,8 +121,8 @@ jobs:
           PATH: ${{ matrix.path }}
         with:
           script: |
-            const { TEST_RESULT, PATH } = process.env
-            console.log(TEST_RESULT)
+            const { PATH } = process.env
+            const TEST_RESULT = PATH === 'accounts' ? 'success' : 'failure'
 
             if (TEST_RESULT === 'success') {
               core.setFailed(`${PATH} tests have failed 🚨`)
