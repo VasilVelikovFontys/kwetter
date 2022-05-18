@@ -136,6 +136,8 @@ jobs:
             const testResults = TEST_RESULTS.split(',')
             testResults.pop()
 
+            console.log(testResults)
+
             const pathTest = testResults.find(result => result.substring(0, result.indexOf(':')) === PATH)
 
             const pathTestValue = pathTest.substring(pathTest.indexOf(':') + 1, pathTest.length + 1)
