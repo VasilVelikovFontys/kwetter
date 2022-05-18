@@ -127,15 +127,16 @@ jobs:
         uses: actions/github-script@v6
         env:
           TEST_RESULTS: ${{ steps.test-results.outputs.content }}
+          PATH: ${{ matrix.path }}
         with:
           script: |
-            const { TEST_RESULTS } = process.env
+            const { TEST_RESULTS, PATH } = process.env
             const testResults = TEST_RESULTS.split(',')
             testResults.pop()
 
             console.log(testResults)
 
-            const pathTest = testResults.find(result => result.substring(0, result.indexOf(':')) == matrix.path)
+            const pathTest = testResults.find(result => result.substring(0, result.indexOf(':')) === PATH)
 
             const pathTestValue = pathTest.substring(pathTest.indexOf(':'), pathTest.length + 1)
 
@@ -176,33 +177,30 @@ jobs:
         env:
           SONAR_TOKEN: ${{ secrets[steps.token.outputs.uppercase] }}
 
-      - name: Quality Gate ✅
+      - name: Save successful quality gate result ✅
         if: ${{ github.ref == 'refs/heads/master' && success() }}
-        run: |
-          curl --request POST \
-          --url https://api.github.com/repos/${{ github.repository }}/statuses/${{ github.sha }} \
-          --header 'authorization: Bearer ${{ secrets.GITHUB_TOKEN }}' \
-          --header 'content-type: application/json' \
-          --data '{
-            "context": "qulity-gate",
-            "state": "success",
-            "description": "Quality gate passed",
-            "target_url": "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
-          }'
+        uses: DamianReeves/write-file-action@v1.0
+        with:
+          path: ${{ github.workspace }}/src/quality-gate-results/results.txt
+          contents: |
+            ${{ matrix.path }}:true,
+          write-mode: append
 
-      - name: Quality Gate 🚨
+      - name: Save failed quality gate result result 🚨
         if: ${{ github.ref == 'refs/heads/master' && failure() }}
-        run: |
-          curl --request POST \
-          --url https://api.github.com/repos/${{ github.repository }}/statuses/${{ github.sha }} \
-          --header 'authorization: Bearer ${{ secrets.GITHUB_TOKEN }}' \
-          --header 'content-type: application/json' \
-          --data '{
-            "context": "qulity-gate",
-            "state": "failure",
-            "description": "Quality gate failed",
-            "target_url": "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
-          }'
+        uses: DamianReeves/write-file-action@v1.0
+        with:
+          path: ${{ github.workspace }}/src/quality-gate-results/results.txt
+          contents: |
+            ${{ matrix.path }}:false,
+          write-mode: append
+
+      - name: Create test results artifact
+        if: ${{ github.ref == 'refs/heads/master' }}
+        uses: actions/upload-artifact@v2
+        with:
+          name: quality-gate-results
+          path: src/quality-gate-results
 
 #  build-docker-hub:
 #    name: Build Docker image and push to DockerHub
