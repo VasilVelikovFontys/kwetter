@@ -74,7 +74,7 @@ jobs:
         with:
           path: ${{ github.workspace }}/src/test-results.txt
           contents: |
-            echo "${{ matrix.path }}:true,"
+            ${{ matrix.path }}:true,
           write-mode: append
 
       - name: Save failed test result 🚨
@@ -83,7 +83,7 @@ jobs:
         with:
           path: ${{ github.workspace }}/src/test-results.txt
           contents: |
-            echo "${{ matrix.path }}:false,"
+            ${{ matrix.path }}:false,
           write-mode: append
 
       - name: Create test results artifact
