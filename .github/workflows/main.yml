@@ -78,6 +78,7 @@ jobs:
           script: |
             const fs = require('fs')
             const { WORKSPACE, PATH, SUCCESS } = process.env
+            console.log(PATH)
 
             try {
               fs.writeFileSync(`${WORKSPACE}/src/${PATH}/test-result.txt`, SUCCESS);
