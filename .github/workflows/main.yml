@@ -68,7 +68,7 @@ jobs:
             src/${{ matrix.path }}/coverage/lcov.info
             src/${{ matrix.path }}/coverage/test-reporter.xml
 
-      - name: Save Successful Test Result ✅
+      - name: Save successful Test result ✅
         if: ${{ success() }}
         uses: DamianReeves/write-file-action@v1.0
         with:
@@ -77,7 +77,7 @@ jobs:
             echo "${{ matrix.path }}:true,"
           write-mode: append
 
-      - name: Save Failed Test Result 🚨
+      - name: Save failed test result 🚨
         if: ${{ failure() }}
         uses: DamianReeves/write-file-action@v1.0
         with:
@@ -85,6 +85,12 @@ jobs:
           contents: |
             echo "${{ matrix.path }}:false,"
           write-mode: append
+
+      - name: Create test results artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: test-results
+          path: src/test-results.txt
 
   sonar:
     name: Scan With Sonarqube
@@ -99,7 +105,19 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Read package.json
+      - name: Download coverage artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: coverage
+          path: ${{ github.workspace }}/src/${{ matrix.path }}/coverage
+
+      - name: Download test results artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: test-results
+          path: ${{ github.workspace }}/src/test-results.txt
+
+      - name: Read test results
         id: test-results
         uses: juliangruber/read-file-action@v1
         with:
@@ -107,12 +125,6 @@ jobs:
 
       - name: Show Test Results
         run: echo "${{ steps.test-results.outputs.content }}"
-
-      - name: Download coverage artifact
-        uses: actions/download-artifact@v2
-        with:
-          name: coverage
-          path: ${{ github.workspace }}/src/${{ matrix.path }}/coverage
 
       - name: Get Sonar Token Name
         id: token
