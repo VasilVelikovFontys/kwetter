@@ -123,16 +123,15 @@ jobs:
         with:
           path: ${{ github.workspace }}/src/test-results/results.txt
 
-      - name: Show test results
-        run: echo "${{ steps.test-results.outputs.content }}"
-
       - name: Check test result
         uses: actions/github-script@v6
         env:
           TEST_RESULTS: ${{ steps.test-results.outputs.content }}
         with:
           script: |
-            console.log(process.env.TEST_RESULTS)
+            const { TEST_RESULTS } = process.env
+            const testResults = TEST_RESULTS.split(',')
+            console.log(testResults)
 
             if (false) {
               core.setFailed('envA and envB are not equivalent!')
