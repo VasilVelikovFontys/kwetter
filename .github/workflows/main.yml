@@ -78,11 +78,11 @@ jobs:
           contents: failure
           write-mode: append
 
-      - name: Create test results artifact
+      - name: Create test result artifact
         if: ${{ success() }}
         uses: actions/upload-artifact@v2
         with:
-          name: tests
+          name: ${{ matrix.path }}-tests
           path: |
             src/${{ matrix.path }}/coverage/lcov.info
             src/${{ matrix.path }}/coverage/test-reporter.xml
@@ -102,13 +102,13 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Download test results artifact
+      - name: Download test result artifact
         uses: actions/download-artifact@v2
         with:
-          name: tests
+          name: ${{ matrix.path }}-tests
           path: ${{ github.workspace }}/src/${{ matrix.path }}/tests
 
-      - name: Read test results
+      - name: Read test result
         id: read-tests
         uses: juliangruber/read-file-action@v1
         with:
