@@ -138,8 +138,7 @@ jobs:
 
             const pathTest = testResults.find(result => result.substring(0, result.indexOf(':')) === PATH)
 
-            const pathTestValue = pathTest.substring(pathTest.indexOf(':'), pathTest.length + 1)
-            console.log(pathTestValue)
+            const pathTestValue = pathTest.substring(pathTest.indexOf(':') + 1, pathTest.length + 1)
 
             if (pathTestValue === 'true') {
               core.setFailed(`${PATH} tests have failed 🚨`)
