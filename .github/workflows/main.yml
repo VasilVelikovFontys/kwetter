@@ -117,11 +117,19 @@ jobs:
           name: test-results
           path: ${{ github.workspace }}/src/test-results.txt
 
+      - name: Find test results
+        run: |
+          ls
+          cd ${{ github.workspace }}
+          ls
+          cd src
+          ls
+
       - name: Read test results
         id: test-results
         uses: juliangruber/read-file-action@v1
         with:
-          path: ${{ github.workspace }}/src/test-results.txt
+          path: src/test-results.txt
 
       - name: Show Test Results
         run: echo "${{ steps.test-results.outputs.content }}"
