@@ -117,20 +117,21 @@ jobs:
           name: test-results
           path: ${{ github.workspace }}/src/test-results
 
-      - name: Find test results
-        run: |
-          cd src
-          cd test-results
-          cat results.txt
-
       - name: Read test results
         id: test-results
         uses: juliangruber/read-file-action@v1
         with:
           path: ${{ github.workspace }}/src/test-results/results.txt
 
-      - name: Show Test Results
+      - name: Show test results
         run: echo "${{ steps.test-results.outputs.content }}"
+
+      - name: Check test result
+        uses: actions/github-script@v3
+        with:
+          script: |
+            console.log(${{ steps.test-results.outputs.content }})
+            core.setFailed('envA and envB are not equivalent!')
 
       - name: Get Sonar Token Name
         id: token
