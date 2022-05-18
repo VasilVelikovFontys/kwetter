@@ -62,50 +62,21 @@ jobs:
       - name: Run tests and generate coverage
         run: npm run test:ci
 
-      - name: Check tests result
+      - name: Save successful test result ✅
         if: ${{ success() }}
-        id: check-tests-result
-        run: |
-          echo ::set-output name=success::true
-
-      - name: Save tests result
-        uses: actions/github-script@v6
-        env:
-          SUCCESS: ${{ steps.check-tests-result.outputs.success }}
-          WORKSPACE: ${{ github.workspace }}
-          PATH: ${{ matrix.path }}
+        uses: DamianReeves/write-file-action@v1.0
         with:
-          script: |
-            const fs = require('fs')
-            const { WORKSPACE, PATH, SUCCESS } = process.env
-            const pathString = PATH.toString()
-            console.log(pathString.substring(pathString.indexOf(':' + 1, pathString.length + 1)))
+          path: ${{ github.workspace }}/src/${{ matrix.path }}/test-result.txt
+          contents: success
+          write-mode: append
 
-            try {
-              fs.writeFileSync(`${WORKSPACE}/src/${PATH}/test-result.txt`, SUCCESS);
-            } catch (error) {
-              console.error(error);
-            }
-
-            if (SUCCESS === false) {
-              core.setFailed(`${PATH} tests have failed 🚨`)
-            }
-
-#      - name: Save successful test result ✅
-#        if: ${{ success() }}
-#        uses: DamianReeves/write-file-action@v1.0
-#        with:
-#          path: ${{ github.workspace }}/src/${{ matrix.path }}/test-result.txt
-#          contents: success
-#          write-mode: append
-#
-#      - name: Save failed test result 🚨
-#        if: ${{ failure() }}
-#        uses: DamianReeves/write-file-action@v1.0
-#        with:
-#          path: ${{ github.workspace }}/src/${{ matrix.path }}/test-result.txt
-#          contents: failure
-#          write-mode: append
+      - name: Save failed test result 🚨
+        if: ${{ failure() }}
+        uses: DamianReeves/write-file-action@v1.0
+        with:
+          path: ${{ github.workspace }}/src/${{ matrix.path }}/test-result.txt
+          contents: failure
+          write-mode: append
 
       - name: Create test result artifact
         if: ${{ success() }}
