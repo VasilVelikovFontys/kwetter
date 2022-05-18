@@ -282,5 +282,4 @@ jobs:
       matrix:
         path: ${{ fromJson(needs.setup.outputs.updated-paths) }}
     steps:
-      - run: |
-        echo performance
+      - run: echo performance
