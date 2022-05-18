@@ -99,9 +99,14 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Read package.json
+        id: test-results
+        uses: juliangruber/read-file-action@v1
+        with:
+          path: ${{ github.workspace }}/src/test-results.txt
+
       - name: Show Test Results
-        run: |
-          echo ${{ github.workspace }}/src/test-results.txt
+        run: echo "${{ steps.test-results.outputs.content }}"
 
       - name: Download coverage artifact
         uses: actions/download-artifact@v2
