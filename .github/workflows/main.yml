@@ -159,6 +159,9 @@ jobs:
         env:
           SONAR_TOKEN: ${{ secrets[steps.token.outputs.uppercase] }}
 
+      - run: |
+          ls
+
       - name: Save successful quality gates result ✅
         if: ${{ github.ref == 'refs/heads/dev' && success() }}
         uses: DamianReeves/write-file-action@v1.0
@@ -180,7 +183,7 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: ${{ matrix.path }}-quality-gates
-          path: src/${{ matrix.path }}/qualilty-gates-result.txt
+          path: src/${{ matrix.path }}/quality-gates-result.txt
 
   build-docker-hub:
     name: Build Docker image and push to DockerHub
@@ -188,23 +191,52 @@ jobs:
     runs-on: ubuntu-latest
     needs: [ setup, test ]
     strategy:
+      fail-fast: false
       matrix:
         path: ${{ fromJson(needs.setup.outputs.updated-paths) }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
 
+      - name: Download test result artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: ${{ matrix.path }}-tests
+          path: ${{ github.workspace }}/src/${{ matrix.path }}/tests
+
+      - name: Read test result
+        id: read-tests
+        uses: juliangruber/read-file-action@v1
+        with:
+          path: ${{ github.workspace }}/src/${{ matrix.path }}/tests/test-result.txt
+
+      - name: Check test result
+        uses: actions/github-script@v6
+        env:
+          TEST_RESULT: ${{ steps.read-tests.outputs.content }}
+          PATH: ${{ matrix.path }}
+        with:
+          script: |
+            const { TEST_RESULT, PATH } = process.env
+
+            if (TEST_RESULT === 'failure') {
+              core.setFailed(`${PATH} tests have failed 🚨`)
+            }
+
       - name: Set up Docker Buildx
+        if: ${{ success () }}
         id: buildx
         uses: docker/setup-buildx-action@v1
 
       - name: Login to DockerHub
+        if: ${{ success () }}
         uses: docker/login-action@v1
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Build image and push to Docker Hub
+        if: ${{ success () }}
         uses: docker/build-push-action@v2
         with:
           context: src/${{ matrix.path }}
@@ -212,14 +244,24 @@ jobs:
           tags: vjv2143/kwetter.${{ matrix.path }}:latest
 
       - name: Image digest
+        if: ${{ success () }}
         run: echo ${{ steps.docker_build.outputs.digest }}
+
+  performance-test:
+    name: Test Performance
+    if: ${{ github.ref == 'refs/heads/dev' }}
+    runs-on: ubuntu-latest
+    needs: [ setup, test, build-docker-hub ]
+    steps:
+      - run: echo performance
 
   build-azure:
     name: Build Docker image and push to ACR
     if: ${{ github.ref == 'refs/heads/dev' }}
     runs-on: ubuntu-latest
-    needs: [ setup, test, sonar ]
+    needs: [ setup, test, sonar, performance-test ]
     strategy:
+      fail-fast: false
       matrix:
         path: ${{ fromJson(needs.setup.outputs.updated-paths) }}
     steps:
@@ -269,14 +311,3 @@ jobs:
       - name: Image digest
         if: ${{ success() }}
         run: echo ${{ steps.docker_build.outputs.digest }}
-
-  performance-test:
-    name: Test Performance
-    if: ${{ github.ref == 'refs/heads/dev' }}
-    runs-on: ubuntu-latest
-    needs: [ setup, test, build-docker-hub ]
-    strategy:
-      matrix:
-        path: ${{ fromJson(needs.setup.outputs.updated-paths) }}
-    steps:
-      - run: echo performance
