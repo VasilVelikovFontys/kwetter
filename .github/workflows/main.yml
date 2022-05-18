@@ -90,7 +90,7 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: test-results
-          path: src/test-results.txt
+          path: src/test-results
 
   sonar:
     name: Scan With Sonarqube
