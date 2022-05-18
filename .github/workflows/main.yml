@@ -68,13 +68,17 @@ jobs:
             src/${{ matrix.path }}/coverage/lcov.info
             src/${{ matrix.path }}/coverage/test-reporter.xml
 
-      - name: Save Test Result
-        uses: DamianReeves/write-file-action@v1.0
-        with:
-          path: ${{ github.workspace }}/src/test-results.txt
-          contents: |
-            echo "${{ matrix.path }}: ${{ success() }}"
-          write-mode: append
+      - name: Show Test Result
+        run: |
+          echo ${{ success() }}
+
+#      - name: Save Test Result
+#        uses: DamianReeves/write-file-action@v1.0
+#        with:
+#          path: ${{ github.workspace }}/src/test-results.txt
+#          contents: |
+#            echo "${{ matrix.path }}: ${{ success() }}"
+#          write-mode: append
 
   sonar:
     name: Scan With Sonarqube
