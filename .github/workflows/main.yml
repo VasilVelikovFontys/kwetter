@@ -68,7 +68,7 @@ jobs:
             src/${{ matrix.path }}/coverage/lcov.info
             src/${{ matrix.path }}/coverage/test-reporter.xml
 
-      - name: Save successful Test result ✅
+      - name: Save successful test result ✅
         if: ${{ success() }}
         uses: DamianReeves/write-file-action@v1.0
         with:
@@ -134,16 +134,12 @@ jobs:
             const testResults = TEST_RESULTS.split(',')
             testResults.pop()
 
-            console.log(testResults)
-
             const pathTest = testResults.find(result => result.substring(0, result.indexOf(':')) === PATH)
 
             const pathTestValue = pathTest.substring(pathTest.indexOf(':'), pathTest.length + 1)
 
-            console.log(pathTest, pathTestValue)
-
-            if (pathTestValue === 'false') {
-              core.setFailed(`${matrix.path} tests have failed 🚨`)
+            if (pathTestValue === 'true') {
+              core.setFailed(`${PATH} tests have failed 🚨`)
             }
 
       - name: Get Sonar Token Name
