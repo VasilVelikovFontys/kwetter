@@ -72,7 +72,7 @@ jobs:
         if: ${{ success() }}
         uses: DamianReeves/write-file-action@v1.0
         with:
-          path: ${{ github.workspace }}/src/test-results.txt
+          path: ${{ github.workspace }}/src/test-results/results.txt
           contents: |
             ${{ matrix.path }}:true,
           write-mode: append
@@ -81,7 +81,7 @@ jobs:
         if: ${{ failure() }}
         uses: DamianReeves/write-file-action@v1.0
         with:
-          path: ${{ github.workspace }}/src/test-results.txt
+          path: ${{ github.workspace }}/src/test-results/results.txt
           contents: |
             ${{ matrix.path }}:false,
           write-mode: append
@@ -115,21 +115,21 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: test-results
-          path: ${{ github.workspace }}/src/test-results.txt
+          path: ${{ github.workspace }}/src/test-results
 
       - name: Find test results
         run: |
           ls
           cd src
           ls
-          cat test-results.txt
-          nano test-results.txt
+          cd test-results
+          cat results.txt
 
       - name: Read test results
         id: test-results
         uses: juliangruber/read-file-action@v1
         with:
-          path: test-results.txt
+          path: test-results/results.txt
 
       - name: Show Test Results
         run: echo "${{ steps.test-results.outputs.content }}"
