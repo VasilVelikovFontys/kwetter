@@ -120,16 +120,16 @@ jobs:
       - name: Find test results
         run: |
           ls
-          cd ${{ github.workspace }}
-          ls
           cd src
           ls
+          cat test-results.txt
+          nano test-results.txt
 
       - name: Read test results
         id: test-results
         uses: juliangruber/read-file-action@v1
         with:
-          path: src/test-results.txt
+          path: test-results.txt
 
       - name: Show Test Results
         run: echo "${{ steps.test-results.outputs.content }}"
