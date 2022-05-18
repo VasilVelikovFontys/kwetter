@@ -66,7 +66,7 @@ jobs:
         if: ${{ success() }}
         uses: DamianReeves/write-file-action@v1.0
         with:
-          path: ${{ github.workspace }}/src/${{ matrix.path }}/tests/result.txt
+          path: ${{ github.workspace }}/src/${{ matrix.path }}/test-result.txt
           contents: success
           write-mode: append
 
@@ -74,7 +74,7 @@ jobs:
         if: ${{ failure() }}
         uses: DamianReeves/write-file-action@v1.0
         with:
-          path: ${{ github.workspace }}/src/${{ matrix.path }}/tests/result.txt
+          path: ${{ github.workspace }}/src/${{ matrix.path }}/test-result.txt
           contents: failure
           write-mode: append
 
@@ -82,11 +82,11 @@ jobs:
         if: ${{ success() }}
         uses: actions/upload-artifact@v2
         with:
-          name: test-results
+          name: tests
           path: |
             src/${{ matrix.path }}/coverage/lcov.info
             src/${{ matrix.path }}/coverage/test-reporter.xml
-            src/${{ matrix.path }}/tests/result.txt
+            src/${{ matrix.path }}/test-result.txt
 
   sonar:
     name: Scan With Sonarqube
@@ -105,19 +105,19 @@ jobs:
       - name: Download test results artifact
         uses: actions/download-artifact@v2
         with:
-          name: test-results
+          name: tests
           path: ${{ github.workspace }}/src/${{ matrix.path }}/tests
 
       - name: Read test results
-        id: test-results
+        id: read-tests
         uses: juliangruber/read-file-action@v1
         with:
-          path: ${{ github.workspace }}/src/${{ matrix.path }}/tests/result.txt
+          path: ${{ github.workspace }}/src/${{ matrix.path }}/tests/test-result.txt
 
       - name: Check test result
         uses: actions/github-script@v6
         env:
-          TEST_RESULTS: ${{ steps.test-results.outputs.content }}
+          TEST_RESULT: ${{ steps.read-tests.outputs.content }}
           PATH: ${{ matrix.path }}
         with:
           script: |
