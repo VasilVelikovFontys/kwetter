@@ -119,6 +119,7 @@ jobs:
 
       - name: Find test results
         run: |
+          cd src
           cd test-results
           cat results.txt
 
