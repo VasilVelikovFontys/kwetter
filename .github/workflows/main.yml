@@ -63,7 +63,7 @@ jobs:
         run: npm run test:ci
 
       - name: Fail job 🚨
-        if: ${{ success() }}
+        if: ${{ failure() }}
         uses: actions/github-script@v6
         env:
           PATH: ${{ matrix.path }}
@@ -71,7 +71,7 @@ jobs:
           script: |
             const { PATH } = process.env
 
-            core.setFailed(`${PATH} quality gates have failed 🚨`)
+            core.setFailed(`${PATH} tests have failed 🚨`)
 
       - name: Save successful test result ✅
         if: ${{ success() }}
@@ -90,7 +90,6 @@ jobs:
           write-mode: append
 
       - name: Create test result artifact
-        if: ${{ success() }}
         uses: actions/upload-artifact@v2
         with:
           name: ${{ matrix.path }}-tests
@@ -102,7 +101,7 @@ jobs:
   sonar:
     name: Scan With Sonarqube
     runs-on: ubuntu-latest
-    needs: [ setup, test]
+    needs: [ setup, test ]
     strategy:
       fail-fast: false
       matrix:
@@ -139,14 +138,12 @@ jobs:
             }
 
       - name: Get Sonar Token Name
-        if: ${{ success() }}
         id: token
         uses: ASzc/change-string-case-action@v2
         with:
           string: SONAR_TOKEN_${{ matrix.path }}
 
       - name: Run Sonarqube scan
-        if: ${{ success() }}
         uses: sonarsource/sonarqube-scan-action@master
         with:
           projectBaseDir: src/${{ matrix.path }}
@@ -162,7 +159,7 @@ jobs:
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
 
       - name: Check Sonarqube quality gates
-        if: ${{ github.ref == 'refs/heads/dev' && success() }}
+        if: ${{ github.ref == 'refs/heads/dev' }}
         uses: sonarsource/sonarqube-quality-gate-action@master
         timeout-minutes: 5
         with:
@@ -231,19 +228,16 @@ jobs:
             }
 
       - name: Set up Docker Buildx
-        if: ${{ success () }}
         id: buildx
         uses: docker/setup-buildx-action@v1
 
       - name: Login to DockerHub
-        if: ${{ success () }}
         uses: docker/login-action@v1
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Build image and push to Docker Hub
-        if: ${{ success () }}
         uses: docker/build-push-action@v2
         with:
           context: src/${{ matrix.path }}
@@ -251,24 +245,13 @@ jobs:
           tags: vjv2143/kwetter.${{ matrix.path }}:latest
 
       - name: Image digest
-        if: ${{ success () }}
         run: echo ${{ steps.docker_build.outputs.digest }}
 
-  performance-test:
-    name: Test Performance
-    #TODO change to master
-    if: ${{ github.ref == 'refs/heads/dev' }}
-    runs-on: ubuntu-latest
-    needs: [ setup, test, build-docker-hub ]
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-
-  build-azure:
+  build-azure-staging:
     name: Build Docker image and push to ACR
     if: ${{ github.ref == 'refs/heads/master' }}
     runs-on: ubuntu-latest
-    needs: [ setup, test, sonar, performance-test ]
+    needs: [ setup, sonar ]
     strategy:
       fail-fast: false
       matrix:
@@ -303,7 +286,6 @@ jobs:
             }
 
       - name: Login to Azure Container Registry
-        if: ${{ success() }}
         uses: azure/docker-login@v1
         with:
           login-server: kwetteracr.azurecr.io
@@ -311,11 +293,82 @@ jobs:
           password: ${{ secrets.ACR_PASSWORD }}
 
       - name: Build and Push Image
-        if: ${{ success() }}
         run: |
-          docker build ./src/${{ matrix.path }} -t kwetteracr.azurecr.io/${{ matrix.path }}:latest
-          docker push kwetteracr.azurecr.io/${{ matrix.path }}:latest
+          docker build ./src/${{ matrix.path }} -t kwetteracr.azurecr.io/${{ matrix.path }}:staging
+          docker push kwetteracr.azurecr.io/${{ matrix.path }}:staging
 
       - name: Image digest
-        if: ${{ success() }}
         run: echo ${{ steps.docker_build.outputs.digest }}
+
+  apply-staging:
+  name: Apply Staging K8S Manifests
+  if: ${{ github.ref == 'refs/heads/master' }}
+  runs-on: ubuntu-latest
+  needs: build-azure-staging
+  steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Install kubectl
+      uses: azure/setup-kubectl@v2.0
+
+    - name: Login to Azure Container Registry
+      uses: azure/docker-login@v1
+      with:
+        login-server: kwetteracr.azurecr.io
+        username: ${{ secrets.ACR_USERNAME }}
+        password: ${{ secrets.ACR_PASSWORD }}
+
+    - name: Apply manifests
+      run: |
+        cd src/infrastructure/staging
+        kubectl apply -f . --namespace staging
+
+  performance-test:
+  name: Test Performance
+  if: ${{ github.ref == 'refs/heads/master' }}
+  runs-on: ubuntu-latest
+  needs: build-azure-staging
+  steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+  build-azure-production:
+  name: Build Docker image and push to ACR
+  if: ${{ github.ref == 'refs/heads/master' }}
+  runs-on: ubuntu-latest
+  needs: [ setup, performance-test ]
+  strategy:
+    fail-fast: false
+    matrix:
+      path: ${{ fromJson(needs.setup.outputs.updated-paths) }}
+  steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Login to Azure Container Registry
+      uses: azure/docker-login@v1
+      with:
+        login-server: kwetteracr.azurecr.io
+        username: ${{ secrets.ACR_USERNAME }}
+        password: ${{ secrets.ACR_PASSWORD }}
+
+    - name: Build and Push Image
+      run: |
+        docker build ./src/${{ matrix.path }} -t kwetteracr.azurecr.io/${{ matrix.path }}:production
+        docker push kwetteracr.azurecr.io/${{ matrix.path }}:production
+
+    - name: Image digest
+      run: echo ${{ steps.docker_build.outputs.digest }}
+
+  apply-staging:
+  name: Apply Production K8S Manifests
+  if: ${{ github.ref == 'refs/heads/master' }}
+  runs-on: ubuntu-latest
+  needs: build-azure-production
+  steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Install kubectl
+      uses: azure/setup-kubectl@v2.0

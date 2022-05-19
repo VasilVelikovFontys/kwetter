@@ -1,107 +1,71 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: accounts-deployment
+  name: pictures-deployment
   labels:
-    app: accounts
+    app: pictures
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: accounts
+      app: pictures
   template:
     metadata:
       labels:
-        app: accounts
+        app: pictures
     spec:
       containers:
-        - name: accounts
-          image: kwetteracr.azurecr.io/accounts
+        - name: pictures
+          image: kwetteracr.azurecr.io/pictures:staging
           ports:
             - containerPort: 4000
           env:
             - name: FIRESTORE_API_KEY
               valueFrom:
                 configMapKeyRef:
-                  name: accounts-config
+                  name: pictures-config
                   key: FIRESTORE_API_KEY
 
             - name: FIRESTORE_AUTH_DOMAIN
               valueFrom:
                 configMapKeyRef:
-                  name: accounts-config
+                  name: pictures-config
                   key: FIRESTORE_AUTH_DOMAIN
 
             - name: FIRESTORE_PROJECT_ID
               valueFrom:
                 configMapKeyRef:
-                  name: accounts-config
+                  name: pictures-config
                   key: FIRESTORE_PROJECT_ID
 
             - name: FIRESTORE_STORAGE_BUCKET
               valueFrom:
                 configMapKeyRef:
-                  name: accounts-config
+                  name: pictures-config
                   key: FIRESTORE_STORAGE_BUCKET
 
             - name: FIRESTORE_MESSAGING_SENDER_ID
               valueFrom:
                 configMapKeyRef:
-                  name: accounts-config
+                  name: pictures-config
                   key: FIRESTORE_MESSAGING_SENDER_ID
 
             - name: FIRESTORE_APP_ID
               valueFrom:
                 configMapKeyRef:
-                  name: accounts-config
+                  name: pictures-config
                   key: FIRESTORE_APP_ID
-
-            - name: ADMIN_PROJECT_ID
-              valueFrom:
-                configMapKeyRef:
-                  name: accounts-config
-                  key: ADMIN_PROJECT_ID
-
-            - name: ADMIN_PRIVATE_KEY_ID
-              valueFrom:
-                configMapKeyRef:
-                  name: accounts-config
-                  key: ADMIN_PRIVATE_KEY_ID
-
-            - name: ADMIN_PRIVATE_KEY
-              valueFrom:
-                secretKeyRef:
-                  name: accounts-secret
-                  key: ADMIN_PRIVATE_KEY
-
-            - name: ADMIN_CLIENT_EMAIL
-              valueFrom:
-                configMapKeyRef:
-                  name: accounts-config
-                  key: ADMIN_CLIENT_EMAIL
-
-            - name: ADMIN_CLIENT_ID
-              valueFrom:
-                configMapKeyRef:
-                  name: accounts-config
-                  key: ADMIN_CLIENT_ID
-
-            - name: ADMIN_CLIENT_x509_CERT_URL
-              valueFrom:
-                configMapKeyRef:
-                  name: accounts-config
-                  key: ADMIN_CLIENT_x509_CERT_URL
 
             - name: FIRESTORE_SERVICE_EMAIL
               valueFrom:
                 configMapKeyRef:
-                  name: accounts-config
+                  name: pictures-config
                   key: FIRESTORE_SERVICE_EMAIL
 
             - name: FIRESTORE_SERVICE_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: accounts-secret
+                  name: pictures-secret
                   key: FIRESTORE_SERVICE_PASSWORD
 
             - name: NATS_CLUSTER_ID
@@ -121,23 +85,23 @@ spec:
                 fieldRef:
                   fieldPath: metadata.name
 
-            - name: NATS_ACCOUNT_CREATED_CHANNEL
+            - name: NATS_DURABLE_NAME
               valueFrom:
                 configMapKeyRef:
-                  name: nats-config
-                  key: ACCOUNT_CREATED_CHANNEL
+                  name: pictures-config
+                  key: NATS_DURABLE_NAME
 
-            - name: NATS_ACCOUNT_PROMOTED_CHANNEL
+            - name: NATS_QUEUE_GROUP
               valueFrom:
                 configMapKeyRef:
-                  name: nats-config
-                  key: ACCOUNT_PROMOTED_CHANNEL
+                  name: pictures-config
+                  key: NATS_QUEUE_GROUP
 
-            - name: NATS_ACCOUNT_DEMOTED_CHANNEL
+            - name: NATS_PICTURE_ADDED_CHANNEL
               valueFrom:
                 configMapKeyRef:
                   name: nats-config
-                  key: ACCOUNT_DEMOTED_CHANNEL
+                  key: PICTURE_ADDED_CHANNEL
 
             - name: NATS_ACCOUNT_DELETED_CHANNEL
               valueFrom:
@@ -148,11 +112,11 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: accounts-service
+  name: pictures-service
 spec:
   selector:
-    app: accounts
+    app: pictures
   ports:
     - protocol: TCP
-      port: 4001
+      port: 4010
       targetPort: 4000

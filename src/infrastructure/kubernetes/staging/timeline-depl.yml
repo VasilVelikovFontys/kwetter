@@ -1,71 +1,71 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: posts-deployment
+  name: timeline-deployment
   labels:
-    app: posts
+    app: timeline
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: posts
+      app: timeline
   template:
     metadata:
       labels:
-        app: posts
+        app: timeline
     spec:
       containers:
-        - name: posts
-          image: kwetteracr.azurecr.io/posts
+        - name: timeline
+          image: kwetteracr.azurecr.io/timeline:staging
           ports:
             - containerPort: 4000
           env:
             - name: FIRESTORE_API_KEY
               valueFrom:
                 configMapKeyRef:
-                  name: posts-config
+                  name: timeline-config
                   key: FIRESTORE_API_KEY
 
             - name: FIRESTORE_AUTH_DOMAIN
               valueFrom:
                 configMapKeyRef:
-                  name: posts-config
+                  name: timeline-config
                   key: FIRESTORE_AUTH_DOMAIN
 
             - name: FIRESTORE_PROJECT_ID
               valueFrom:
                 configMapKeyRef:
-                  name: posts-config
+                  name: timeline-config
                   key: FIRESTORE_PROJECT_ID
 
             - name: FIRESTORE_STORAGE_BUCKET
               valueFrom:
                 configMapKeyRef:
-                  name: posts-config
+                  name: timeline-config
                   key: FIRESTORE_STORAGE_BUCKET
 
             - name: FIRESTORE_MESSAGING_SENDER_ID
               valueFrom:
                 configMapKeyRef:
-                  name: posts-config
+                  name: timeline-config
                   key: FIRESTORE_MESSAGING_SENDER_ID
 
             - name: FIRESTORE_APP_ID
               valueFrom:
                 configMapKeyRef:
-                  name: posts-config
+                  name: timeline-config
                   key: FIRESTORE_APP_ID
 
             - name: FIRESTORE_SERVICE_EMAIL
               valueFrom:
                 configMapKeyRef:
-                  name: posts-config
+                  name: timeline-config
                   key: FIRESTORE_SERVICE_EMAIL
 
             - name: FIRESTORE_SERVICE_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: posts-secret
+                  name: timeline-secret
                   key: FIRESTORE_SERVICE_PASSWORD
 
             - name: NATS_CLUSTER_ID
@@ -88,14 +88,20 @@ spec:
             - name: NATS_DURABLE_NAME
               valueFrom:
                 configMapKeyRef:
-                  name: posts-config
+                  name: timeline-config
                   key: NATS_DURABLE_NAME
 
             - name: NATS_QUEUE_GROUP
               valueFrom:
                 configMapKeyRef:
-                  name: posts-config
+                  name: timeline-config
                   key: NATS_QUEUE_GROUP
+
+            - name: NATS_ACCOUNT_CREATED_CHANNEL
+              valueFrom:
+                configMapKeyRef:
+                  name: nats-config
+                  key: ACCOUNT_CREATED_CHANNEL
 
             - name: NATS_POST_CREATED_CHANNEL
               valueFrom:
@@ -108,6 +114,12 @@ spec:
                 configMapKeyRef:
                   name: nats-config
                   key: POST_LIKED_CHANNEL
+
+            - name: NATS_USER_FOLLOWED_CHANNEL
+              valueFrom:
+                configMapKeyRef:
+                  name: nats-config
+                  key: USER_FOLLOWED_CHANNEL
 
             - name: NATS_ACCOUNT_DELETED_CHANNEL
               valueFrom:
@@ -130,11 +142,11 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: posts-service
+  name: timeline-service
 spec:
   selector:
-    app: posts
+    app: timeline
   ports:
     - protocol: TCP
-      port: 4002
+      port: 4007
       targetPort: 4000

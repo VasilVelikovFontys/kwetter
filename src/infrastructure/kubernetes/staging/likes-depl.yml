@@ -1,71 +1,71 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: following-deployment
+  name: likes-deployment
   labels:
-    app: following
+    app: likes
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: following
+      app: likes
   template:
     metadata:
       labels:
-        app: following
+        app: likes
     spec:
       containers:
-        - name: following
-          image: kwetteracr.azurecr.io/following
+        - name: likes
+          image: kwetteracr.azurecr.io/likes:staging
           ports:
             - containerPort: 4000
           env:
             - name: FIRESTORE_API_KEY
               valueFrom:
                 configMapKeyRef:
-                  name: following-config
+                  name: likes-config
                   key: FIRESTORE_API_KEY
 
             - name: FIRESTORE_AUTH_DOMAIN
               valueFrom:
                 configMapKeyRef:
-                  name: following-config
+                  name: likes-config
                   key: FIRESTORE_AUTH_DOMAIN
 
             - name: FIRESTORE_PROJECT_ID
               valueFrom:
                 configMapKeyRef:
-                  name: following-config
+                  name: likes-config
                   key: FIRESTORE_PROJECT_ID
 
             - name: FIRESTORE_STORAGE_BUCKET
               valueFrom:
                 configMapKeyRef:
-                  name: following-config
+                  name: likes-config
                   key: FIRESTORE_STORAGE_BUCKET
 
             - name: FIRESTORE_MESSAGING_SENDER_ID
               valueFrom:
                 configMapKeyRef:
-                  name: following-config
+                  name: likes-config
                   key: FIRESTORE_MESSAGING_SENDER_ID
 
             - name: FIRESTORE_APP_ID
               valueFrom:
                 configMapKeyRef:
-                  name: following-config
+                  name: likes-config
                   key: FIRESTORE_APP_ID
 
             - name: FIRESTORE_SERVICE_EMAIL
               valueFrom:
                 configMapKeyRef:
-                  name: following-config
+                  name: likes-config
                   key: FIRESTORE_SERVICE_EMAIL
 
             - name: FIRESTORE_SERVICE_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: following-secret
+                  name: likes-secret
                   key: FIRESTORE_SERVICE_PASSWORD
 
             - name: NATS_CLUSTER_ID
@@ -88,20 +88,26 @@ spec:
             - name: NATS_DURABLE_NAME
               valueFrom:
                 configMapKeyRef:
-                  name: following-config
+                  name: likes-config
                   key: NATS_DURABLE_NAME
 
             - name: NATS_QUEUE_GROUP
               valueFrom:
                 configMapKeyRef:
-                  name: following-config
+                  name: likes-config
                   key: NATS_QUEUE_GROUP
 
-            - name: NATS_ACCOUNT_CREATED_CHANNEL
+            - name: NATS_POST_CREATED_CHANNEL
               valueFrom:
                 configMapKeyRef:
                   name: nats-config
-                  key: ACCOUNT_CREATED_CHANNEL
+                  key: POST_CREATED_CHANNEL
+
+            - name: NATS_POST_LIKED_CHANNEL
+              valueFrom:
+                configMapKeyRef:
+                  name: nats-config
+                  key: POST_LIKED_CHANNEL
 
             - name: NATS_ACCOUNT_DELETED_CHANNEL
               valueFrom:
@@ -109,20 +115,26 @@ spec:
                   name: nats-config
                   key: ACCOUNT_DELETED_CHANNEL
 
-            - name: NATS_USER_FOLLOWED_CHANNEL
+            - name: NATS_POST_DELETED_CHANNEL
               valueFrom:
                 configMapKeyRef:
                   name: nats-config
-                  key: USER_FOLLOWED_CHANNEL
+                  key: POST_DELETED_CHANNEL
+
+            - name: NATS_LIKE_DELETED_CHANNEL
+              valueFrom:
+                configMapKeyRef:
+                  name: nats-config
+                  key: LIKE_DELETED_CHANNEL
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: following-service
+  name: likes-service
 spec:
   selector:
-    app: following
+    app: likes
   ports:
     - protocol: TCP
-      port: 4005
+      port: 4006
       targetPort: 4000

@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: gateway
-          image: kwetteracr.azurecr.io/gateway
+          image: kwetteracr.azurecr.io/gateway:staging
           ports:
             - containerPort: 4000
           env:
