@@ -2,7 +2,7 @@ name: Mentions
 
 on:
   push:
-    paths: 'src/services/Mentions/**'
+    paths: 'src/services/mentions/**'
 
 env:
   AZURE_REGISTRY_NAME: kwetteracr
