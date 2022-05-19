@@ -325,7 +325,7 @@ jobs:
 
       - name: Apply manifests
         run: |
-          cd src/infrastructure/staging
+          cd src/infrastructure/kubernetes/staging
           kubectl apply -f . --namespace staging
 
   performance-test:
@@ -379,3 +379,15 @@ jobs:
 
       - name: Install kubectl
         uses: azure/setup-kubectl@v2.0
+
+      - name: Login to Azure Container Registry
+        uses: azure/docker-login@v1
+        with:
+          login-server: kwetteracr.azurecr.io
+          username: ${{ secrets.ACR_USERNAME }}
+          password: ${{ secrets.ACR_PASSWORD }}
+
+      - name: Apply manifests
+        run: |
+          cd src/infrastructure/kubernetes/production
+          kubectl apply -f . --namespace production
