@@ -329,6 +329,7 @@ jobs:
         with:
           manifests: |
             ${{ github.workspace }}/src/infrastructure/kubernetes/nats-config.yml
+            ${{ github.workspace }}/src/infrastructure/kubernetes/nats-depl.yml
             ${{ github.workspace }}/src/infrastructure/kubernetes/${{ matrix.path }}-config.yml
             ${{ github.workspace }}/src/infrastructure/kubernetes/${{ matrix.path }}-secret.yml
             ${{ github.workspace }}/src/infrastructure/kubernetes/${{ matrix.path }}-depl.yml
@@ -395,6 +396,7 @@ jobs:
         with:
           manifests: |
             ${{ github.workspace }}/src/infrastructure/kubernetes/nats-config.yml
+            ${{ github.workspace }}/src/infrastructure/kubernetes/nats-depl.yml
             ${{ github.workspace }}/src/infrastructure/kubernetes/${{ matrix.path }}-config.yml
             ${{ github.workspace }}/src/infrastructure/kubernetes/${{ matrix.path }}-secret.yml
             ${{ github.workspace }}/src/infrastructure/kubernetes/${{ matrix.path }}-depl.yml
