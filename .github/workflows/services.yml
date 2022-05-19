@@ -182,6 +182,7 @@ jobs:
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
 
       - name: Check Sonarqube quality gates
+        #TODO change to master
         if: ${{ github.ref == 'refs/heads/dev' }}
         uses: sonarsource/sonarqube-quality-gate-action@master
         timeout-minutes: 5
@@ -191,7 +192,8 @@ jobs:
           SONAR_TOKEN: ${{ secrets[steps.token.outputs.uppercase] }}
 
       - name: Save successful quality gates result ✅
-        if: ${{ github.ref == 'refs/heads/master' && success() }}
+        #TODO change to master
+        if: ${{ github.ref == 'refs/heads/dev' && success() }}
         uses: DamianReeves/write-file-action@v1.0
         with:
           path: ${{ github.workspace }}/${{ env.SERVICES_PATH }}/${{ matrix.path }}/quality-gates-result.txt
@@ -199,7 +201,8 @@ jobs:
           write-mode: append
 
       - name: Save failed quality gates result 🚨
-        if: ${{ github.ref == 'refs/heads/master' && failure() }}
+        #TODO change to master
+        if: ${{ github.ref == 'refs/heads/dev' && failure() }}
         uses: DamianReeves/write-file-action@v1.0
         with:
           path: ${{ github.workspace }}/${{ env.SERVICES_PATH }}/${{ matrix.path }}/quality-gates-result.txt
@@ -207,7 +210,8 @@ jobs:
           write-mode: append
 
       - name: Create quality gates result artifact
-        if: ${{ github.ref == 'refs/heads/master' }}
+        #TODO change to master
+        if: ${{ github.ref == 'refs/heads/dev' }}
         uses: actions/upload-artifact@v2
         with:
           name: ${{ matrix.path }}-quality-gates
