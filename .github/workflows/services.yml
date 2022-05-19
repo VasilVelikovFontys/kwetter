@@ -51,7 +51,7 @@ jobs:
               }
             });
 
-            paths.slice(0, -2);
+            paths = paths.slice(0, -2);
             paths += ']';
 
             console.log(paths)
