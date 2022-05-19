@@ -49,32 +49,32 @@ jobs:
             core.setFailed(`${PATH} tests have failed 🚨`)
 
       - name: Tests ✅
-          if: ${{ success() }}
-          run: |
-            curl --request POST \
-            --url https://api.github.com/repos/${{ github.repository }}/statuses/${{ github.sha }} \
-            --header 'authorization: Bearer ${{ secrets.GITHUB_TOKEN }}' \
-            --header 'content-type: application/json' \
-            --data '{
-            "context": "tests",
-            "state": "success",
-            "description": "Tests passed",
-            "target_url": "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
-            }'
+        if: ${{ success() }}
+        run: |
+          curl --request POST \
+          --url https://api.github.com/repos/${{ github.repository }}/statuses/${{ github.sha }} \
+          --header 'authorization: Bearer ${{ secrets.GITHUB_TOKEN }}' \
+          --header 'content-type: application/json' \
+          --data '{
+          "context": "tests",
+          "state": "success",
+          "description": "Tests passed",
+          "target_url": "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          }'
 
       - name: Tests 🚨
-          if: ${{ failure() }}
-          run: |
-            curl --request POST \
-            --url https://api.github.com/repos/${{ github.repository }}/statuses/${{ github.sha }} \
-            --header 'authorization: Bearer ${{ secrets.GITHUB_TOKEN }}' \
-            --header 'content-type: application/json' \
-            --data '{
-              "context": "tests",
-              "state": "failure",
-              "description": "Tests failed",
-              "target_url": "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
-            }'
+        if: ${{ failure() }}
+        run: |
+          curl --request POST \
+          --url https://api.github.com/repos/${{ github.repository }}/statuses/${{ github.sha }} \
+          --header 'authorization: Bearer ${{ secrets.GITHUB_TOKEN }}' \
+          --header 'content-type: application/json' \
+          --data '{
+            "context": "tests",
+            "state": "failure",
+            "description": "Tests failed",
+            "target_url": "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          }'
 
   sonar:
     name: Scan With Sonarqube
@@ -118,22 +118,22 @@ jobs:
           SONAR_TOKEN: ${{ secrets[steps.token.outputs.uppercase] }}
 
       - name: Quality Gate ✅
-          #TODO change to master
-          if: ${{ github.ref == 'refs/heads/dev' && success() }}
-          run: |
-            curl --request POST \
-            --url https://api.github.com/repos/${{ github.repository }}/statuses/${{ github.sha }} \
-            --header 'authorization: Bearer ${{ secrets.GITHUB_TOKEN }}' \
-            --header 'content-type: application/json' \
-            --data '{
-            "context": "qulity-gate",
-            "state": "success",
-            "description": "Quality gate passed",
-            "target_url": "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
-            }'
+        #TODO change to master
+        if: ${{ github.ref == 'refs/heads/dev' && success() }}
+        run: |
+          curl --request POST \
+          --url https://api.github.com/repos/${{ github.repository }}/statuses/${{ github.sha }} \
+          --header 'authorization: Bearer ${{ secrets.GITHUB_TOKEN }}' \
+          --header 'content-type: application/json' \
+          --data '{
+          "context": "qulity-gate",
+          "state": "success",
+          "description": "Quality gate passed",
+          "target_url": "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          }'
 
       - name: Quality Gate 🚨
-        #TODO change to master
+      #TODO change to master
         if: ${{ github.ref == 'refs/heads/dev' && failure() }}
         run: |
           curl --request POST \
