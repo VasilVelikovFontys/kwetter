@@ -195,7 +195,7 @@ jobs:
 
       - name: Build and Push Image
         run: |
-          docker build ${{ env.SERVICE_PATH }}/${{ env.SERVICE }} -t ${{ env.AZURE_REGISTRY_NAME }}.azurecr.io/${{ env.SERVICE }}
+          docker build ${{ env.SERVICE_PATH }} -t ${{ env.AZURE_REGISTRY_NAME }}.azurecr.io/${{ env.SERVICE }}
           docker push ${{ env.AZURE_REGISTRY_NAME }}.azurecr.io/${{ env.SERVICE }}
 
       - name: Set the target AKS cluster

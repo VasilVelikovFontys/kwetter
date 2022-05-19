@@ -105,8 +105,8 @@ jobs:
             -Dsonar.sources=src
             -Dsonar.tests=src
             -Dsonar.test.inclusions=src/**/*.test.js
-            -Dsonar.testExecutionReportPaths=tests/coverage/test-reporter.xml
-            -Dsonar.javascript.lcov.reportPaths=tests/coverage/lcov.info
+            -Dsonar.testExecutionReportPaths=coverage/test-reporter.xml
+            -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
         env:
           SONAR_TOKEN: ${{ secrets[steps.token.outputs.uppercase] }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
@@ -195,7 +195,7 @@ jobs:
 
       - name: Build and Push Image
         run: |
-          docker build ${{ env.SERVICE_PATH }}/${{ env.SERVICE }} -t ${{ env.AZURE_REGISTRY_NAME }}.azurecr.io/${{ env.SERVICE }}
+          docker build ${{ env.SERVICE_PATH }} -t ${{ env.AZURE_REGISTRY_NAME }}.azurecr.io/${{ env.SERVICE }}
           docker push ${{ env.AZURE_REGISTRY_NAME }}.azurecr.io/${{ env.SERVICE }}
 
       - name: Set the target AKS cluster
