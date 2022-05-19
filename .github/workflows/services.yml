@@ -41,9 +41,14 @@ jobs:
             const prefix = 'src/services/';
 
             diffsArray.forEach(diff => {
+              console.log(diff);
+
               if (diff.indexOf(prefix) > -1) {
                 const cutDiff = diff.substring(prefix.length);
+                console.log(cutDiff);
+
                 const path = cutDiff.substring(0, cutDiff.indexOf('/'));
+                console.log(path)
 
                 if (paths.indexOf(path) < 0) {
                   paths += `"${path}", `;
@@ -57,366 +62,366 @@ jobs:
             console.log(paths)
             core.setOutput('paths', paths);
 
-  test:
-    name: Test With Jest
-    runs-on: ubuntu-latest
-    needs: setup
-    strategy:
-      fail-fast: false
-      matrix:
-        path: ${{ fromJson(needs.setup.outputs.updated-paths) }}
-    defaults:
-      run:
-        working-directory: '${{ env.SERVICES_PATH }}/${{ matrix.path }}'
-    steps:
-      - name: Check out code
-        uses: actions/checkout@v2
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '12'
-          cache: 'npm'
-          cache-dependency-path: ${{ env.SERVICES_PATH }}/${{ matrix.path }}/package-lock.json
-
-      - name: Install dependencies with npm
-        run: npm install
-
-      - name: Run tests and generate coverage
-        run: npm run test:ci
-
-      - name: Fail job 🚨
-        if: ${{ failure() }}
-        uses: actions/github-script@v6
-        env:
-          PATH: ${{ matrix.path }}
-        with:
-          script: |
-            const { PATH } = process.env
-
-            core.setFailed(`${PATH} tests have failed 🚨`)
-
-      - name: Save successful test result ✅
-        if: ${{ success() }}
-        uses: DamianReeves/write-file-action@v1.0
-        with:
-          path: ${{ github.workspace }}/${{ env.SERVICES_PATH }}/${{ matrix.path }}/test-result.txt
-          contents: success
-          write-mode: append
-
-      - name: Save failed test result 🚨
-        if: ${{ failure() }}
-        uses: DamianReeves/write-file-action@v1.0
-        with:
-          path: ${{ github.workspace }}/${{ env.SERVICES_PATH }}/${{ matrix.path }}/test-result.txt
-          contents: failure
-          write-mode: append
-
-      - name: Create test result artifact
-        uses: actions/upload-artifact@v2
-        with:
-          name: ${{ matrix.path }}-tests
-          path: |
-            ${{ env.SERVICES_PATH }}/${{ matrix.path }}/coverage/lcov.info
-            ${{ env.SERVICES_PATH }}/${{ matrix.path }}/coverage/test-reporter.xml
-            ${{ env.SERVICES_PATH }}/${{ matrix.path }}/test-result.txt
-
-  sonar:
-    name: Scan With Sonarqube
-    runs-on: ubuntu-latest
-    needs: [ setup, test ]
-    strategy:
-      fail-fast: false
-      matrix:
-        path: ${{ fromJson(needs.setup.outputs.updated-paths) }}
-    steps:
-      - name: Check out code
-        uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
-
-      - name: Download test result artifact
-        uses: actions/download-artifact@v2
-        with:
-          name: ${{ matrix.path }}-tests
-          path: ${{ github.workspace }}/${{ env.SERVICES_PATH }}/${{ matrix.path }}/tests
-
-      - name: Read test result
-        id: read-tests
-        uses: juliangruber/read-file-action@v1
-        with:
-          path: ${{ github.workspace }}/${{ env.SERVICES_PATH }}/${{ matrix.path }}/tests/test-result.txt
-
-      - name: Check test result
-        uses: actions/github-script@v6
-        env:
-          TEST_RESULT: ${{ steps.read-tests.outputs.content }}
-          PATH: ${{ matrix.path }}
-        with:
-          script: |
-            const { TEST_RESULT, PATH } = process.env
-
-            if (TEST_RESULT === 'failure') {
-              core.setFailed(`${PATH} tests have failed 🚨`)
-            }
-
-      - name: Get Sonar Token Name
-        id: token
-        uses: ASzc/change-string-case-action@v2
-        with:
-          string: SONAR_TOKEN_${{ matrix.path }}
-
-      - name: Run Sonarqube scan
-        uses: sonarsource/sonarqube-scan-action@master
-        with:
-          projectBaseDir: ${{ env.SERVICES_PATH }}/${{ matrix.path }}
-          args: >
-            -Dsonar.projectKey=kwetter-${{ matrix.path }}
-            -Dsonar.sources=src
-            -Dsonar.tests=src
-            -Dsonar.test.inclusions=src/**/*.test.js
-            -Dsonar.testExecutionReportPaths=tests/coverage/test-reporter.xml
-            -Dsonar.javascript.lcov.reportPaths=tests/coverage/lcov.info
-        env:
-          SONAR_TOKEN: ${{ secrets[steps.token.outputs.uppercase] }}
-          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
-
-      - name: Check Sonarqube quality gates
-        #TODO change to master
-        if: ${{ github.ref == 'refs/heads/dev' }}
-        uses: sonarsource/sonarqube-quality-gate-action@master
-        timeout-minutes: 5
-        with:
-          scanMetadataReportFile: ${{ github.workspace }}/${{ env.SERVICES_PATH }}/${{ matrix.path }}/.scannerwork/report-task.txt
-        env:
-          SONAR_TOKEN: ${{ secrets[steps.token.outputs.uppercase] }}
-
-      - name: Save successful quality gates result ✅
-        #TODO change to master
-        if: ${{ github.ref == 'refs/heads/dev' && success() }}
-        uses: DamianReeves/write-file-action@v1.0
-        with:
-          path: ${{ github.workspace }}/${{ env.SERVICES_PATH }}/${{ matrix.path }}/quality-gates-result.txt
-          contents: success
-          write-mode: append
-
-      - name: Save failed quality gates result 🚨
-        #TODO change to master
-        if: ${{ github.ref == 'refs/heads/dev' && failure() }}
-        uses: DamianReeves/write-file-action@v1.0
-        with:
-          path: ${{ github.workspace }}/${{ env.SERVICES_PATH }}/${{ matrix.path }}/quality-gates-result.txt
-          contents: failure
-          write-mode: append
-
-      - name: Create quality gates result artifact
-        #TODO change to master
-        if: ${{ github.ref == 'refs/heads/dev' }}
-        uses: actions/upload-artifact@v2
-        with:
-          name: ${{ matrix.path }}-quality-gates
-          path: ${{ env.SERVICES_PATH }}/${{ matrix.path }}/quality-gates-result.txt
-
-  dockerhub:
-    name: Build Docker Image and Push to DockerHub
-    runs-on: ubuntu-latest
-    needs: [ setup, test ]
-    strategy:
-      fail-fast: false
-      matrix:
-        path: ${{ fromJson(needs.setup.outputs.updated-paths) }}
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-
-      - name: Download test result artifact
-        uses: actions/download-artifact@v2
-        with:
-          name: ${{ matrix.path }}-tests
-          path: ${{ github.workspace }}/${{ env.SERVICES_PATH }}/${{ matrix.path }}/tests
-
-      - name: Read test result
-        id: read-tests
-        uses: juliangruber/read-file-action@v1
-        with:
-          path: ${{ github.workspace }}/${{ env.SERVICES_PATH }}/${{ matrix.path }}/tests/test-result.txt
-
-      - name: Check test result
-        uses: actions/github-script@v6
-        env:
-          TEST_RESULT: ${{ steps.read-tests.outputs.content }}
-          PATH: ${{ matrix.path }}
-        with:
-          script: |
-            const { TEST_RESULT, PATH } = process.env
-
-            if (TEST_RESULT === 'failure') {
-              core.setFailed(`${PATH} tests have failed 🚨`)
-            }
-
-      - name: Set up Docker Buildx
-        id: buildx
-        uses: docker/setup-buildx-action@v1
-
-      - name: Login to DockerHub
-        uses: docker/login-action@v1
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-
-      - name: Build image and push to Docker Hub
-        uses: docker/build-push-action@v2
-        with:
-          context: ${{ env.SERVICES_PATH }}/${{ matrix.path }}
-          push: true
-          tags: vjv2143/kwetter.${{ matrix.path }}:latest
-
-  azure-staging:
-    name: Build, Push and Apply Azure Staging
-    #TODO change to master
-    if: ${{ github.ref == 'refs/heads/dev' }}
-    runs-on: ubuntu-latest
-    needs: [ setup, sonar ]
-    strategy:
-      fail-fast: false
-      matrix:
-        path: ${{ fromJson(needs.setup.outputs.updated-paths) }}
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-
-      - name: Download quality gates result artifact
-        uses: actions/download-artifact@v2
-        with:
-          name: ${{ matrix.path }}-quality-gates
-          path: ${{ github.workspace }}/${{ env.SERVICES_PATH }}/${{ matrix.path }}/quality-gates
-
-      - name: Read quality gates result
-        id: read-quality-gates
-        uses: juliangruber/read-file-action@v1
-        with:
-          path: ${{ github.workspace }}/${{ env.SERVICES_PATH }}/${{ matrix.path }}/quality-gates/quality-gates-result.txt
-
-      - name: Check quality gates result
-        uses: actions/github-script@v6
-        env:
-          QUALITY_GATES_RESULT: ${{ steps.read-quality-gates.outputs.content }}
-          PATH: ${{ matrix.path }}
-        with:
-          script: |
-            const { QUALITY_GATES_RESULT, PATH } = process.env
-
-            if (QUALITY_GATES_RESULT === 'failure') {
-              core.setFailed(`${PATH} quality gates have failed 🚨`)
-            }
-
-      - name: Login to Azure Container Registry
-        uses: azure/docker-login@v1
-        with:
-          login-server: ${{ env.AZURE_REGISTRY_NAME }}.azurecr.io
-          username: ${{ secrets.ACR_USERNAME }}
-          password: ${{ secrets.ACR_PASSWORD }}
-
-      - name: Build and Push Image
-        run: |
-          docker build ${{ env.SERVICES_PATH }}/${{ matrix.path }} -t ${{ env.AZURE_REGISTRY_NAME }}.azurecr.io/${{ matrix.path }}
-          docker push ${{ env.AZURE_REGISTRY_NAME }}.azurecr.io/${{ matrix.path }}
-
-      - name: Set the target AKS cluster
-        uses: azure/aks-set-context@v1
-        with:
-          creds: '${{ secrets.AZ_CREDENTIALS }}'
-          cluster-name: ${{ env.AZURE_CLUSTER_NAME }}
-          resource-group: ${{ env.AZURE_RESOURCE_GROUP }}
-
-      - name: Create Namespace
-        run: |
-          kubectl create namespace staging --dry-run=client -o json | kubectl apply -f -
-
-      - name: Create Image Pull Secret for ACR
-        uses: azure/k8s-create-secret@v1
-        with:
-          container-registry-url: ${{ env.AZURE_REGISTRY_NAME }}.azurecr.io
-          container-registry-username: ${{ secrets.ACR_USERNAME }}
-          container-registry-password: ${{ secrets.ACR_PASSWORD }}
-          secret-name: ${{ env.AZURE_SECRET }}
-          namespace: staging
-          arguments: --force true
-
-      - name: Deploy to AKS
-        uses: azure/k8s-deploy@v1
-        with:
-          manifests: |
-            ${{ env.MANIFESTS_PATH}}/${{ matrix.path }}-config.yml
-            ${{ env.MANIFESTS_PATH}}/${{ matrix.path }}-secret.yml
-            ${{ env.MANIFESTS_PATH}}/${{ matrix.path }}-depl.yml
-          images: |
-            ${{ env.AZURE_REGISTRY_NAME }}.azurecr.io/${{ matrix.path }}
-          imagepullsecrets: |
-            ${{ env.AZURE_SECRET }}
-          namespace: staging
-
-  performance-test:
-    name: Test Performance
-    #TODO change to master
-    if: ${{ github.ref == 'refs/heads/dev' }}
-    runs-on: ubuntu-latest
-    needs: azure-staging
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-
-  azure-production:
-    name: Build, Push and Apply Azure Production
-    #TODO change to master
-    if: ${{ github.ref == 'refs/heads/dev' }}
-    runs-on: ubuntu-latest
-    needs: [ setup, performance-test ]
-    strategy:
-      fail-fast: false
-      matrix:
-        path: ${{ fromJson(needs.setup.outputs.updated-paths) }}
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-
-      - name: Login to Azure Container Registry
-        uses: azure/docker-login@v1
-        with:
-          login-server: ${{ env.AZURE_REGISTRY_NAME }}.azurecr.io
-          username: ${{ secrets.ACR_USERNAME }}
-          password: ${{ secrets.ACR_PASSWORD }}
-
-      - name: Set the target AKS cluster
-        uses: azure/aks-set-context@v1
-        with:
-          creds: '${{ secrets.AZ_CREDENTIALS }}'
-          cluster-name: ${{ env.AZURE_CLUSTER_NAME }}
-          resource-group: ${{ env.AZURE_RESOURCE_GROUP }}
-
-      - name: Create Namespace
-        run: |
-          kubectl create namespace production --dry-run=client -o json | kubectl apply -f -
-
-      - name: Create Image Pull Secret for ACR
-        uses: azure/k8s-create-secret@v1
-        with:
-          container-registry-url: ${{ env.AZURE_REGISTRY_NAME }}.azurecr.io
-          container-registry-username: ${{ secrets.ACR_USERNAME }}
-          container-registry-password: ${{ secrets.ACR_PASSWORD }}
-          secret-name: ${{ env.AZURE_SECRET }}
-          namespace: production
-          arguments: --force true
-
-      - name: Deploy to AKS
-        uses: azure/k8s-deploy@v1
-        with:
-          manifests: |
-            ${{ env.MANIFESTS_PATH}}/${{ matrix.path }}-config.yml
-            ${{ env.MANIFESTS_PATH}}/${{ matrix.path }}-secret.yml
-            ${{ env.MANIFESTS_PATH}}/${{ matrix.path }}-depl.yml
-          images: |
-            ${{ env.AZURE_REGISTRY_NAME }}.azurecr.io/${{ matrix.path }}
-          imagepullsecrets: |
-            ${{ env.AZURE_SECRET }}
-          namespace: production
+#  test:
+#    name: Test With Jest
+#    runs-on: ubuntu-latest
+#    needs: setup
+#    strategy:
+#      fail-fast: false
+#      matrix:
+#        path: ${{ fromJson(needs.setup.outputs.updated-paths) }}
+#    defaults:
+#      run:
+#        working-directory: '${{ env.SERVICES_PATH }}/${{ matrix.path }}'
+#    steps:
+#      - name: Check out code
+#        uses: actions/checkout@v2
+#
+#      - name: Set up Node.js
+#        uses: actions/setup-node@v3
+#        with:
+#          node-version: '12'
+#          cache: 'npm'
+#          cache-dependency-path: ${{ env.SERVICES_PATH }}/${{ matrix.path }}/package-lock.json
+#
+#      - name: Install dependencies with npm
+#        run: npm install
+#
+#      - name: Run tests and generate coverage
+#        run: npm run test:ci
+#
+#      - name: Fail job 🚨
+#        if: ${{ failure() }}
+#        uses: actions/github-script@v6
+#        env:
+#          PATH: ${{ matrix.path }}
+#        with:
+#          script: |
+#            const { PATH } = process.env
+#
+#            core.setFailed(`${PATH} tests have failed 🚨`)
+#
+#      - name: Save successful test result ✅
+#        if: ${{ success() }}
+#        uses: DamianReeves/write-file-action@v1.0
+#        with:
+#          path: ${{ github.workspace }}/${{ env.SERVICES_PATH }}/${{ matrix.path }}/test-result.txt
+#          contents: success
+#          write-mode: append
+#
+#      - name: Save failed test result 🚨
+#        if: ${{ failure() }}
+#        uses: DamianReeves/write-file-action@v1.0
+#        with:
+#          path: ${{ github.workspace }}/${{ env.SERVICES_PATH }}/${{ matrix.path }}/test-result.txt
+#          contents: failure
+#          write-mode: append
+#
+#      - name: Create test result artifact
+#        uses: actions/upload-artifact@v2
+#        with:
+#          name: ${{ matrix.path }}-tests
+#          path: |
+#            ${{ env.SERVICES_PATH }}/${{ matrix.path }}/coverage/lcov.info
+#            ${{ env.SERVICES_PATH }}/${{ matrix.path }}/coverage/test-reporter.xml
+#            ${{ env.SERVICES_PATH }}/${{ matrix.path }}/test-result.txt
+#
+#  sonar:
+#    name: Scan With Sonarqube
+#    runs-on: ubuntu-latest
+#    needs: [ setup, test ]
+#    strategy:
+#      fail-fast: false
+#      matrix:
+#        path: ${{ fromJson(needs.setup.outputs.updated-paths) }}
+#    steps:
+#      - name: Check out code
+#        uses: actions/checkout@v2
+#        with:
+#          fetch-depth: 0
+#
+#      - name: Download test result artifact
+#        uses: actions/download-artifact@v2
+#        with:
+#          name: ${{ matrix.path }}-tests
+#          path: ${{ github.workspace }}/${{ env.SERVICES_PATH }}/${{ matrix.path }}/tests
+#
+#      - name: Read test result
+#        id: read-tests
+#        uses: juliangruber/read-file-action@v1
+#        with:
+#          path: ${{ github.workspace }}/${{ env.SERVICES_PATH }}/${{ matrix.path }}/tests/test-result.txt
+#
+#      - name: Check test result
+#        uses: actions/github-script@v6
+#        env:
+#          TEST_RESULT: ${{ steps.read-tests.outputs.content }}
+#          PATH: ${{ matrix.path }}
+#        with:
+#          script: |
+#            const { TEST_RESULT, PATH } = process.env
+#
+#            if (TEST_RESULT === 'failure') {
+#              core.setFailed(`${PATH} tests have failed 🚨`)
+#            }
+#
+#      - name: Get Sonar Token Name
+#        id: token
+#        uses: ASzc/change-string-case-action@v2
+#        with:
+#          string: SONAR_TOKEN_${{ matrix.path }}
+#
+#      - name: Run Sonarqube scan
+#        uses: sonarsource/sonarqube-scan-action@master
+#        with:
+#          projectBaseDir: ${{ env.SERVICES_PATH }}/${{ matrix.path }}
+#          args: >
+#            -Dsonar.projectKey=kwetter-${{ matrix.path }}
+#            -Dsonar.sources=src
+#            -Dsonar.tests=src
+#            -Dsonar.test.inclusions=src/**/*.test.js
+#            -Dsonar.testExecutionReportPaths=tests/coverage/test-reporter.xml
+#            -Dsonar.javascript.lcov.reportPaths=tests/coverage/lcov.info
+#        env:
+#          SONAR_TOKEN: ${{ secrets[steps.token.outputs.uppercase] }}
+#          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+#
+#      - name: Check Sonarqube quality gates
+#        #TODO change to master
+#        if: ${{ github.ref == 'refs/heads/dev' }}
+#        uses: sonarsource/sonarqube-quality-gate-action@master
+#        timeout-minutes: 5
+#        with:
+#          scanMetadataReportFile: ${{ github.workspace }}/${{ env.SERVICES_PATH }}/${{ matrix.path }}/.scannerwork/report-task.txt
+#        env:
+#          SONAR_TOKEN: ${{ secrets[steps.token.outputs.uppercase] }}
+#
+#      - name: Save successful quality gates result ✅
+#        #TODO change to master
+#        if: ${{ github.ref == 'refs/heads/dev' && success() }}
+#        uses: DamianReeves/write-file-action@v1.0
+#        with:
+#          path: ${{ github.workspace }}/${{ env.SERVICES_PATH }}/${{ matrix.path }}/quality-gates-result.txt
+#          contents: success
+#          write-mode: append
+#
+#      - name: Save failed quality gates result 🚨
+#        #TODO change to master
+#        if: ${{ github.ref == 'refs/heads/dev' && failure() }}
+#        uses: DamianReeves/write-file-action@v1.0
+#        with:
+#          path: ${{ github.workspace }}/${{ env.SERVICES_PATH }}/${{ matrix.path }}/quality-gates-result.txt
+#          contents: failure
+#          write-mode: append
+#
+#      - name: Create quality gates result artifact
+#        #TODO change to master
+#        if: ${{ github.ref == 'refs/heads/dev' }}
+#        uses: actions/upload-artifact@v2
+#        with:
+#          name: ${{ matrix.path }}-quality-gates
+#          path: ${{ env.SERVICES_PATH }}/${{ matrix.path }}/quality-gates-result.txt
+#
+#  dockerhub:
+#    name: Build Docker Image and Push to DockerHub
+#    runs-on: ubuntu-latest
+#    needs: [ setup, test ]
+#    strategy:
+#      fail-fast: false
+#      matrix:
+#        path: ${{ fromJson(needs.setup.outputs.updated-paths) }}
+#    steps:
+#      - name: Checkout code
+#        uses: actions/checkout@v2
+#
+#      - name: Download test result artifact
+#        uses: actions/download-artifact@v2
+#        with:
+#          name: ${{ matrix.path }}-tests
+#          path: ${{ github.workspace }}/${{ env.SERVICES_PATH }}/${{ matrix.path }}/tests
+#
+#      - name: Read test result
+#        id: read-tests
+#        uses: juliangruber/read-file-action@v1
+#        with:
+#          path: ${{ github.workspace }}/${{ env.SERVICES_PATH }}/${{ matrix.path }}/tests/test-result.txt
+#
+#      - name: Check test result
+#        uses: actions/github-script@v6
+#        env:
+#          TEST_RESULT: ${{ steps.read-tests.outputs.content }}
+#          PATH: ${{ matrix.path }}
+#        with:
+#          script: |
+#            const { TEST_RESULT, PATH } = process.env
+#
+#            if (TEST_RESULT === 'failure') {
+#              core.setFailed(`${PATH} tests have failed 🚨`)
+#            }
+#
+#      - name: Set up Docker Buildx
+#        id: buildx
+#        uses: docker/setup-buildx-action@v1
+#
+#      - name: Login to DockerHub
+#        uses: docker/login-action@v1
+#        with:
+#          username: ${{ secrets.DOCKERHUB_USERNAME }}
+#          password: ${{ secrets.DOCKERHUB_TOKEN }}
+#
+#      - name: Build image and push to Docker Hub
+#        uses: docker/build-push-action@v2
+#        with:
+#          context: ${{ env.SERVICES_PATH }}/${{ matrix.path }}
+#          push: true
+#          tags: vjv2143/kwetter.${{ matrix.path }}:latest
+#
+#  azure-staging:
+#    name: Build, Push and Apply Azure Staging
+#    #TODO change to master
+#    if: ${{ github.ref == 'refs/heads/dev' }}
+#    runs-on: ubuntu-latest
+#    needs: [ setup, sonar ]
+#    strategy:
+#      fail-fast: false
+#      matrix:
+#        path: ${{ fromJson(needs.setup.outputs.updated-paths) }}
+#    steps:
+#      - name: Checkout code
+#        uses: actions/checkout@v2
+#
+#      - name: Download quality gates result artifact
+#        uses: actions/download-artifact@v2
+#        with:
+#          name: ${{ matrix.path }}-quality-gates
+#          path: ${{ github.workspace }}/${{ env.SERVICES_PATH }}/${{ matrix.path }}/quality-gates
+#
+#      - name: Read quality gates result
+#        id: read-quality-gates
+#        uses: juliangruber/read-file-action@v1
+#        with:
+#          path: ${{ github.workspace }}/${{ env.SERVICES_PATH }}/${{ matrix.path }}/quality-gates/quality-gates-result.txt
+#
+#      - name: Check quality gates result
+#        uses: actions/github-script@v6
+#        env:
+#          QUALITY_GATES_RESULT: ${{ steps.read-quality-gates.outputs.content }}
+#          PATH: ${{ matrix.path }}
+#        with:
+#          script: |
+#            const { QUALITY_GATES_RESULT, PATH } = process.env
+#
+#            if (QUALITY_GATES_RESULT === 'failure') {
+#              core.setFailed(`${PATH} quality gates have failed 🚨`)
+#            }
+#
+#      - name: Login to Azure Container Registry
+#        uses: azure/docker-login@v1
+#        with:
+#          login-server: ${{ env.AZURE_REGISTRY_NAME }}.azurecr.io
+#          username: ${{ secrets.ACR_USERNAME }}
+#          password: ${{ secrets.ACR_PASSWORD }}
+#
+#      - name: Build and Push Image
+#        run: |
+#          docker build ${{ env.SERVICES_PATH }}/${{ matrix.path }} -t ${{ env.AZURE_REGISTRY_NAME }}.azurecr.io/${{ matrix.path }}
+#          docker push ${{ env.AZURE_REGISTRY_NAME }}.azurecr.io/${{ matrix.path }}
+#
+#      - name: Set the target AKS cluster
+#        uses: azure/aks-set-context@v1
+#        with:
+#          creds: '${{ secrets.AZ_CREDENTIALS }}'
+#          cluster-name: ${{ env.AZURE_CLUSTER_NAME }}
+#          resource-group: ${{ env.AZURE_RESOURCE_GROUP }}
+#
+#      - name: Create Namespace
+#        run: |
+#          kubectl create namespace staging --dry-run=client -o json | kubectl apply -f -
+#
+#      - name: Create Image Pull Secret for ACR
+#        uses: azure/k8s-create-secret@v1
+#        with:
+#          container-registry-url: ${{ env.AZURE_REGISTRY_NAME }}.azurecr.io
+#          container-registry-username: ${{ secrets.ACR_USERNAME }}
+#          container-registry-password: ${{ secrets.ACR_PASSWORD }}
+#          secret-name: ${{ env.AZURE_SECRET }}
+#          namespace: staging
+#          arguments: --force true
+#
+#      - name: Deploy to AKS
+#        uses: azure/k8s-deploy@v1
+#        with:
+#          manifests: |
+#            ${{ env.MANIFESTS_PATH}}/${{ matrix.path }}-config.yml
+#            ${{ env.MANIFESTS_PATH}}/${{ matrix.path }}-secret.yml
+#            ${{ env.MANIFESTS_PATH}}/${{ matrix.path }}-depl.yml
+#          images: |
+#            ${{ env.AZURE_REGISTRY_NAME }}.azurecr.io/${{ matrix.path }}
+#          imagepullsecrets: |
+#            ${{ env.AZURE_SECRET }}
+#          namespace: staging
+#
+#  performance-test:
+#    name: Test Performance
+#    #TODO change to master
+#    if: ${{ github.ref == 'refs/heads/dev' }}
+#    runs-on: ubuntu-latest
+#    needs: azure-staging
+#    steps:
+#      - name: Checkout code
+#        uses: actions/checkout@v2
+#
+#  azure-production:
+#    name: Build, Push and Apply Azure Production
+#    #TODO change to master
+#    if: ${{ github.ref == 'refs/heads/dev' }}
+#    runs-on: ubuntu-latest
+#    needs: [ setup, performance-test ]
+#    strategy:
+#      fail-fast: false
+#      matrix:
+#        path: ${{ fromJson(needs.setup.outputs.updated-paths) }}
+#    steps:
+#      - name: Checkout code
+#        uses: actions/checkout@v2
+#
+#      - name: Login to Azure Container Registry
+#        uses: azure/docker-login@v1
+#        with:
+#          login-server: ${{ env.AZURE_REGISTRY_NAME }}.azurecr.io
+#          username: ${{ secrets.ACR_USERNAME }}
+#          password: ${{ secrets.ACR_PASSWORD }}
+#
+#      - name: Set the target AKS cluster
+#        uses: azure/aks-set-context@v1
+#        with:
+#          creds: '${{ secrets.AZ_CREDENTIALS }}'
+#          cluster-name: ${{ env.AZURE_CLUSTER_NAME }}
+#          resource-group: ${{ env.AZURE_RESOURCE_GROUP }}
+#
+#      - name: Create Namespace
+#        run: |
+#          kubectl create namespace production --dry-run=client -o json | kubectl apply -f -
+#
+#      - name: Create Image Pull Secret for ACR
+#        uses: azure/k8s-create-secret@v1
+#        with:
+#          container-registry-url: ${{ env.AZURE_REGISTRY_NAME }}.azurecr.io
+#          container-registry-username: ${{ secrets.ACR_USERNAME }}
+#          container-registry-password: ${{ secrets.ACR_PASSWORD }}
+#          secret-name: ${{ env.AZURE_SECRET }}
+#          namespace: production
+#          arguments: --force true
+#
+#      - name: Deploy to AKS
+#        uses: azure/k8s-deploy@v1
+#        with:
+#          manifests: |
+#            ${{ env.MANIFESTS_PATH}}/${{ matrix.path }}-config.yml
+#            ${{ env.MANIFESTS_PATH}}/${{ matrix.path }}-secret.yml
+#            ${{ env.MANIFESTS_PATH}}/${{ matrix.path }}-depl.yml
+#          images: |
+#            ${{ env.AZURE_REGISTRY_NAME }}.azurecr.io/${{ matrix.path }}
+#          imagepullsecrets: |
+#            ${{ env.AZURE_SECRET }}
+#          namespace: production
