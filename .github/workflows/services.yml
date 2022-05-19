@@ -56,7 +56,8 @@ jobs:
               }
             });
 
-            core.setOutput('paths', paths.toString());
+            console.log(`[${paths.toString()}]`)
+            core.setOutput('paths', `[${paths.toString()}]`);
 
   test:
     name: Test With Jest
