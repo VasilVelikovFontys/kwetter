@@ -328,6 +328,7 @@ jobs:
         uses: azure/k8s-deploy@v1
         with:
           manifests: |
+            ${{ github.workspace }}/src/infrastructure/kubernetes/nats-config.yml
             ${{ github.workspace }}/src/infrastructure/kubernetes/${{ matrix.path }}-config.yml
             ${{ github.workspace }}/src/infrastructure/kubernetes/${{ matrix.path }}-secret.yml
             ${{ github.workspace }}/src/infrastructure/kubernetes/${{ matrix.path }}-depl.yml
@@ -393,6 +394,7 @@ jobs:
         uses: azure/k8s-deploy@v1
         with:
           manifests: |
+            ${{ github.workspace }}/src/infrastructure/kubernetes/nats-config.yml
             ${{ github.workspace }}/src/infrastructure/kubernetes/${{ matrix.path }}-config.yml
             ${{ github.workspace }}/src/infrastructure/kubernetes/${{ matrix.path }}-secret.yml
             ${{ github.workspace }}/src/infrastructure/kubernetes/${{ matrix.path }}-depl.yml
