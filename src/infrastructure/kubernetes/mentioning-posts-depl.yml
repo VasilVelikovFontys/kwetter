@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: mentioning-posts
-          image: kwetteracr.azurecr.io/mentioning-posts:staging
+          image: kwetteracr.azurecr.io/mentioning-posts
           ports:
             - containerPort: 4000
           env:
