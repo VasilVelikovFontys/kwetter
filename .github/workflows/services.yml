@@ -33,7 +33,7 @@ jobs:
               then
               tmpString1=${updatedFile#*/}
               tmpString2=${tmpString1#*/}
-              path=${temporaryString%/*}
+              path=${tmpString2%/*}
               pathsArray+=(\"$path\")
             fi
           done

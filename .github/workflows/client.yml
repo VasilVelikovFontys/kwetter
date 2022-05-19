@@ -34,8 +34,8 @@ jobs:
         with:
           name: coverage
           path: |
-            src/web-app/coverage/lcov.info
-            src/web-app/coverage/test-reporter.xml
+            src/client/coverage/lcov.info
+            src/client/coverage/test-reporter.xml
 
       - name: Tests ✅
         if: ${{ success() }}
@@ -86,12 +86,12 @@ jobs:
         with:
           projectBaseDir: src/client
           args: >
-            -Dsonar.projectKey=kwetter-web-app
+            -Dsonar.projectKey=kwetter-client
             -Dsonar.sources=src
             -Dsonar.tests=src
             -Dsonar.test.inclusions=src/**/*.test.js
             -Dsonar.testExecutionReportPaths=coverage/test-reporter.xml
             -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
         env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_WEB_APP }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_CLIENT }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
