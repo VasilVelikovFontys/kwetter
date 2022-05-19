@@ -56,73 +56,71 @@ jobs:
               }
             });
 
-            console.log(paths);
-
             core.setOutput('paths', paths.toString());
 
-#  test:
-#    name: Test With Jest
-#    runs-on: ubuntu-latest
-#    needs: setup
-#    strategy:
-#      fail-fast: false
-#      matrix:
-#        path: ${{ fromJson(needs.setup.outputs.updated-paths) }}
-#    defaults:
-#      run:
-#        working-directory: '${{ env.SERVICES_PATH }}/${{ matrix.path }}'
-#    steps:
-#      - name: Check out code
-#        uses: actions/checkout@v2
-#
-#      - name: Set up Node.js
-#        uses: actions/setup-node@v3
-#        with:
-#          node-version: '12'
-#          cache: 'npm'
-#          cache-dependency-path: ${{ env.SERVICES_PATH }}/${{ matrix.path }}/package-lock.json
-#
-#      - name: Install dependencies with npm
-#        run: npm install
-#
-#      - name: Run tests and generate coverage
-#        run: npm run test:ci
-#
-#      - name: Fail job 🚨
-#        if: ${{ failure() }}
-#        uses: actions/github-script@v6
-#        env:
-#          PATH: ${{ matrix.path }}
-#        with:
-#          script: |
-#            const { PATH } = process.env
-#
-#            core.setFailed(`${PATH} tests have failed 🚨`)
-#
-#      - name: Save successful test result ✅
-#        if: ${{ success() }}
-#        uses: DamianReeves/write-file-action@v1.0
-#        with:
-#          path: ${{ github.workspace }}/${{ env.SERVICES_PATH }}/${{ matrix.path }}/test-result.txt
-#          contents: success
-#          write-mode: append
-#
-#      - name: Save failed test result 🚨
-#        if: ${{ failure() }}
-#        uses: DamianReeves/write-file-action@v1.0
-#        with:
-#          path: ${{ github.workspace }}/${{ env.SERVICES_PATH }}/${{ matrix.path }}/test-result.txt
-#          contents: failure
-#          write-mode: append
-#
-#      - name: Create test result artifact
-#        uses: actions/upload-artifact@v2
-#        with:
-#          name: ${{ matrix.path }}-tests
-#          path: |
-#            ${{ env.SERVICES_PATH }}/${{ matrix.path }}/coverage/lcov.info
-#            ${{ env.SERVICES_PATH }}/${{ matrix.path }}/coverage/test-reporter.xml
-#            ${{ env.SERVICES_PATH }}/${{ matrix.path }}/test-result.txt
+  test:
+    name: Test With Jest
+    runs-on: ubuntu-latest
+    needs: setup
+    strategy:
+      fail-fast: false
+      matrix:
+        path: ${{ fromJson(needs.setup.outputs.updated-paths) }}
+    defaults:
+      run:
+        working-directory: '${{ env.SERVICES_PATH }}/${{ matrix.path }}'
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '12'
+          cache: 'npm'
+          cache-dependency-path: ${{ env.SERVICES_PATH }}/${{ matrix.path }}/package-lock.json
+
+      - name: Install dependencies with npm
+        run: npm install
+
+      - name: Run tests and generate coverage
+        run: npm run test:ci
+
+      - name: Fail job 🚨
+        if: ${{ failure() }}
+        uses: actions/github-script@v6
+        env:
+          PATH: ${{ matrix.path }}
+        with:
+          script: |
+            const { PATH } = process.env
+
+            core.setFailed(`${PATH} tests have failed 🚨`)
+
+      - name: Save successful test result ✅
+        if: ${{ success() }}
+        uses: DamianReeves/write-file-action@v1.0
+        with:
+          path: ${{ github.workspace }}/${{ env.SERVICES_PATH }}/${{ matrix.path }}/test-result.txt
+          contents: success
+          write-mode: append
+
+      - name: Save failed test result 🚨
+        if: ${{ failure() }}
+        uses: DamianReeves/write-file-action@v1.0
+        with:
+          path: ${{ github.workspace }}/${{ env.SERVICES_PATH }}/${{ matrix.path }}/test-result.txt
+          contents: failure
+          write-mode: append
+
+      - name: Create test result artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: ${{ matrix.path }}-tests
+          path: |
+            ${{ env.SERVICES_PATH }}/${{ matrix.path }}/coverage/lcov.info
+            ${{ env.SERVICES_PATH }}/${{ matrix.path }}/coverage/test-reporter.xml
+            ${{ env.SERVICES_PATH }}/${{ matrix.path }}/test-result.txt
 #
 #  sonar:
 #    name: Scan With Sonarqube
