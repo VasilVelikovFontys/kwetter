@@ -43,8 +43,10 @@ jobs:
             diffsArray.forEach(diff => {
               if (diff.indexOf(prefix) > -1) {
                 console.log(diff)
-                const cutDiff = diff.substring(diff.indexOf(prefix));
+
+                const cutDiff = diff.substring(prefix.length);
                 console.log(cutDiff)
+
                 const path = cutDiff.substring(0, cutDiff.indexOf('/'));
                 console.log(path)
 
