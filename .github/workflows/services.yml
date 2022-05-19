@@ -36,7 +36,7 @@ jobs:
           script: |
             const { DIFFS } = process.env;
             const diffsArray = DIFFS.split(' ');
-            let paths = '[';
+            const paths = '[';
 
             const prefix = 'src/services/';
 
