@@ -54,7 +54,7 @@ services:
 
   #Mentioning Posts Service
   mentioning-posts:
-    image: vjv2143/kwetter.mentioning-posts
+    image: vjv2143/kwetter.mentioning_posts
     container_name: mentioning-posts
     depends_on:
       - nats-streaming
@@ -104,7 +104,7 @@ services:
 
   #Trend Posts Service
   trend-posts:
-    image: vjv2143/kwetter.trend-posts
+    image: vjv2143/kwetter.trend_posts
     container_name: trend-posts
     depends_on:
       - nats-streaming
