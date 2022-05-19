@@ -263,30 +263,30 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Download quality gates result artifact
-        uses: actions/download-artifact@v2
-        with:
-          name: ${{ matrix.path }}-quality-gates
-          path: ${{ github.workspace }}/src/${{ matrix.path }}/quality-gates
-
-      - name: Read quality gates result
-        id: read-quality-gates
-        uses: juliangruber/read-file-action@v1
-        with:
-          path: ${{ github.workspace }}/src/${{ matrix.path }}/quality-gates/quality-gates-result.txt
-
-      - name: Check quality gates result
-        uses: actions/github-script@v6
-        env:
-          QUALITY_GATES_RESULT: ${{ steps.read-quality-gates.outputs.content }}
-          PATH: ${{ matrix.path }}
-        with:
-          script: |
-            const { QUALITY_GATES_RESULT, PATH } = process.env
-
-            if (QUALITY_GATES_RESULT === 'failure') {
-              core.setFailed(`${PATH} quality gates have failed 🚨`)
-            }
+#      - name: Download quality gates result artifact
+#        uses: actions/download-artifact@v2
+#        with:
+#          name: ${{ matrix.path }}-quality-gates
+#          path: ${{ github.workspace }}/src/${{ matrix.path }}/quality-gates
+#
+#      - name: Read quality gates result
+#        id: read-quality-gates
+#        uses: juliangruber/read-file-action@v1
+#        with:
+#          path: ${{ github.workspace }}/src/${{ matrix.path }}/quality-gates/quality-gates-result.txt
+#
+#      - name: Check quality gates result
+#        uses: actions/github-script@v6
+#        env:
+#          QUALITY_GATES_RESULT: ${{ steps.read-quality-gates.outputs.content }}
+#          PATH: ${{ matrix.path }}
+#        with:
+#          script: |
+#            const { QUALITY_GATES_RESULT, PATH } = process.env
+#
+#            if (QUALITY_GATES_RESULT === 'failure') {
+#              core.setFailed(`${PATH} quality gates have failed 🚨`)
+#            }
 
       - name: Login to Azure Container Registry
         uses: azure/docker-login@v1
