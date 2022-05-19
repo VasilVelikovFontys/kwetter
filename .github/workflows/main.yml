@@ -8,7 +8,7 @@ env:
   REGISTRY_NAME: kwetteracr
   CLUSTER_NAME: kwetterAKSCluster
   CLUSTER_RESOURCE_GROUP: kwetterResourceGroup
-  SECRET: kwetterSecret
+  SECRET: kwetter-secret
 
 jobs:
   setup:
