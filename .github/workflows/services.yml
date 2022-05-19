@@ -46,13 +46,13 @@ jobs:
                 const path = cutDiff.substring(0, cutDiff.indexOf('/'));
 
                 if (paths.indexOf(path) < 0) {
-                  paths.append(`"${path}", `);
+                  paths += `"${path}", `;
                 }
               }
             });
 
             paths.slice(0, -2);
-            paths.append(']');
+            paths += ']';
 
             console.log(paths)
             core.setOutput('paths', paths);
