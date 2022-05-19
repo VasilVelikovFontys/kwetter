@@ -223,7 +223,6 @@ jobs:
         uses: azure/k8s-deploy@v1
         with:
           manifests: |
-            ${{ env.MANIFESTS_PATH}}/${{ env.SERVICE }}-config.yml
             ${{ env.MANIFESTS_PATH}}/${{ env.SERVICE }}-secret.yml
             ${{ env.MANIFESTS_PATH}}/${{ env.SERVICE }}-depl.yml
           images: |

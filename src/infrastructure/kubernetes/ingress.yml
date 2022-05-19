@@ -7,7 +7,7 @@ spec:
   rules:
     - http:
         paths:
-          - path: '/staging'
+          - path: '/production'
             pathType: Prefix
             backend:
               service:
