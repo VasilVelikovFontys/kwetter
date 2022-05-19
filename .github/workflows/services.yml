@@ -51,7 +51,7 @@ jobs:
       - name: Check test result
         uses: actions/github-script@v6
         env:
-          DIFFS: ${{ steps.get-diffs.outputs.content }}
+          DIFFS: ${{ steps.get-diffs.outputs.diffs }}
         with:
           script: |
             const { DIFFS } = process.env
