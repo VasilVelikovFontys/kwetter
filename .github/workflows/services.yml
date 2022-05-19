@@ -42,13 +42,8 @@ jobs:
 
             diffsArray.forEach(diff => {
               if (diff.indexOf(prefix) > -1) {
-                console.log(diff)
-
                 const cutDiff = diff.substring(prefix.length);
-                console.log(cutDiff)
-
                 const path = cutDiff.substring(0, cutDiff.indexOf('/'));
-                console.log(path)
 
                 if (paths.indexOf(path) < 0) {
                   paths.append(`"${path}", `);
@@ -56,7 +51,7 @@ jobs:
               }
             });
 
-            paths = paths.slice(0, -2);
+            paths.slice(0, -2);
             paths.append(']');
 
             console.log(paths)
