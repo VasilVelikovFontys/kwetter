@@ -36,7 +36,7 @@ jobs:
           script: |
             const { DIFFS } = process.env;
             const diffsArray = DIFFS.split(' ');
-            const paths = [];
+            let paths = '[';
 
             const prefix = 'src/services/';
 
@@ -51,13 +51,16 @@ jobs:
                 console.log(path)
 
                 if (paths.indexOf(path) < 0) {
-                  paths.push(path);
+                  paths.append(`"${path}", `);
                 }
               }
             });
 
-            console.log(`[${paths.toString()}]`)
-            core.setOutput('paths', `[${paths.toString()}]`);
+            paths = paths.slice(0, -2);
+            paths.append(']');
+
+            console.log(paths)
+            core.setOutput('paths', paths);
 
   test:
     name: Test With Jest
