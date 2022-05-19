@@ -37,16 +37,14 @@ jobs:
       - name: Run tests and generate coverage
         run: npm run test:ci
 
-      - name: Fail job 🚨
-        if: ${{ failure() }}
-        uses: actions/github-script@v6
-        env:
-          PATH: ${{ matrix.path }}
+      - name: Create coverage artifact
+        if: ${{ success() }}
+        uses: actions/upload-artifact@v2
         with:
-          script: |
-            const { PATH } = process.env
-
-            core.setFailed(`${PATH} tests have failed 🚨`)
+          name: coverage
+          path: |
+            ${{ env.SERVICE_PATH }}/coverage/lcov.info
+            ${{ env.SERVICE_PATH }}/coverage/test-reporter.xml
 
       - name: Tests ✅
         if: ${{ success() }}
@@ -86,6 +84,12 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Download coverage artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: coverage
+          path: ${{ github.workspace }}/${{ env.SERVICE_PATH }}/coverage
+
       - name: Get Sonar Token Name
         id: token
         uses: ASzc/change-string-case-action@v2
@@ -101,8 +105,8 @@ jobs:
             -Dsonar.sources=src
             -Dsonar.tests=src
             -Dsonar.test.inclusions=src/**/*.test.js
-            -Dsonar.testExecutionReportPaths=tests/coverage/test-reporter.xml
-            -Dsonar.javascript.lcov.reportPaths=tests/coverage/lcov.info
+            -Dsonar.testExecutionReportPaths=coverage/test-reporter.xml
+            -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
         env:
           SONAR_TOKEN: ${{ secrets[steps.token.outputs.uppercase] }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
@@ -168,7 +172,7 @@ jobs:
       - name: Build image and push to Docker Hub
         uses: docker/build-push-action@v2
         with:
-          context: ${{ env.SERVICE_PATH }}/${{ env.SERVICE }}
+          context: ${{ env.SERVICE_PATH }}
           push: true
           tags: vjv2143/kwetter.${{ env.SERVICE }}:latest
 

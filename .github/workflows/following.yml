@@ -37,16 +37,14 @@ jobs:
       - name: Run tests and generate coverage
         run: npm run test:ci
 
-      - name: Fail job 🚨
-        if: ${{ failure() }}
-        uses: actions/github-script@v6
-        env:
-          PATH: ${{ matrix.path }}
+      - name: Create coverage artifact
+        if: ${{ success() }}
+        uses: actions/upload-artifact@v2
         with:
-          script: |
-            const { PATH } = process.env
-
-            core.setFailed(`${PATH} tests have failed 🚨`)
+          name: coverage
+          path: |
+            ${{ env.SERVICE_PATH }}/coverage/lcov.info
+            ${{ env.SERVICE_PATH }}/coverage/test-reporter.xml
 
       - name: Tests ✅
         if: ${{ success() }}
@@ -85,6 +83,12 @@ jobs:
         uses: actions/checkout@v2
         with:
           fetch-depth: 0
+
+      - name: Download coverage artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: coverage
+          path: ${{ github.workspace }}/${{ env.SERVICE_PATH }}/coverage
 
       - name: Get Sonar Token Name
         id: token
@@ -168,7 +172,7 @@ jobs:
       - name: Build image and push to Docker Hub
         uses: docker/build-push-action@v2
         with:
-          context: ${{ env.SERVICE_PATH }}/${{ env.SERVICE }}
+          context: ${{ env.SERVICE_PATH }}
           push: true
           tags: vjv2143/kwetter.${{ env.SERVICE }}:latest
 
