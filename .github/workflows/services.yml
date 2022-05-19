@@ -54,9 +54,24 @@ jobs:
           DIFFS: ${{ steps.get-diffs.outputs.diffs }}
         with:
           script: |
-            const { DIFFS } = process.env
+            const { DIFFS } = process.env;
+            const diffsArray = DIFFS.split(' ');
+            const paths = [];
 
-            console.log(DIFFS)
+            const prefix = 'src/services/';
+
+            diffsArray.forEach(diff => {
+              if (diff.indexOf(prefix) > -1) {
+                const cutDiff = diff.substing(diff.indexOf(prefix));
+                const path = cutDiff.substring(0, cutDiff.indexOf('/'));
+
+                if (paths.indexOf(path) < 0) {
+                  paths.push(path);
+                }
+              }
+            });
+
+            console.log(paths);
 
 #  test:
 #    name: Test With Jest
