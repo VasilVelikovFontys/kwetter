@@ -177,7 +177,7 @@ jobs:
     name: Build, Push and Apply Azure Staging
     if: ${{ github.ref == 'refs/heads/master' }}
     runs-on: ubuntu-latest
-    needs: sonar
+#    needs: sonar
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
