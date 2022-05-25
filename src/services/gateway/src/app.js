@@ -2,6 +2,13 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
 
+const dotenv = require("dotenv");
+dotenv.config();
+
+const {
+    ENVIRONMENT_PREFIX
+} = process.env;
+
 const createAuthRouter = require('./routes/auth');
 const createPostsRouter = require('./routes/posts');
 const createUsersRouter = require('./routes/users');
@@ -44,13 +51,13 @@ const createApp = (allowedOrigin, serviceUrls, jwtUtils) => {
     app.use(bodyParser.json());
     app.use(cors(corsOptions));
 
-    app.use(authRouter);
-    app.use(accountsRouter);
-    app.use(usersRouter);
-    app.use(postsRouter);
-    app.use(followingRouter);
-    app.use(trendsRouter);
-    app.use(picturesRouter);
+    app.use(ENVIRONMENT_PREFIX, authRouter);
+    app.use(ENVIRONMENT_PREFIX, accountsRouter);
+    app.use(ENVIRONMENT_PREFIX, usersRouter);
+    app.use(ENVIRONMENT_PREFIX, postsRouter);
+    app.use(ENVIRONMENT_PREFIX, followingRouter);
+    app.use(ENVIRONMENT_PREFIX, trendsRouter);
+    app.use(ENVIRONMENT_PREFIX, picturesRouter);
 
     return app;
 }

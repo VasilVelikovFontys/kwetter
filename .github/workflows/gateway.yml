@@ -14,164 +14,164 @@ env:
   MANIFESTS_PATH: ${{ github.workspace }}/src/infrastructure/kubernetes
 
 jobs:
-  test:
-    name: Test With Jest
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: '${{ env.SERVICE_PATH }}'
-    steps:
-      - name: Check out code
-        uses: actions/checkout@v2
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '12'
-          cache: 'npm'
-          cache-dependency-path: ${{ env.SERVICE_PATH }}/package-lock.json
-
-      - name: Install dependencies with npm
-        run: npm install
-
-      - name: Run tests and generate coverage
-        run: npm run test:ci
-
-      - name: Create coverage artifact
-        if: ${{ success() }}
-        uses: actions/upload-artifact@v2
-        with:
-          name: coverage
-          path: |
-            ${{ env.SERVICE_PATH }}/coverage/lcov.info
-            ${{ env.SERVICE_PATH }}/coverage/test-reporter.xml
-
-      - name: Tests ✅
-        if: ${{ success() }}
-        run: |
-          curl --request POST \
-          --url https://api.github.com/repos/${{ github.repository }}/statuses/${{ github.sha }} \
-          --header 'authorization: Bearer ${{ secrets.GITHUB_TOKEN }}' \
-          --header 'content-type: application/json' \
-          --data '{
-          "context": "tests",
-          "state": "success",
-          "description": "Tests passed",
-          "target_url": "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
-          }'
-
-      - name: Tests 🚨
-        if: ${{ failure() }}
-        run: |
-          curl --request POST \
-          --url https://api.github.com/repos/${{ github.repository }}/statuses/${{ github.sha }} \
-          --header 'authorization: Bearer ${{ secrets.GITHUB_TOKEN }}' \
-          --header 'content-type: application/json' \
-          --data '{
-            "context": "tests",
-            "state": "failure",
-            "description": "Tests failed",
-            "target_url": "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
-          }'
-
-  sonar:
-    name: Scan With Sonarqube
-    runs-on: ubuntu-latest
-    needs: test
-    steps:
-      - name: Check out code
-        uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
-
-      - name: Download coverage artifact
-        uses: actions/download-artifact@v2
-        with:
-          name: coverage
-          path: ${{ github.workspace }}/${{ env.SERVICE_PATH }}/coverage
-
-      - name: Get Sonar Token Name
-        id: token
-        uses: ASzc/change-string-case-action@v2
-        with:
-          string: SONAR_TOKEN_${{ env.SERVICE }}
-
-      - name: Run Sonarqube scan
-        uses: sonarsource/sonarqube-scan-action@master
-        with:
-          projectBaseDir: ${{ env.SERVICE_PATH }}
-          args: >
-            -Dsonar.projectKey=kwetter-${{ env.SERVICE }}
-            -Dsonar.sources=src
-            -Dsonar.tests=src
-            -Dsonar.test.inclusions=src/**/*.test.js
-            -Dsonar.testExecutionReportPaths=coverage/test-reporter.xml
-            -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
-        env:
-          SONAR_TOKEN: ${{ secrets[steps.token.outputs.uppercase] }}
-          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
-
-      - name: Check Sonarqube quality gates
-        if: ${{ github.ref == 'refs/heads/master' }}
-        uses: sonarsource/sonarqube-quality-gate-action@master
-        timeout-minutes: 5
-        with:
-          scanMetadataReportFile: ${{ github.workspace }}/${{ env.SERVICE_PATH }}/.scannerwork/report-task.txt
-        env:
-          SONAR_TOKEN: ${{ secrets[steps.token.outputs.uppercase] }}
-
-      - name: Quality Gate ✅
-        if: ${{ github.ref == 'refs/heads/master' && success() }}
-        run: |
-          curl --request POST \
-          --url https://api.github.com/repos/${{ github.repository }}/statuses/${{ github.sha }} \
-          --header 'authorization: Bearer ${{ secrets.GITHUB_TOKEN }}' \
-          --header 'content-type: application/json' \
-          --data '{
-          "context": "qulity-gate",
-          "state": "success",
-          "description": "Quality gate passed",
-          "target_url": "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
-          }'
-
-      - name: Quality Gate 🚨
-        if: ${{ github.ref == 'refs/heads/master' && failure() }}
-        run: |
-          curl --request POST \
-          --url https://api.github.com/repos/${{ github.repository }}/statuses/${{ github.sha }} \
-          --header 'authorization: Bearer ${{ secrets.GITHUB_TOKEN }}' \
-          --header 'content-type: application/json' \
-          --data '{
-            "context": "qulity-gate",
-            "state": "failure",
-            "description": "Quality gate failed",
-            "target_url": "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
-          }'
-
-  dockerhub:
-    name: Build Docker Image and Push to DockerHub
-    runs-on: ubuntu-latest
-    needs: test
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-
-      - name: Set up Docker Buildx
-        id: buildx
-        uses: docker/setup-buildx-action@v1
-
-      - name: Login to DockerHub
-        uses: docker/login-action@v1
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-
-      - name: Build image and push to Docker Hub
-        uses: docker/build-push-action@v2
-        with:
-          context: ${{ env.SERVICE_PATH }}
-          push: true
-          tags: vjv2143/kwetter.${{ env.SERVICE }}:latest
+#  test:
+#    name: Test With Jest
+#    runs-on: ubuntu-latest
+#    defaults:
+#      run:
+#        working-directory: '${{ env.SERVICE_PATH }}'
+#    steps:
+#      - name: Check out code
+#        uses: actions/checkout@v2
+#
+#      - name: Set up Node.js
+#        uses: actions/setup-node@v3
+#        with:
+#          node-version: '12'
+#          cache: 'npm'
+#          cache-dependency-path: ${{ env.SERVICE_PATH }}/package-lock.json
+#
+#      - name: Install dependencies with npm
+#        run: npm install
+#
+#      - name: Run tests and generate coverage
+#        run: npm run test:ci
+#
+#      - name: Create coverage artifact
+#        if: ${{ success() }}
+#        uses: actions/upload-artifact@v2
+#        with:
+#          name: coverage
+#          path: |
+#            ${{ env.SERVICE_PATH }}/coverage/lcov.info
+#            ${{ env.SERVICE_PATH }}/coverage/test-reporter.xml
+#
+#      - name: Tests ✅
+#        if: ${{ success() }}
+#        run: |
+#          curl --request POST \
+#          --url https://api.github.com/repos/${{ github.repository }}/statuses/${{ github.sha }} \
+#          --header 'authorization: Bearer ${{ secrets.GITHUB_TOKEN }}' \
+#          --header 'content-type: application/json' \
+#          --data '{
+#          "context": "tests",
+#          "state": "success",
+#          "description": "Tests passed",
+#          "target_url": "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+#          }'
+#
+#      - name: Tests 🚨
+#        if: ${{ failure() }}
+#        run: |
+#          curl --request POST \
+#          --url https://api.github.com/repos/${{ github.repository }}/statuses/${{ github.sha }} \
+#          --header 'authorization: Bearer ${{ secrets.GITHUB_TOKEN }}' \
+#          --header 'content-type: application/json' \
+#          --data '{
+#            "context": "tests",
+#            "state": "failure",
+#            "description": "Tests failed",
+#            "target_url": "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+#          }'
+#
+#  sonar:
+#    name: Scan With Sonarqube
+#    runs-on: ubuntu-latest
+#    needs: test
+#    steps:
+#      - name: Check out code
+#        uses: actions/checkout@v2
+#        with:
+#          fetch-depth: 0
+#
+#      - name: Download coverage artifact
+#        uses: actions/download-artifact@v2
+#        with:
+#          name: coverage
+#          path: ${{ github.workspace }}/${{ env.SERVICE_PATH }}/coverage
+#
+#      - name: Get Sonar Token Name
+#        id: token
+#        uses: ASzc/change-string-case-action@v2
+#        with:
+#          string: SONAR_TOKEN_${{ env.SERVICE }}
+#
+#      - name: Run Sonarqube scan
+#        uses: sonarsource/sonarqube-scan-action@master
+#        with:
+#          projectBaseDir: ${{ env.SERVICE_PATH }}
+#          args: >
+#            -Dsonar.projectKey=kwetter-${{ env.SERVICE }}
+#            -Dsonar.sources=src
+#            -Dsonar.tests=src
+#            -Dsonar.test.inclusions=src/**/*.test.js
+#            -Dsonar.testExecutionReportPaths=coverage/test-reporter.xml
+#            -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
+#        env:
+#          SONAR_TOKEN: ${{ secrets[steps.token.outputs.uppercase] }}
+#          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+#
+#      - name: Check Sonarqube quality gates
+#        if: ${{ github.ref == 'refs/heads/master' }}
+#        uses: sonarsource/sonarqube-quality-gate-action@master
+#        timeout-minutes: 5
+#        with:
+#          scanMetadataReportFile: ${{ github.workspace }}/${{ env.SERVICE_PATH }}/.scannerwork/report-task.txt
+#        env:
+#          SONAR_TOKEN: ${{ secrets[steps.token.outputs.uppercase] }}
+#
+#      - name: Quality Gate ✅
+#        if: ${{ github.ref == 'refs/heads/master' && success() }}
+#        run: |
+#          curl --request POST \
+#          --url https://api.github.com/repos/${{ github.repository }}/statuses/${{ github.sha }} \
+#          --header 'authorization: Bearer ${{ secrets.GITHUB_TOKEN }}' \
+#          --header 'content-type: application/json' \
+#          --data '{
+#          "context": "qulity-gate",
+#          "state": "success",
+#          "description": "Quality gate passed",
+#          "target_url": "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+#          }'
+#
+#      - name: Quality Gate 🚨
+#        if: ${{ github.ref == 'refs/heads/master' && failure() }}
+#        run: |
+#          curl --request POST \
+#          --url https://api.github.com/repos/${{ github.repository }}/statuses/${{ github.sha }} \
+#          --header 'authorization: Bearer ${{ secrets.GITHUB_TOKEN }}' \
+#          --header 'content-type: application/json' \
+#          --data '{
+#            "context": "qulity-gate",
+#            "state": "failure",
+#            "description": "Quality gate failed",
+#            "target_url": "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+#          }'
+#
+#  dockerhub:
+#    name: Build Docker Image and Push to DockerHub
+#    runs-on: ubuntu-latest
+#    needs: test
+#    steps:
+#      - name: Checkout code
+#        uses: actions/checkout@v2
+#
+#      - name: Set up Docker Buildx
+#        id: buildx
+#        uses: docker/setup-buildx-action@v1
+#
+#      - name: Login to DockerHub
+#        uses: docker/login-action@v1
+#        with:
+#          username: ${{ secrets.DOCKERHUB_USERNAME }}
+#          password: ${{ secrets.DOCKERHUB_TOKEN }}
+#
+#      - name: Build image and push to Docker Hub
+#        uses: docker/build-push-action@v2
+#        with:
+#          context: ${{ env.SERVICE_PATH }}
+#          push: true
+#          tags: vjv2143/kwetter.${{ env.SERVICE }}:latest
 
   azure-staging:
     name: Build, Push and Apply Azure Staging
@@ -219,6 +219,7 @@ jobs:
         uses: azure/k8s-deploy@v1
         with:
           manifests: |
+            ${{ env.MANIFESTS_PATH}}/staging/${{ env.SERVICE }}-config.yml
             ${{ env.MANIFESTS_PATH}}/staging/${{ env.SERVICE }}-secret.yml
             ${{ env.MANIFESTS_PATH}}/${{ env.SERVICE }}-depl.yml
           images: |
@@ -227,60 +228,61 @@ jobs:
             ${{ env.AZURE_SECRET }}
           namespace: staging
 
-  performance-test:
-    name: Test Performance
-    if: ${{ github.ref == 'refs/heads/master' }}
-    runs-on: ubuntu-latest
-    needs: azure-staging
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-
-  azure-production:
-    name: Build, Push and Apply Azure Production
-    if: ${{ github.ref == 'refs/heads/master' }}
-    runs-on: ubuntu-latest
-    needs: performance-test
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-
-      - name: Login to Azure Container Registry
-        uses: azure/docker-login@v1
-        with:
-          login-server: ${{ env.AZURE_REGISTRY_NAME }}.azurecr.io
-          username: ${{ secrets.ACR_USERNAME }}
-          password: ${{ secrets.ACR_PASSWORD }}
-
-      - name: Set the target AKS cluster
-        uses: azure/aks-set-context@v1
-        with:
-          creds: '${{ secrets.AZ_CREDENTIALS }}'
-          cluster-name: ${{ env.AZURE_CLUSTER_NAME }}
-          resource-group: ${{ env.AZURE_RESOURCE_GROUP }}
-
-      - name: Create Namespace
-        run: |
-          kubectl create namespace production --dry-run=client -o json | kubectl apply -f -
-
-      - name: Create Image Pull Secret for ACR
-        uses: azure/k8s-create-secret@v1
-        with:
-          container-registry-url: ${{ env.AZURE_REGISTRY_NAME }}.azurecr.io
-          container-registry-username: ${{ secrets.ACR_USERNAME }}
-          container-registry-password: ${{ secrets.ACR_PASSWORD }}
-          secret-name: ${{ env.AZURE_SECRET }}
-          namespace: production
-          arguments: --force true
-
-      - name: Deploy to AKS
-        uses: azure/k8s-deploy@v1
-        with:
-          manifests: |
-            ${{ env.MANIFESTS_PATH}}/production/${{ env.SERVICE }}-secret.yml
-            ${{ env.MANIFESTS_PATH}}/${{ env.SERVICE }}-depl.yml
-          images: |
-            ${{ env.AZURE_REGISTRY_NAME }}.azurecr.io/${{ env.SERVICE }}
-          imagepullsecrets: |
-            ${{ env.AZURE_SECRET }}
-          namespace: production
+#  performance-test:
+#    name: Test Performance
+#    if: ${{ github.ref == 'refs/heads/master' }}
+#    runs-on: ubuntu-latest
+#    needs: azure-staging
+#    steps:
+#      - name: Checkout code
+#        uses: actions/checkout@v2
+#
+#  azure-production:
+#    name: Build, Push and Apply Azure Production
+#    if: ${{ github.ref == 'refs/heads/master' }}
+#    runs-on: ubuntu-latest
+#    needs: performance-test
+#    steps:
+#      - name: Checkout code
+#        uses: actions/checkout@v2
+#
+#      - name: Login to Azure Container Registry
+#        uses: azure/docker-login@v1
+#        with:
+#          login-server: ${{ env.AZURE_REGISTRY_NAME }}.azurecr.io
+#          username: ${{ secrets.ACR_USERNAME }}
+#          password: ${{ secrets.ACR_PASSWORD }}
+#
+#      - name: Set the target AKS cluster
+#        uses: azure/aks-set-context@v1
+#        with:
+#          creds: '${{ secrets.AZ_CREDENTIALS }}'
+#          cluster-name: ${{ env.AZURE_CLUSTER_NAME }}
+#          resource-group: ${{ env.AZURE_RESOURCE_GROUP }}
+#
+#      - name: Create Namespace
+#        run: |
+#          kubectl create namespace production --dry-run=client -o json | kubectl apply -f -
+#
+#      - name: Create Image Pull Secret for ACR
+#        uses: azure/k8s-create-secret@v1
+#        with:
+#          container-registry-url: ${{ env.AZURE_REGISTRY_NAME }}.azurecr.io
+#          container-registry-username: ${{ secrets.ACR_USERNAME }}
+#          container-registry-password: ${{ secrets.ACR_PASSWORD }}
+#          secret-name: ${{ env.AZURE_SECRET }}
+#          namespace: production
+#          arguments: --force true
+#
+#      - name: Deploy to AKS
+#        uses: azure/k8s-deploy@v1
+#        with:
+#          manifests: |
+#            ${{ env.MANIFESTS_PATH}}/production/${{ env.SERVICE }}-config.yml
+#            ${{ env.MANIFESTS_PATH}}/production/${{ env.SERVICE }}-secret.yml
+#            ${{ env.MANIFESTS_PATH}}/${{ env.SERVICE }}-depl.yml
+#          images: |
+#            ${{ env.AZURE_REGISTRY_NAME }}.azurecr.io/${{ env.SERVICE }}
+#          imagepullsecrets: |
+#            ${{ env.AZURE_SECRET }}
+#          namespace: production
