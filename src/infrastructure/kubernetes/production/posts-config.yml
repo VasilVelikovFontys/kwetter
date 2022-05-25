@@ -5,6 +5,8 @@ metadata:
 data:
   URL: "http://posts-service:4002"
 
+  ALGOLIA_APP_ID: HDX8CLOVRG
+
   FIRESTORE_API_KEY: AIzaSyAQWZ54EG20YkVh0MQ1_CDeZUNRZs7pP4Y
   FIRESTORE_AUTH_DOMAIN: kwetter-posts-fc493.firebaseapp.com
   FIRESTORE_PROJECT_ID: kwetter-posts-fc493

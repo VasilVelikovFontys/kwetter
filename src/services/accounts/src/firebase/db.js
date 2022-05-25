@@ -1,7 +1,8 @@
 const firebaseApp = require("./app");
 require("firebase/compat/firestore");
-const db = firebaseApp.firestore();
 const {handleError} = require("../utils/errorHandler");
+
+const db = firebaseApp.firestore();
 
 const getAccounts = async () => {
     try {

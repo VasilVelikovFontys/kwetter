@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: trends-config
+data:
+  URL: "http://trends-service:4008"
+
+  FIRESTORE_API_KEY: AIzaSyCvlaASalF3IJFkC6X1zGRlFQ1g0obe9vc
+  FIRESTORE_AUTH_DOMAIN: kwetter-trends-staging.firebaseapp.com
+  FIRESTORE_PROJECT_ID: kwetter-trends-staging
+  FIRESTORE_STORAGE_BUCKET: kwetter-trends-staging.appspot.com
+  FIRESTORE_MESSAGING_SENDER_ID: "1006894814711"
+  FIRESTORE_APP_ID: 1:1006894814711:web:df686374a233ee1f244af2
+
+  FIRESTORE_SERVICE_EMAIL: trends-service-staging@kwetter.com
+
+  NATS_DURABLE_NAME: trends
+  NATS_QUEUE_GROUP: trends-queue-group

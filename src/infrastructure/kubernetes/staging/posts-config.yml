@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: posts-config
+data:
+  URL: "http://posts-service:4002"
+
+  ALGOLIA_APP_ID: J9T07CU5IP
+
+  FIRESTORE_API_KEY: AIzaSyDXe0HlV_Tlp0vRzLuO_3Thb22R6rpsA-8
+  FIRESTORE_AUTH_DOMAIN: kwetter-posts-staging.firebaseapp.com
+  FIRESTORE_PROJECT_ID: kwetter-posts-staging
+  FIRESTORE_STORAGE_BUCKET: kwetter-posts-staging.appspot.com
+  FIRESTORE_MESSAGING_SENDER_ID: "603193529009"
+  FIRESTORE_APP_ID: 1:603193529009:web:21682c24546b6ba35d0890
+
+  FIRESTORE_SERVICE_EMAIL: posts-service-staging@kwetter.com
+
+  NATS_DURABLE_NAME: posts
+  NATS_QUEUE_GROUP: posts-queue-group

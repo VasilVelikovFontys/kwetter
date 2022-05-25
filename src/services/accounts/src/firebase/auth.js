@@ -1,6 +1,5 @@
 const firebaseApp = require("./app");
 require("firebase/compat/auth");
-const auth = firebaseApp.auth();
 const {handleError} = require("../utils/errorHandler");
 
 const dotenv = require("dotenv");
@@ -11,6 +10,8 @@ const {
     FIRESTORE_SERVICE_PASSWORD,
     NATS_CLIENT_ID
 } = process.env;
+
+const auth = firebaseApp.auth();
 
 const authenticateService = async () => {
     try {

@@ -19,7 +19,24 @@ spec:
           image: kwetteracr.azurecr.io/posts
           ports:
             - containerPort: 4000
+          resources:
+            limits:
+              cpu: 500m
+            requests:
+              cpu: 200m
           env:
+            - name: ALGOLIA_APP_ID
+              valueFrom:
+                configMapKeyRef:
+                  name: posts-config
+                  key: ALGOLIA_APP_ID
+
+            - name: ALGOLIA_ADMIN_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: posts-secret
+                  key: ALGOLIA_ADMIN_API_KEY
+
             - name: FIRESTORE_API_KEY
               valueFrom:
                 configMapKeyRef:

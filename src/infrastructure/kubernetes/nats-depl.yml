@@ -15,6 +15,11 @@ spec:
       containers:
         - name: nats
           image: nats-streaming
+          resources:
+            limits:
+              cpu: 500m
+            requests:
+              cpu: 200m
           env:
             - name: CLUSTER_ID
               valueFrom:

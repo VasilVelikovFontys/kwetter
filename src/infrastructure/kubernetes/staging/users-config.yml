@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: users-config
+data:
+  URL: "http://users-service:4011"
+
+  FIRESTORE_API_KEY: AIzaSyD9ZJiO6uGNs35VzUedqXiIU_9H7wPWBAA
+  FIRESTORE_AUTH_DOMAIN: kwetter-users-staging.firebaseapp.com
+  FIRESTORE_PROJECT_ID: kwetter-users-staging
+  FIRESTORE_STORAGE_BUCKET: kwetter-users-staging.appspot.com
+  FIRESTORE_MESSAGING_SENDER_ID: "577488887454"
+  FIRESTORE_APP_ID: 1:577488887454:web:f2626b56fc0e1fd7eea58f
+
+  FIRESTORE_SERVICE_EMAIL: users-service-staging@kwetter.com
+
+  NATS_DURABLE_NAME: users
+  NATS_QUEUE_GROUP: users-queue-group
