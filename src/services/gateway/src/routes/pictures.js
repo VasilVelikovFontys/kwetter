@@ -20,6 +20,8 @@ const createPicturesRouter = (picturesUrl, jwtUtils) => {
         const {userId} = req.user;
         const file = req.file;
 
+        if (!file || !file.mimetype) return res.sendStatus(400);
+
         const {mimetype} = file;
         const fileExtension = mimetype.substring(mimetype.indexOf('/') + 1);
 

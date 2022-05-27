@@ -16,12 +16,12 @@ spec:
     spec:
       containers:
         - name: likes
-          image: kwetteracr.azurecr.io/likes
+          image: vjvkwetter.azurecr.io/likes
           ports:
             - containerPort: 4000
           resources:
             limits:
-              cpu: 500m
+              cpu: 200m
             requests:
               cpu: 200m
           env:

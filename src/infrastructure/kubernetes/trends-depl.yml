@@ -16,12 +16,12 @@ spec:
     spec:
       containers:
         - name: trends
-          image: kwetteracr.azurecr.io/trends
+          image: vjvkwetter.azurecr.io/trends
           ports:
             - containerPort: 4000
           resources:
             limits:
-              cpu: 500m
+              cpu: 200m
             requests:
               cpu: 200m
           env:

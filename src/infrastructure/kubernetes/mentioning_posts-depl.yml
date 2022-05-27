@@ -16,12 +16,12 @@ spec:
     spec:
       containers:
         - name: mentioning-posts
-          image: kwetteracr.azurecr.io/mentioning_posts
+          image: vjvkwetter.azurecr.io/mentioning_posts
           ports:
             - containerPort: 4000
           resources:
             limits:
-              cpu: 500m
+              cpu: 200m
             requests:
               cpu: 200m
           env:

@@ -16,12 +16,12 @@ spec:
     spec:
       containers:
         - name: following
-          image: kwetteracr.azurecr.io/following
+          image: vjvkwetter.azurecr.io/following
           ports:
             - containerPort: 4000
           resources:
             limits:
-              cpu: 500m
+              cpu: 200m
             requests:
               cpu: 200m
           env:

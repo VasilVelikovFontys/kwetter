@@ -1,0 +1,42 @@
+az login
+
+az group create --name kwetterResourceGroup --location eastus
+
+az acr create --resource-group kwetterResourceGroup --name vjvkwetter --sku Basic
+
+docker build service -t vjvkwetter.azurecr.io/service
+
+docker push vjvkwetter.azurecr.io/service
+
+az aks create \
+    --resource-group kwetterResourceGroup \
+    --name kwetterAKSCluster \
+    --node-count 2 \
+    --generate-ssh-keys \
+    --attach-acr vjvkwetter
+
+az aks get-credentials --resource-group kwetterResourceGroup --name kwetterAKSCluster
+
+az ad sp create-for-rbac --name "kwetter" --role contributor --scopes /subscriptions/f5ae7037-cea1-42ae-b49b-fff33dc119d6/resourceGroups/kwetterResourceGroup --sdk-auth
+
+az acr credential
+
+helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
+
+helm repo update
+
+helm install ingress-nginx ingress-nginx/ingress-nginx \
+  --set controller.service.annotations."service\.beta\.kubernetes\.io/azure-load-balancer-health-probe-request-path"=/healthz
+
+az aks update \
+  --resource-group kwetterResourceGroup \
+  --name kwetterAKSCluster \
+  --enable-cluster-autoscaler \
+  --min-count 1 \
+  --max-count 3
+
+kubectl autoscale deployment service --cpu-percent=50 --min=1 --max=3
+
+kubectl -n namespacce patch hpa hpa-name --patch '{"spec":{"minReplicas":1}}'
+
+az aks stop --name kwetterAKSCluster --resource-group kwetterResourceGroup

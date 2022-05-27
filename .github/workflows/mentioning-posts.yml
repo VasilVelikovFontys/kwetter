@@ -5,7 +5,7 @@ on:
     paths: 'src/services/mentioning_posts/**'
 
 env:
-  AZURE_REGISTRY_NAME: kwetteracr
+  AZURE_REGISTRY_NAME: vjvkwetter
   AZURE_CLUSTER_NAME: kwetterAKSCluster
   AZURE_RESOURCE_GROUP: kwetterResourceGroup
   AZURE_SECRET: kwetter-mentioning-posts-secret

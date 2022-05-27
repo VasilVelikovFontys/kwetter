@@ -16,12 +16,12 @@ spec:
     spec:
       containers:
         - name: trend-posts
-          image: kwetteracr.azurecr.io/trend_posts
+          image: vjvkwetter.azurecr.io/trend_posts
           ports:
             - containerPort: 4000
           resources:
             limits:
-              cpu: 500m
+              cpu: 200m
             requests:
               cpu: 200m
           env:

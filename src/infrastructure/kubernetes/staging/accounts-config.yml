@@ -14,7 +14,7 @@ data:
 
   ADMIN_PROJECT_ID: kwetter-accounts-staging
   ADMIN_PRIVATE_KEY_ID: c06df464ac120f73e425ca74b792abc1afc0d7ff
-  ADMIN_CLIENT_EMAIL: firebase-adminsdk-va4dl@kwetter-accounts-staging.iam.gserviceaccount.com
+  ADMIN_CLIENT_EMAIL: firebase-adminsdk-2vbth@kwetter-accounts-staging.iam.gserviceaccount.com
   ADMIN_CLIENT_ID: "116233515725134730545"
   ADMIN_CLIENT_x509_CERT_URL: https://www.googleapis.com/robot/v1/metadata/x509/firebase-adminsdk-2vbth%40kwetter-accounts-staging.iam.gserviceaccount.com
 

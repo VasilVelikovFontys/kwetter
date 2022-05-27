@@ -16,12 +16,12 @@ spec:
     spec:
       containers:
         - name: mentions
-          image: kwetteracr.azurecr.io/mentions
+          image: vjvkwetter.azurecr.io/mentions
           ports:
             - containerPort: 4000
           resources:
             limits:
-              cpu: 500m
+              cpu: 200m
             requests:
               cpu: 200m
           env:

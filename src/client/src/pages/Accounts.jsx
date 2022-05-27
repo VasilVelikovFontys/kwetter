@@ -11,6 +11,7 @@ const Accounts = () => {
     const navigate = useNavigate();
 
     const {user: currentUser} = useSelector(state => state.currentUser);
+
     const {accounts, loading: accountsLoading, error: accountsError} = useSelector(state => state.accounts);
 
     const [styledAccounts, setStyledAccounts] = useState([]);
@@ -59,7 +60,9 @@ const Accounts = () => {
             <div id='accounts-nav'>
                 <div>Accounts</div>
                 <div id='accounts-nav-buttons'>
-                    <div id='start-button' onClick={redirectToStart}>Start</div>
+                    {currentUser && currentUser.roles.indexOf('ADMIN') < 0 && (
+                        <div id='start-button' onClick={redirectToStart}>Start</div>
+                    )}
                     <div id='logout-button' onClick={handleLogout}>Log out</div>
                 </div>
             </div>

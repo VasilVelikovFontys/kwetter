@@ -16,12 +16,12 @@ spec:
     spec:
       containers:
         - name: users
-          image: kwetteracr.azurecr.io/users
+          image: vjvkwetter.azurecr.io/users
           ports:
             - containerPort: 4000
           resources:
             limits:
-              cpu: 500m
+              cpu: 200m
             requests:
               cpu: 200m
           env:
