@@ -278,6 +278,12 @@ jobs:
             csToJson().fromFile('${{ github.workspace }}/apache-jmeter-5.4.3/bin/results.csv')
                 .then(results => {
                     console.log(results);
+
+                    const failure = results.find(result => result.success === 'false');
+
+                    if (failure) {
+                      core.setFailed('There are test failures!');
+                    }
                 }).catch(err => {
                     console.log(err);
                 });
