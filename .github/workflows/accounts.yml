@@ -238,10 +238,10 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Run JMeter Action on a test
-          uses: rbhadti94/apache-jmeter-action@v0.5.0
-          with:
-            testFilePath: ${{ github.workspace }}/src/performance/register.jmx
-            outputReportsFolder: reports/
+        uses: rbhadti94/apache-jmeter-action@v0.5.0
+        with:
+          testFilePath: ${{ github.workspace }}/src/performance/register.jmx
+          outputReportsFolder: reports/
 
       - name: Run JMeter Action on a test
         uses: rbhadti94/apache-jmeter-action@v0.5.0
