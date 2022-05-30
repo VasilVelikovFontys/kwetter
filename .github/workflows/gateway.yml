@@ -228,61 +228,137 @@ jobs:
             ${{ env.AZURE_SECRET }}
           namespace: staging
 
-#  performance-test:
-#    name: Test Performance
-#    if: ${{ github.ref == 'refs/heads/master' }}
-#    runs-on: ubuntu-latest
-#    needs: azure-staging
-#    steps:
-#      - name: Checkout code
-#        uses: actions/checkout@v2
-#
-#  azure-production:
-#    name: Build, Push and Apply Azure Production
-#    if: ${{ github.ref == 'refs/heads/master' }}
-#    runs-on: ubuntu-latest
-#    needs: performance-test
-#    steps:
-#      - name: Checkout code
-#        uses: actions/checkout@v2
-#
-#      - name: Login to Azure Container Registry
-#        uses: azure/docker-login@v1
-#        with:
-#          login-server: ${{ env.AZURE_REGISTRY_NAME }}.azurecr.io
-#          username: ${{ secrets.ACR_USERNAME }}
-#          password: ${{ secrets.ACR_PASSWORD }}
-#
-#      - name: Set the target AKS cluster
-#        uses: azure/aks-set-context@v1
-#        with:
-#          creds: '${{ secrets.AZ_CREDENTIALS }}'
-#          cluster-name: ${{ env.AZURE_CLUSTER_NAME }}
-#          resource-group: ${{ env.AZURE_RESOURCE_GROUP }}
-#
-#      - name: Create Namespace
-#        run: |
-#          kubectl create namespace production --dry-run=client -o json | kubectl apply -f -
-#
-#      - name: Create Image Pull Secret for ACR
-#        uses: azure/k8s-create-secret@v1
-#        with:
-#          container-registry-url: ${{ env.AZURE_REGISTRY_NAME }}.azurecr.io
-#          container-registry-username: ${{ secrets.ACR_USERNAME }}
-#          container-registry-password: ${{ secrets.ACR_PASSWORD }}
-#          secret-name: ${{ env.AZURE_SECRET }}
-#          namespace: production
-#          arguments: --force true
-#
-#      - name: Deploy to AKS
-#        uses: azure/k8s-deploy@v1
-#        with:
-#          manifests: |
-#            ${{ env.MANIFESTS_PATH}}/production/${{ env.SERVICE }}-config.yml
-#            ${{ env.MANIFESTS_PATH}}/production/${{ env.SERVICE }}-secret.yml
-#            ${{ env.MANIFESTS_PATH}}/${{ env.SERVICE }}-depl.yml
-#          images: |
-#            ${{ env.AZURE_REGISTRY_NAME }}.azurecr.io/${{ env.SERVICE }}
-#          imagepullsecrets: |
-#            ${{ env.AZURE_SECRET }}
-#          namespace: production
+  performance-test:
+  name: Test Performance
+  if: ${{ github.ref == 'refs/heads/master' }}
+  runs-on: ubuntu-latest
+  needs: azure-staging
+  steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Install JMeter
+      run: |
+        wget https://downloads.apache.org//jmeter/binaries/apache-jmeter-5.4.3.zip
+        unzip apache-jmeter-5.4.3.zip
+        cd apache-jmeter-5.4.3/bin
+
+    - name: Run JMeter Register
+      run: |
+        cd ${{ github.workspace }}/apache-jmeter-5.4.3/bin
+        ./jmeter -n -t ${{ github.workspace }}/src/performance/register.jmx -l 'results.csv'
+
+    - name: Run JMeter Upload Picture
+      run: |
+        cd ${{ github.workspace }}/apache-jmeter-5.4.3/bin
+        ./jmeter -n -t ${{ github.workspace }}/src/performance/upload-picture.jmx -l 'results.csv'
+
+    - name: Run JMeter Delete Users
+      run: |
+        cd ${{ github.workspace }}/apache-jmeter-5.4.3/bin
+        ./jmeter -n -t ${{ github.workspace }}/src/performance/delete-users.jmx -l 'results.csv'
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v2
+      with:
+        node-version: 14
+
+    - name: Install csvtojson Package
+      run: npm install csvtojson
+
+    - name: Check JMeter Results
+      uses: actions/github-script@v6
+      with:
+        script: |
+          const csToJson = require('csvtojson');
+
+          csToJson().fromFile('${{ github.workspace }}/apache-jmeter-5.4.3/bin/results.csv')
+              .then(results => {
+                  console.log(results);
+
+                  const failure = results.find(result => result.success === 'false');
+
+                  if (failure) {
+                    core.setFailed('There are test failures!');
+                  }
+              }).catch(err => {
+                  console.log(err);
+              });
+
+    - name: Performance Tests ✅
+      if: ${{ success() }}
+      run: |
+        curl --request POST \
+        --url https://api.github.com/repos/${{ github.repository }}/statuses/${{ github.sha }} \
+        --header 'authorization: Bearer ${{ secrets.GITHUB_TOKEN }}' \
+        --header 'content-type: application/json' \
+        --data '{
+        "context": "qulity-gate",
+        "state": "success",
+        "description": "Quality gate passed",
+        "target_url": "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+        }'
+
+    - name: Performance Tests 🚨
+      if: ${{ failure() }}
+      run: |
+        curl --request POST \
+        --url https://api.github.com/repos/${{ github.repository }}/statuses/${{ github.sha }} \
+        --header 'authorization: Bearer ${{ secrets.GITHUB_TOKEN }}' \
+        --header 'content-type: application/json' \
+        --data '{
+          "context": "qulity-gate",
+          "state": "failure",
+          "description": "Quality gate failed",
+          "target_url": "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+        }'
+
+  azure-production:
+    name: Build, Push and Apply Azure Production
+    if: ${{ github.ref == 'refs/heads/master' }}
+    runs-on: ubuntu-latest
+    needs: performance-test
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Login to Azure Container Registry
+        uses: azure/docker-login@v1
+        with:
+          login-server: ${{ env.AZURE_REGISTRY_NAME }}.azurecr.io
+          username: ${{ secrets.ACR_USERNAME }}
+          password: ${{ secrets.ACR_PASSWORD }}
+
+      - name: Set the target AKS cluster
+        uses: azure/aks-set-context@v1
+        with:
+          creds: '${{ secrets.AZ_CREDENTIALS }}'
+          cluster-name: ${{ env.AZURE_CLUSTER_NAME }}
+          resource-group: ${{ env.AZURE_RESOURCE_GROUP }}
+
+      - name: Create Namespace
+        run: |
+          kubectl create namespace production --dry-run=client -o json | kubectl apply -f -
+
+      - name: Create Image Pull Secret for ACR
+        uses: azure/k8s-create-secret@v1
+        with:
+          container-registry-url: ${{ env.AZURE_REGISTRY_NAME }}.azurecr.io
+          container-registry-username: ${{ secrets.ACR_USERNAME }}
+          container-registry-password: ${{ secrets.ACR_PASSWORD }}
+          secret-name: ${{ env.AZURE_SECRET }}
+          namespace: production
+          arguments: --force true
+
+      - name: Deploy to AKS
+        uses: azure/k8s-deploy@v1
+        with:
+          manifests: |
+            ${{ env.MANIFESTS_PATH}}/production/${{ env.SERVICE }}-config.yml
+            ${{ env.MANIFESTS_PATH}}/production/${{ env.SERVICE }}-secret.yml
+            ${{ env.MANIFESTS_PATH}}/${{ env.SERVICE }}-depl.yml
+          images: |
+            ${{ env.AZURE_REGISTRY_NAME }}.azurecr.io/${{ env.SERVICE }}
+          imagepullsecrets: |
+            ${{ env.AZURE_SECRET }}
+          namespace: production
