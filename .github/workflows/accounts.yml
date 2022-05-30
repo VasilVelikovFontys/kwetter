@@ -239,27 +239,27 @@ jobs:
 
       - name: Install JMeter
         run: |
-          java -version
           wget https://downloads.apache.org//jmeter/binaries/apache-jmeter-5.4.3.zip
           unzip apache-jmeter-5.4.3.zip
           cd apache-jmeter-5.4.3/bin
-          ./jmeter -v
-          pwd
 
       - name: Run JMeter Register
         run: |
           cd $GITHUB_WORKSPACE/apache-jmeter-5.4.3/bin
-          ./jmeter -n -t ${{ github.workspace }}/src/performance/register.jmx
+          ./jmeter -n -t ${{ github.workspace }}/src/performance/register.jmx -l 'results.csv'
 
       - name: Run JMeter Upload Picture
         run: |
           cd $GITHUB_WORKSPACE/apache-jmeter-5.4.3/bin
-          ./jmeter -n -t ${{ github.workspace }}/src/performance/upload-picture.jmx
+          ./jmeter -n -t ${{ github.workspace }}/src/performance/upload-picture.jmx -l 'results.csv'
 
       - name: Run JMeter Delete Users
         run: |
           cd $GITHUB_WORKSPACE/apache-jmeter-5.4.3/bin
-          ./jmeter -n -t ${{ github.workspace }}/src/performance/delete-users.jmx
+          ./jmeter -n -t ${{ github.workspace }}/src/performance/delete-users.jmx -l 'results.csv'
+
+      - run: |
+          cat results.csv
 
       - name: Performance Tests ✅
         if: ${{ success() }}
