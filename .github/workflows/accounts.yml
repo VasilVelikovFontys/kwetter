@@ -266,7 +266,7 @@ jobs:
         with:
           node-version: 14
 
-      - name: Install CSVtoJSON
+      - name: Install csvtojson Package
         run: npm install csvtojson
 
       - uses: actions/github-script@v6
@@ -275,7 +275,7 @@ jobs:
           script: |
             const csToJson = require('csvtojson');
 
-            csToJson().fromFile('${{ github.workspace }}/apache-jmeter-5.4.3/bin/results.csv');
+            csToJson().fromFile('${{ github.workspace }}/apache-jmeter-5.4.3/bin/results.csv')
                 .then(results => {
                     console.log(results);
                 }).catch(err => {
