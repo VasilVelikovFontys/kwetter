@@ -238,19 +238,19 @@ jobs:
         uses: actions/checkout@v2
 
       - name: JMeter Register Users
-        uses: QAInsights/PerfAction@v2.0
+        uses: QAInsights/PerfAction
         with:
           test-plan-path: ${{ github.workspace }}/src/performance/register.jmx
           args: ""
 
       - name: JMeter Upload Picture
-        uses: QAInsights/PerfAction@v2.0
+        uses: QAInsights/PerfAction
         with:
           test-plan-path: ${{ github.workspace }}/src/performance/upload-picture.jmx
           args: ""
 
       - name: JMeter Delete Users
-        uses: QAInsights/PerfAction@v2.0
+        uses: QAInsights/PerfAction
         with:
           test-plan-path: ${{ github.workspace }}/src/performance/delete-users.jmx
           args: ""
