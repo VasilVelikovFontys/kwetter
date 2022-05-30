@@ -237,23 +237,29 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Run JMeter Register Test
-        uses: QAInsights/PerfAction@3.0
-        with:
-          test-plan-path: ${{ github.workspace }}/src/performance/register.jmx
-          args: ""
+      - name: Install JMeter
+        run: |
+          java -version
+          wget https://downloads.apache.org//jmeter/binaries/apache-jmeter-5.4.1.zip
+          unzip apache-jmeter-5.4.1.zip
+          cd apache-jmeter-5.4.1/bin
+          ./jmeter -v
+          pwd
 
-      - name: Run JMeter Upload Picture Test
-        uses: QAInsights/PerfAction@3.0
-        with:
-          test-plan-path: ${{ github.workspace }}/src/performance/upload-picture.jmx
-          args: ""
+      - name: Run JMeter Register
+        run: |
+          cd $GITHUB_WORKSPACE/apache-jmeter-5.4.1/bin
+          ./jmeter -n -t ${{ github.workspace }}/src/performance/register.jmx
 
-      - name: Run JMeter Delete Users Test
-        uses: QAInsights/PerfAction@3.0
-        with:
-          test-plan-path: ${{ github.workspace }}/src/performance/delete-users.jmx
-          args: ""
+      - name: Run JMeter Upload Picture
+        run: |
+          cd $GITHUB_WORKSPACE/apache-jmeter-5.4.1/bin
+          ./jmeter -n -t ${{ github.workspace }}/src/performance/upload-picture.jmx
+
+      - name: Run JMeter Delete Users
+        run: |
+          cd $GITHUB_WORKSPACE/apache-jmeter-5.4.1/bin
+          ./jmeter -n -t ${{ github.workspace }}/src/performance/delete-users.jmx
 
       - name: Performance Tests ✅
         if: ${{ success() }}
