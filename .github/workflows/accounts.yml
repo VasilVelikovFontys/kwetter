@@ -237,6 +237,11 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
+      - run: |
+          ls
+          cd ${{ github.workspace }}/src/performance
+          ls
+
       - name: Run JMeter Register Test
         uses: rbhadti94/apache-jmeter-action@v0.5.0
         with:
