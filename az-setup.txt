@@ -31,7 +31,7 @@ helm install ingress-nginx ingress-nginx/ingress-nginx \
 az aks update \
   --resource-group kwetterResourceGroup \
   --name kwetterAKSCluster \
-  --enable-cluster-autoscaler \
+  --update-cluster-autoscaler \
   --min-count 1 \
   --max-count 3
 

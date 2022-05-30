@@ -237,6 +237,52 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
+      - name: JMeter Register Users
+        uses: QAInsights/PerfAction@v2.0
+        with:
+          test-plan-path: ${{ github.workspace }}/src/performance/register.jmx
+          args: ""
+
+      - name: JMeter Upload Picture
+        uses: QAInsights/PerfAction@v2.0
+        with:
+          test-plan-path: ${{ github.workspace }}/src/performance/upload-picture.jmx
+          args: ""
+
+      - name: JMeter Delete Users
+        uses: QAInsights/PerfAction@v2.0
+        with:
+          test-plan-path: ${{ github.workspace }}/src/performance/delete-users.jmx
+          args: ""
+
+      - name: Performance Tests ✅
+        if: ${{ success() }}
+        run: |
+          curl --request POST \
+          --url https://api.github.com/repos/${{ github.repository }}/statuses/${{ github.sha }} \
+          --header 'authorization: Bearer ${{ secrets.GITHUB_TOKEN }}' \
+          --header 'content-type: application/json' \
+          --data '{
+          "context": "qulity-gate",
+          "state": "success",
+          "description": "Quality gate passed",
+          "target_url": "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          }'
+
+      - name: Performance Tests 🚨
+        if: ${{ failure() }}
+        run: |
+          curl --request POST \
+          --url https://api.github.com/repos/${{ github.repository }}/statuses/${{ github.sha }} \
+          --header 'authorization: Bearer ${{ secrets.GITHUB_TOKEN }}' \
+          --header 'content-type: application/json' \
+          --data '{
+            "context": "qulity-gate",
+            "state": "failure",
+            "description": "Quality gate failed",
+            "target_url": "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          }'
+
   azure-production:
     name: Build, Push and Apply Azure Production
     if: ${{ github.ref == 'refs/heads/master' }}

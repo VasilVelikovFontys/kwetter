@@ -4,8 +4,6 @@ services:
   gateway:
     image: vjv2143/kwetter.gateway
     container_name: gateway
-    depends_on:
-      - nats-streaming
     env_file: .gateway.env
     ports:
       - ${GATEWAY_PORT}:4000
