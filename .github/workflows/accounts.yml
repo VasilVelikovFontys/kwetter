@@ -237,28 +237,23 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - run: |
-          ls
-          cd ${{ github.workspace }}/src/performance
-          ls
-
       - name: Run JMeter Register Test
-        uses: rbhadti94/apache-jmeter-action@v0.5.0
+        uses: QAInsights/PerfAction@3.0
         with:
-          testFilePath: ${{ github.workspace }}/src/performance/register.jmx
-          outputReportsFolder: reports/
+          test-plan-path: ${{ github.workspace }}/src/performance/register.jmx
+          args: ""
 
       - name: Run JMeter Upload Picture Test
-        uses: rbhadti94/apache-jmeter-action@v0.5.0
+        uses: QAInsights/PerfAction@3.0
         with:
-          testFilePath: ${{ github.workspace }}/src/performance/upload-picture.jmx
-          outputReportsFolder: reports/
+          test-plan-path: ${{ github.workspace }}/src/performance/upload-picture.jmx
+          args: ""
 
       - name: Run JMeter Delete Users Test
-        uses: rbhadti94/apache-jmeter-action@v0.5.0
+        uses: QAInsights/PerfAction@3.0
         with:
-          testFilePath: ${{ github.workspace }}/src/performance/delete-users.jmx
-          outputReportsFolder: reports/
+          test-plan-path: ${{ github.workspace }}/src/performance/delete-users.jmx
+          args: ""
 
       - name: Performance Tests ✅
         if: ${{ success() }}
