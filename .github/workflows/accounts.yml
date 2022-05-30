@@ -232,7 +232,7 @@ jobs:
     name: Test Performance
     if: ${{ github.ref == 'refs/heads/master' }}
     runs-on: ubuntu-latest
-    needs: azure-staging
+#    needs: azure-staging
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
